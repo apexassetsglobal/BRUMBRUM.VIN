@@ -3,30 +3,41 @@ on:
   push:
     branches: [roboty-app]
   workflow_dispatch:
+
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
+
 concurrency:
   group: roboty-pages
   cancel-in-progress: true
+
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout roboty-app
         uses: actions/checkout@v6
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
         with:
-          enablement: true
-      - name: Upload site
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: roboty-app
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+          fetch-depth: 0
+
+      - name: Prepare static site
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/roboty-site
+          mkdir -p /tmp/roboty-site
+          cp -a roboty-app/. /tmp/roboty-site/
+          touch /tmp/roboty-site/.nojekyll
+
+      - name: Publish to gh-pages branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan gh-pages
+          git rm -rf . || true
+          cp -a /tmp/roboty-site/. .
+          git add -A
+          git commit -m "Deploy ROBOTY I AUTOMATYKA"
+          git push --force origin gh-pages
