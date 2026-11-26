@@ -15,10 +15,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout roboty-app
+      - name: Checkout only roboty-app files
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          sparse-checkout: |
+            roboty-app
+          sparse-checkout-cone-mode: true
 
       - name: Prepare static site
         shell: bash
@@ -36,7 +39,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout --orphan gh-pages
-          git rm -rf . || true
+          git rm -rf --sparse . || true
           cp -a /tmp/roboty-site/. .
           git add -A
           git commit -m "Deploy ROBOTY I AUTOMATYKA"
