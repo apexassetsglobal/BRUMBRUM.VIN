@@ -1,0 +1,2 @@
+
+ee3a3a56b7132450dadfaec9f2a5aa81b459b60b	{"key":"make-fetch-happen:request-cache:https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.12.tgz","integrity":"sha512-alJC0uCZpTFrSL0CCDjcgleBXPnCrEAhTBILpeAp7M/OFgoqtAetfBzX0xM00MUsVVPpVjlPuMbREqnZCXaTnA==","time":1795722725171,"size":4484984,"metadata":{"time":1795722725145,"url":"https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.12.tgz","reqHeaders":{},"resHeaders":{"content-type":"application/octet-stream","cache-control":"public,max-age=31536000,immutable"},"options":{"compress":true}}}

@@ -1,0 +1,2 @@
+
+0c99751a2ee8bd45b4b8c16afa5eae7565c49068	{"key":"make-fetch-happen:request-cache:https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.25.12.tgz","integrity":"sha512-Ld5pTlzPy3YwGec4OuHh1aCVCRvOXdH8DgRjfDy/oumVovmuSzWfnSJg+VtakB9Cm0gxNO9BzWkj6mtO1FMXkQ==","time":1795722721842,"size":4375063,"metadata":{"time":1795722721810,"url":"https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.25.12.tgz","reqHeaders":{},"resHeaders":{"content-type":"application/octet-stream","cache-control":"public,max-age=31536000,immutable"},"options":{"compress":true}}}

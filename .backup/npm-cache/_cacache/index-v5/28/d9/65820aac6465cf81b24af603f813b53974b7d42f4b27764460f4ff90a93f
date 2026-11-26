@@ -1,0 +1,2 @@
+
+0673e2e31a3740f7a15319e6af4d94ff2a94e31c	{"key":"make-fetch-happen:request-cache:https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.12.tgz","integrity":"sha512-gA0Bx759+7Jve03K1S0vkOu5Lg/85dou3EseOGUes8flVOGxbhDDh/iZaoek11Y8mtyKPGF3vP8XhnkDEAmzeg==","time":1795722710187,"size":4034702,"metadata":{"time":1795722710144,"url":"https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.12.tgz","reqHeaders":{},"resHeaders":{"content-type":"application/octet-stream","cache-control":"public,max-age=31536000,immutable"},"options":{"compress":true}}}

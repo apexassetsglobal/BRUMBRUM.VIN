@@ -1,0 +1,2 @@
+
+8fa545b9490cd24bf6f6926af46d2e21a182a6a6	{"key":"make-fetch-happen:request-cache:https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.25.12.tgz","integrity":"sha512-0y9KrdVnbMM2/vG8KfU0byhUN+EFCny9+8g202gYqSSVMonbsCfLjUO+rCci7pM0WBEtz+oK/PIwHkzxkyharA==","time":1795722714901,"size":4069529,"metadata":{"time":1795722714875,"url":"https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.25.12.tgz","reqHeaders":{},"resHeaders":{"content-type":"application/octet-stream","cache-control":"public,max-age=31536000,immutable"},"options":{"compress":true}}}
