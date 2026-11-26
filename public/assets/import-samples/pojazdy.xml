@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='utf-8'?>
+<offers>
+  <offer external_id="SZABLON-001">
+    <make>Toyota</make>
+    <model>Corolla</model>
+    <variant>1.8 Hybrid</variant>
+    <type>car</type>
+    <body>wagon</body>
+    <fuel>hybrid</fuel>
+    <gearbox>auto</gearbox>
+    <drive>fwd</drive>
+    <condition>used</condition>
+    <damage>no</damage>
+    <year>2021</year>
+    <mileage>63000</mileage>
+    <power>122</power>
+    <price currency="PLN">74900</price>
+    <equipment>
+      <item>abs</item>
+      <item>ac</item>
+    </equipment>
+    <description>Wiersz przykładowy. Wpisz faktyczny opis i podmień adresy zdjęć na własne.</description>
+    <availability>available</availability>
+    <contact>message</contact>
+    <location>
+      <city>Łódź</city>
+      <region>Łódzkie</region>
+      <country>Polska</country>
+    </location>
+    <photos>
+      <photo url="https://dealer.example/photos/001-a.webp" />
+      <photo url="https://dealer.example/photos/001-b.webp" />
+    </photos>
+  </offer>
+  <offer external_id="SZABLON-002">
+    <make>Yamaha</make>
+    <model>MT-07</model>
+    <variant>ABS</variant>
+    <type>motorcycle</type>
+    <body>naked</body>
+    <fuel>petrol</fuel>
+    <gearbox>manual</gearbox>
+    <drive>rwd</drive>
+    <condition>used</condition>
+    <damage>no</damage>
+    <year>2022</year>
+    <mileage>11800</mileage>
+    <power>73</power>
+    <price currency="PLN">24900</price>
+    <equipment>
+      <item>abs</item>
+    </equipment>
+    <description>Wiersz przykładowy. Przed importem wpisz własne dane i adres zdjęcia.</description>
+    <availability>available</availability>
+    <contact>message</contact>
+    <location>
+      <city>Poznań</city>
+      <region>Wielkopolskie</region>
+      <country>Polska</country>
+    </location>
+    <photos>
+      <photo url="https://dealer.example/photos/002-a.webp" />
+    </photos>
+  </offer>
+</offers>

@@ -1,0 +1,155 @@
+html.app-launch {background-color: #000}
+.launch-screen {display: none}
+.app-launch .launch-screen {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  background: #000 url("/assets/launch-leather.webp") center / cover no-repeat;
+  animation: brumbrum-launch 5000ms both;
+}
+.app-launch .launch-screen::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: max(env(safe-area-inset-bottom, 0px), env(safe-area-max-inset-bottom, 0px));
+  background-color: #000;
+}
+.launch-badge {
+  display: grid;
+  place-items: center;
+  width: min(83vw, 500px);
+  min-height: clamp(78px, 14vw, 124px);
+  padding: clamp(14px, 3.8vw, 34px);
+  border: 1px solid #c4d1df9c;
+  border-radius: clamp(12px, 2vw, 20px);
+  background:
+    linear-gradient(115deg, transparent 28%, #ebf5ff35 47%, transparent 66%),
+    repeating-linear-gradient(0deg, #c4d7ec16 0 1px, #26344720 1px 3px),
+    linear-gradient(180deg, #b5c2d0, #eef5fc 29%, #9eafc1 53%, #67798d 100%);
+  box-shadow: 0 19px 40px #000b, inset 0 0 0 2px #f0f7ff44, inset 0 -4px 10px #16233162;
+  color: #101d2d;
+}
+.launch-badge .brumbrum-mark {
+  width: 100%;
+  filter: drop-shadow(0 1px 0 #ffffff85);
+}
+.launch-badge .brumbrum-accent {fill: #0a4b94}
+.launch-badge .brand-image {height: auto; max-width: 100%}
+@keyframes brumbrum-launch {
+  0%, 93% {opacity: 1; visibility: visible}
+  100% {opacity: 0; visibility: hidden}
+}
+@media (orientation: landscape) {
+  .app-launch .launch-screen {background-size: 100% 100%}
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-launch .launch-screen {display: none}
+}
+
+.site-head.home-engraved-head {
+  position: sticky;
+  top: 0;
+}
+.site-head .head-inner > .header-brand {
+  min-width: 0;
+  max-width: min(38vw, 144px);
+  min-height: 44px;
+}
+.header-brand > [data-header-original] {min-width: 0}
+.header-brand [data-header-original] :is(.brumbrum-mark,.brand-image) {max-width: 100%}
+.header-brand .brand-logo-preset {
+  width: 144px;
+  max-width: 100%;
+  max-height: 44px;
+  object-position: left center;
+}
+@media (min-width: 1041px) {
+  .site-head .head-inner > .header-brand {max-width: 178px}
+  .header-brand .brand-logo-preset {width: 178px}
+}
+@media (768px <= width <= 1040px),
+       (1041px <= width <= 1366px) and (orientation: landscape) and (pointer: coarse) {
+  .site-head .head-inner > .header-brand {max-width: 162px}
+  .header-brand .brand-logo-preset {width: 162px; height: 44px; object-fit: fill}
+}
+
+.brand-logo-preset {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 3px #0007);
+}
+.launch-badge.launch-badge-preset {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.logo-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr));
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 10px;
+  border: 0;
+}
+.logo-choice-card {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  cursor: pointer;
+}
+.logo-choice-card input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.logo-choice-card:has(input:checked) {
+  border-color: var(--blue);
+  box-shadow: inset 0 0 0 1px var(--blue);
+  background: var(--soft);
+}
+.logo-choice-card:has(input:focus-visible) {
+  outline: 2px solid var(--focus, var(--blue));
+  outline-offset: 2px;
+}
+.logo-choice-preview {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 3 / 1;
+  min-width: 0;
+}
+.logo-choice-preview :is(img,svg) {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+}
+.logo-choice-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  font-size: 12px;
+}
+.logo-choice-card:has(input:checked) .logo-choice-caption::after {
+  content: "✓";
+  font-weight: 800;
+  color: var(--blue);
+}

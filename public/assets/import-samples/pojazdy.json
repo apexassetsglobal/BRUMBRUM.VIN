@@ -1,0 +1,80 @@
+{
+  "offers": [
+    {
+      "external_id": "SZABLON-001",
+      "make": "Toyota",
+      "model": "Corolla",
+      "variant": "1.8 Hybrid",
+      "type": "car",
+      "body": "wagon",
+      "fuel": "hybrid",
+      "gearbox": "auto",
+      "drive": "fwd",
+      "condition": "used",
+      "damage": "no",
+      "year": 2021,
+      "mileage": 63000,
+      "power": 122,
+      "price": {
+        "amount": 74900,
+        "currency": "PLN"
+      },
+      "equipment": [
+        "abs",
+        "ac"
+      ],
+      "description": "Wiersz przykładowy. Wpisz faktyczny opis i podmień adresy zdjęć na własne.",
+      "availability": "available",
+      "contact": "message",
+      "location": {
+        "city": "Łódź",
+        "region": "Łódzkie",
+        "country": "Polska"
+      },
+      "photos": [
+        {
+          "url": "https://dealer.example/photos/001-a.webp"
+        },
+        {
+          "url": "https://dealer.example/photos/001-b.webp"
+        }
+      ]
+    },
+    {
+      "external_id": "SZABLON-002",
+      "make": "Yamaha",
+      "model": "MT-07",
+      "variant": "ABS",
+      "type": "motorcycle",
+      "body": "naked",
+      "fuel": "petrol",
+      "gearbox": "manual",
+      "drive": "rwd",
+      "condition": "used",
+      "damage": "no",
+      "year": 2022,
+      "mileage": 11800,
+      "power": 73,
+      "price": {
+        "amount": 24900,
+        "currency": "PLN"
+      },
+      "equipment": [
+        "abs"
+      ],
+      "description": "Wiersz przykładowy. Przed importem wpisz własne dane i adres zdjęcia.",
+      "availability": "available",
+      "contact": "message",
+      "location": {
+        "city": "Poznań",
+        "region": "Wielkopolskie",
+        "country": "Polska"
+      },
+      "photos": [
+        {
+          "url": "https://dealer.example/photos/002-a.webp"
+        }
+      ]
+    }
+  ]
+}

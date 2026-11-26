@@ -1,0 +1,57 @@
+/* Read-only illustrations, visibly distinct from real marketplace listings. */
+.robot-demo-section {padding-top:30px;border-top:1px solid #dcebf5;}
+.robot-demo-section .section-head {align-items:center;}
+.robot-demo-heading-mark {white-space:nowrap;color:#0068c7;}
+.robot-demo-notice {display:flex;align-items:center;gap:16px;padding:17px 20px;border:1px solid #b7dcf6;border-radius:16px;background:#f1f9ff;color:#244967;}
+.robot-demo-notice p {margin:0;max-width:90ch;font-size:14px;line-height:1.65;}
+.robot-demo-badge {display:inline-flex;align-items:center;justify-content:center;flex:none;border:1px solid #087ad2;border-radius:8px;padding:6px 10px;background:#0767bb;color:#fff;font-size:12px;font-weight:750;letter-spacing:.09em;line-height:1.2;}
+.robot-demo-count {margin:13px 0 23px;color:#567086;font-size:13px;}
+.robot-demo-real-status {display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin:0 0 17px;color:#567086;font-size:14px;}
+.robot-demo-real-status p {margin:0;}
+.robot-demo-real-status .robot-text-link {display:inline-flex;align-items:center;gap:6px;}
+.robot-demo-card {display:flex;flex-direction:column;border-color:#cae2f1;}
+.robot-demo-photo {position:relative;display:grid;place-items:center;aspect-ratio:4/3;overflow:hidden;border-bottom:1px solid #e5eff6;background:#fff;}
+.robot-demo-photo>.robot-demo-badge {position:absolute;z-index:1;top:14px;left:14px;}
+.robot-demo-photo .robot-category-art {width:75%;height:auto;aspect-ratio:1;}
+.robot-demo-illustration {position:absolute;right:13px;bottom:11px;padding:3px 7px;border-radius:6px;background:#f0f6fbea;color:#567086;font-size:11px;line-height:1.4;}
+.robot-demo-card>.robot-offer-info {display:flex;flex:1;flex-direction:column;align-items:flex-start;}
+.robot-demo-card h3 {margin-bottom:10px;}
+.robot-demo-mode {display:inline-flex;border:1px solid #d9e8f3;border-radius:7px;background:#f5faff;color:#315b7b;padding:4px 8px;font-size:11px;line-height:1.4;}
+.robot-demo-price-label {margin:18px 0 2px;color:#587085;font-size:12px;}
+.robot-demo-card .robot-card-price {margin:0;}
+.robot-demo-card .robot-small {margin:5px 0 0;}
+.robot-demo-spec-preview {display:grid;gap:6px;width:100%;margin:17px 0 20px;font-size:12px;line-height:1.6;}
+.robot-demo-spec-preview>div {display:flex;justify-content:space-between;gap:12px;}
+.robot-demo-spec-preview dt {color:#60778a;}
+.robot-demo-spec-preview dd {margin:0;color:#274a66;font-weight:550;text-align:right;}
+.robot-demo-card-bottom {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;width:100%;padding-top:15px;margin-top:auto;border-top:1px solid #e6eef5;font-size:12px;color:#6a7d8e;}
+.robot-demo-card-bottom .robot-text-link {display:inline-flex;align-items:center;gap:6px;font-size:13px;}
+.robot-demo-card a:focus-visible {outline:3px solid #0097e6;outline-offset:4px;}
+.robot-demo-photo:focus-visible {outline-offset:-4px;}
+.robot-demo-empty {padding:24px 0;color:#567086;}
+.robot-demo-detail>.robot-demo-notice {margin:0 0 27px;}
+.robot-demo-detail>.robot-demo-notice>.robot-demo-badge {padding:10px 15px;font-size:16px;}
+.robot-demo-figure {position:relative;min-width:0;margin:0;border:1px solid #d4e7f3;border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 7px 25px #183b6408;}
+.robot-demo-figure>.robot-demo-badge {position:absolute;z-index:1;top:20px;left:20px;padding:9px 14px;font-size:15px;}
+.robot-demo-figure>.robot-category-art {width:90%;margin-inline:auto;}
+.robot-demo-figure figcaption {padding:18px 22px;border-top:1px solid #e5eef5;background:#f8fbfe;color:#5a7084;font-size:13px;line-height:1.6;}
+.robot-demo-detail .robot-details-tags {flex-wrap:wrap;}
+@media (max-width:760px) {
+  .robot-demo-section {margin-top:20px;padding-top:0;border-top:0;}
+  .robot-demo-section .section-head {align-items:flex-start;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .robot-app .robot-demo-section .section-head>a {max-width:100%;text-align:left;}
+  .robot-demo-notice {align-items:flex-start;gap:10px;padding:14px;}
+  .robot-demo-notice p {font-size:13px;line-height:1.5;}
+  .robot-demo-real-status {gap:6px 14px;margin-bottom:14px;}
+  .robot-demo-count {margin:12px 0 16px;}
+  .robot-demo-card>.robot-offer-info {padding:16px;}
+  .robot-demo-card h3 {margin:6px 0 8px;}
+  .robot-demo-price-label {margin-top:14px;}
+  .robot-demo-spec-preview {margin:14px 0 16px;}
+  .robot-demo-card-bottom {padding-top:14px;}
+  .robot-demo-empty {padding:16px 0;}
+  .robot-demo-detail>.robot-demo-notice {margin-bottom:18px;}
+  .robot-demo-detail>.robot-demo-notice>.robot-demo-badge {padding:6px 9px;font-size:13px;}
+  .robot-demo-figure>.robot-demo-badge {top:15px;left:15px;}
+  .robot-demo-figure figcaption {padding:14px 16px;}
+}
