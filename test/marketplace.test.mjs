@@ -1233,6 +1233,9 @@ test('demo showcase serves three distinct photos per listing and full-width deta
     assert.doesNotMatch(page,/data-copy-vin=/);
     assert.match(page,/class="panel offer-section"><summary>[^<]*<svg[^>]*>.*?<span>Opis sprzedawcy<\/span>/s);
     assert.match(page,/data-gallery-autoplay/);
+    assert.match(page,/>Napisz wiadomość</);
+    assert.match(page,/>Umów oględziny</);
+    assert.match(page,/>Rolki</);
     const frames=JSON.parse(page.match(/data-gallery="([^"]+)"/)[1].replaceAll('&quot;','"'));
     assert.equal(frames.length,3);
     assert.equal(new Set(frames.map(frame=>frame.url)).size,3);
@@ -1573,10 +1576,10 @@ test('demo photo reels link to the matching listing, photos, and seller',async()
   assert.match(firstSlide,/Napisz wiadomość/);
   assert.match(firstSlide,/Umów oględziny/);
   assert.match(firstSlide,/Sprawdź VIN|Zapytaj o VIN/);
-  const detailsPanel=firstSlide.slice(firstSlide.indexOf('data-reel-panel="details"'),firstSlide.indexOf('data-reel-panel="media"'));
+  const detailsPanel=firstSlide.slice(firstSlide.indexOf('data-reel-panel="details"'));
   assert.doesNotMatch(detailsPanel,/<img /);
-  assert.ok(firstSlide.indexOf('data-reel-panel="photos"')<firstSlide.indexOf('data-reel-panel="details"'));
-  assert.ok(firstSlide.indexOf('data-reel-panel="details"')<firstSlide.indexOf('data-reel-panel="media"'));
+  assert.ok(firstSlide.indexOf('data-reel-panel="photos"')<firstSlide.indexOf('data-reel-panel="media"'));
+  assert.ok(firstSlide.indexOf('data-reel-panel="media"')<firstSlide.indexOf('data-reel-panel="details"'));
   assert.match(firstSlide,/Film nie został dodany/);
   const photoStack=firstSlide.slice(firstSlide.indexOf('<div class="reel-photo-stack'),firstSlide.indexOf('</div>',firstSlide.indexOf('<div class="reel-photo-stack')));
   assert.equal((photoStack.match(/<img /g)||[]).length,3);

@@ -333,8 +333,10 @@ export function listingsPage(ctx,items) {
       <div class="inline listing-actions">${actions}</div></article>`;
   }).join('');
   return {title:t('Moje ogłoszenia','My listings'),body:`<div class="wrap page listings-manage">
-    ${pageHead(t('Moje ogłoszenia','My listings'),'',link(ctx,'/sprzedaj',(ctx.robotics?t('Wystaw sprzęt','List equipment'):t('Dodaj pojazd','Add a vehicle')),'btn primary','listing'))}
-    <div class="inline">${ctx.robotics?(ctx.user.profile_type==='company'?link(ctx,'/panel-dealera',t('Import CSV robotów','Robot CSV import'),'btn','upload'):''):link(ctx,'/moje-ogloszenia/import',t('Import i automatyzacja','Import and automation'),'btn','upload')}${link(ctx,'/moje-uslugi',t('Moje firmy','My businesses'),'btn','building')}</div>
+    <header class="listings-manage-header">
+      ${pageHead(t('Moje ogłoszenia','My listings'),'',link(ctx,'/sprzedaj',(ctx.robotics?t('Wystaw sprzęt','List equipment'):t('Dodaj pojazd','Add a vehicle')),'btn primary','listing'))}
+      <div class="inline listings-manage-tools">${ctx.robotics?(ctx.user.profile_type==='company'?link(ctx,'/panel-dealera',t('Import CSV robotów','Robot CSV import'),'btn','upload'):''):link(ctx,'/moje-ogloszenia/import',t('Import i automatyzacja','Import and automation'),'btn','upload')}${link(ctx,'/moje-uslugi',t('Moje firmy','My businesses'),'btn','building')}</div>
+    </header>
     ${listingConfirmation(ctx,items)}${supportInvitation(ctx,ctx.url.searchParams.get('wyslano')||'')}${tabs}<div class="listing-stack">${table||empty(ctx,t('Brak ogłoszeń','No listings'),t('Zapisz szkic lub zmień filtr statusu.','Start a draft or change the status filter.'),link(ctx,'/sprzedaj',(ctx.robotics?t('Wystaw sprzęt','List equipment'):t('Dodaj pojazd','Add a vehicle')),'btn primary','listing'))}</div>
   </div>`};
 }
@@ -393,13 +395,26 @@ export async function wizard(ctx,offer,state) {
     ${area('history',t('Historia i uszkodzenia','History and damage'),d.history,{attributes:'maxlength="1500"'})}</fieldset>
     ${groups}${area('description',t('Opis ogłoszenia','Listing description'),d.description,{required:true,attributes:'minlength="12" maxlength="7000"'})}
     ${area('description_en',t('Opis po angielsku (opcjonalnie)','English description (optional)'),d.description_en,{attributes:'maxlength="7000"'})}`,
-    `<section class="media-editor" aria-labelledby="smart-camera-heading">
+    `<section class="media-editor smart-camera-entry" aria-labelledby="smart-camera-heading">
       <h3 id="smart-camera-heading">${icon('image',22)} BRUMBRUM.VIN — SMART CAMERA 360° STUDIO</h3>
       <p>${t('Nie musisz być fotografem. Wystarczy, że dopasujesz kontur.','You don’t need to be a photographer. Just line up the outline.')}</p>
       <div class="inline">${[
         ['guided','image',t('Zrób zdjęcie','Take a photo')],['guide','listing',t('Instrukcja zdjęć','Photo guide')],
         ['spin','rotate',t('Sesja 360°','360° session')]
       ].map(([mode,symbol,label])=>`<button class="btn${mode==='guided'?' primary':''}" type="button" data-camera-open="${mode}" data-button-finish-action>${icon(symbol,19)}${buttonEmbroideryLabel(label)}</button>`).join('')}</div>
+      <details class="photo-master-guide">
+        <summary>${icon('listing',19)}<span>${t('Pełny poradnik: 12–16 idealnych zdjęć','Complete guide: 12–16 ideal photos')}</span>${icon('down',16)}</summary>
+        <div class="photo-master-guide-content">
+          <img src="/assets/photo-guide/brumbrum-photo-guide.webp" width="1536" height="1152" loading="lazy" decoding="async"
+            alt="${e(t('Poradnik BRUMBRUM.VIN: pozycje fotografa wokół auta, kolejność 12 zdjęć, prawidłowa odległość, kąt i wysokość aparatu oraz przykłady dobrego i złego kadru.','BRUMBRUM.VIN guide showing photographer positions around a car, the 12-shot sequence, correct distance, angle and camera height, plus good and poor framing examples.'))}">
+          <div><strong>${t('Najważniejsze zasady','Key rules')}</strong><ul>
+            <li>${t('Umyj auto, wybierz równe i spokojne tło oraz miękkie światło dzienne.','Clean the vehicle and choose a level, uncluttered background with soft daylight.')}</li>
+            <li>${t('Stań 4–6 m od auta, trzymaj aparat na wysokości 1–1,3 m i użyj obiektywu 1×.','Stand 4–6 m away, hold the camera 1–1.3 m high and use the 1× lens.')}</li>
+            <li>${t('Pokaż całe auto z marginesem. Nie ucinaj zderzaków, kół ani dachu.','Show the complete vehicle with a margin. Do not crop bumpers, wheels or the roof.')}</li>
+            <li>${t('Po ośmiu ujęciach nadwozia dodaj kokpit, siedzenia, bagażnik, silnik i ważne detale.','After eight exterior angles, add the cockpit, seats, boot, engine bay and important details.')}</li>
+          </ul></div>
+        </div>
+      </details>
       </section><div class="dropzone"><span class="mini-icon">${icon('upload',24)}</span><strong>${t('Dodaj zdjęcia pojazdu','Add vehicle photos')}</strong>
       <p>${t('JPEG, PNG lub WebP. Do 30 zdjęć i 12 MB na plik. Pierwsze zdjęcie będzie okładką.','JPEG, PNG or WebP. Up to 30 photos and 12 MB per file. The first photo is the cover.')}</p>
       <label class="btn file-button" data-button-finish-action>${icon('image',18)}${buttonEmbroideryLabel(t('Wybierz zdjęcia','Choose photos'))}<input type="file" data-photo-input multiple accept="image/jpeg,image/png,image/webp" aria-label="${t('Wybierz zdjęcia','Choose photos')}"></label></div>

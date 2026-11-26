@@ -177,9 +177,19 @@ export async function openSmartCamera(bridge, options = {}) {
         ${button('fullscreen',t('Pełny ekran','Full screen'))}
       </div></details>
       <details class="sc-details" data-sc-guide><summary>${e(t('Instrukcja fotografowania','Photography guide'))}</summary>
-        <p class="sc-reference-name">Lamborghini Revuelto · ${e(t('Przykłady kadrowania','Framing examples'))}</p><div class="sc-examples"><figure><div data-sc-example-good></div><figcaption>${e(t('Cały pojazd i margines','Full vehicle with a margin'))}</figcaption></figure>
+        <figure class="sc-master-art"><img src="/assets/photo-guide/brumbrum-photo-guide.webp" width="1536" height="1152" loading="lazy" decoding="async"
+          alt="${e(t('Pełny przewodnik po ustawieniu fotografa, kątach i kolejności zdjęć samochodu.','Complete guide to photographer position, angles and vehicle photo order.'))}"><figcaption>${e(t('Plan 12–16 zdjęć: osiem stron nadwozia, wnętrze, bagażnik, silnik i detale.','12–16 shot plan: eight exterior angles, interior, boot, engine bay and details.'))}</figcaption></figure>
+        <div class="sc-guide-grid"><section><h3>${e(t('Ustawienie fotografa','Photographer setup'))}</h3><dl>
+          <div><dt>${e(t('Odległość','Distance'))}</dt><dd>4–6 m</dd></div><div><dt>${e(t('Kąt','Angle'))}</dt><dd>30–45°</dd></div>
+          <div><dt>${e(t('Wysokość','Height'))}</dt><dd>1–1,3 m</dd></div><div><dt>${e(t('Obiektyw','Lens'))}</dt><dd>1×</dd></div>
+        </dl></section><section><h3>${e(t('Kolejność podstawowa','Core sequence'))}</h3><ol class="sc-shot-sequence">
+          ${['Przód lewy 315°','Przód 0°','Przód prawy 45°','Lewy bok 270°','Prawy bok 90°','Tył lewy 225°','Tył 180°','Tył prawy 135°','Wnętrze — przód','Wnętrze — tył','Bagażnik','Komora silnika'].map((label,index)=>`<li><span>${index+1}</span>${e(label)}</li>`).join('')}
+        </ol></section></div>
+        <p class="sc-reference-name">Lamborghini Revuelto · ${e(t('Przykłady kadrowania','Framing examples'))}</p><div class="sc-examples"><figure><div data-sc-example-good></div><figcaption>${e(t('Dobre: czyste auto, spokojne tło, miękkie światło, lekki kąt 45° i całe auto w kadrze.','Good: clean vehicle, uncluttered background, soft light, a slight 45° angle and the complete car in frame.'))}</figcaption></figure>
         <figure><div data-sc-example-bad></div><figcaption>${e(t('Zbyt ciasny kadr','Too tightly cropped'))}</figcaption></figure></div>
-        <ul>${guideTips.map(tip=>`<li>${e(pick(tip))}</li>`).join('')}</ul></details>
+        <div class="sc-guide-checks"><section><h3>${e(t('Dobre zdjęcie','Good photo'))}</h3><ul>${[t('Czysty pojazd','Clean vehicle'),t('Równe, spokojne tło','Level, uncluttered background'),t('Dobre dzienne światło','Good daylight'),t('Ostre i wyraźne zdjęcie','Sharp, clear photo')].map(item=>`<li>${e(item)}</li>`).join('')}</ul></section>
+        <section><h3>${e(t('Tego unikaj','Avoid this'))}</h3><ul>${[t('Uciętego auta lub zbyt małej odległości','Cropped vehicle or too little distance'),t('Kadru z góry albo z dołu','High or low camera angle'),t('Bałaganu w tle','Cluttered background'),t('Brudnego, ciemnego lub rozmazanego auta','Dirty, dark or blurred vehicle')].map(item=>`<li>${e(item)}</li>`).join('')}</ul></section></div>
+        <h3 class="sc-guide-tips-title">${e(t('Dodatkowe wskazówki','Additional tips'))}</h3><ul>${guideTips.map(tip=>`<li>${e(pick(tip))}</li>`).join('')}</ul></details>
     </main><aside class="sc-plan">
       <div data-sc-mode-config></div>
       <div class="sc-progress"><strong data-sc-progress-label></strong><progress data-sc-progress max="100"></progress></div>

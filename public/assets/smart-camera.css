@@ -176,3 +176,27 @@
   .sc-studio :is(.sc-button, .sc-list button, .sc-plan, .sc-details) { border-color: currentColor; }
   .sc-view-status { background: #000; }
 }
+
+/* Full, accessible version of the photographic guide used from the listing wizard. */
+.sc-master-art { margin:0 .8rem .9rem;overflow:hidden;border:1px solid var(--sc-border);border-radius:10px;background:#07111b; }
+.sc-master-art img { display:block;width:100%;height:auto; }
+.sc-master-art figcaption { padding:.55rem .7rem;color:var(--sc-muted);font-size:.8rem; }
+.sc-guide-grid,.sc-guide-checks { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem;padding:0 .8rem .25rem; }
+.sc-guide-grid section,.sc-guide-checks section { min-width:0;padding:.7rem;border:1px solid var(--sc-border);border-radius:9px;background:color-mix(in srgb,var(--soft,#24313c) 72%,transparent); }
+.sc-guide-grid h3,.sc-guide-checks h3,.sc-guide-tips-title { margin:0 0 .5rem;font-size:.9rem; }
+.sc-guide-grid dl { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;margin:0; }
+.sc-guide-grid dl div { padding:.45rem;border-radius:7px;background:#07111b66; }
+.sc-guide-grid dt { color:var(--sc-muted);font-size:.7rem; }
+.sc-guide-grid dd { margin:.1rem 0 0;font-weight:800; }
+.sc-shot-sequence { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem;margin:0;padding:0;list-style:none; }
+.sc-shot-sequence li { display:flex;align-items:center;gap:.4rem;min-width:0;margin:0!important;font-size:.76rem; }
+.sc-shot-sequence span { display:grid;place-items:center;flex:none;width:1.45rem;height:1.45rem;border-radius:50%;background:#d6b15e;color:#111;font-weight:850; }
+.sc-guide-checks { margin-top:.7rem; }
+.sc-guide-checks ul { margin:0;padding-inline-start:1.25rem; }
+.sc-guide-checks section:first-child li::marker { color:#55d98a; }
+.sc-guide-checks section:last-child li::marker { color:#ff737b; }
+.sc-guide-tips-title { margin:.8rem .8rem 0; }
+@media (max-width:700px) {
+  .sc-guide-grid,.sc-guide-checks { grid-template-columns:minmax(0,1fr); }
+  .sc-master-art { margin-inline:.65rem; }
+}

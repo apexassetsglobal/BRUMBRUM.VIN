@@ -714,12 +714,14 @@ function ultimateVisualEngine(ctx,group) {
   const section=(id,title,content,open='')=>appearanceDisclosure(title,content,'uve-section',` data-uve-section="${id}"${open}`);
   const stitches=[['single','Single Stitch'],['double','Double Stitch'],['cross','Cross Stitch'],['q-citura','Q‑Citura'],['racing','Racing Stitch'],['brogue','Brogue'],['piping','Contrast Piping']];
   const threads=[['#ff003c','Czerwony'],['#9d00ff','Fioletowy'],['#ffd700','Złoty'],['#ffffff','Biały'],['#c0c0c0','Srebrny'],['#0066ff','Niebieski'],['#050505','Czarny']];
+  const led=[['#4ca7ff','Niebieski'],['#39ff88','Zielony'],['#ffd34d','Złoty'],['#ff5b68','Czerwony'],['#b47cff','Fioletowy'],['#ffffff','Biały']];
   return `<details class="appearance-disclosure ultimate-visual-engine" data-uve-root>
     <summary>${t('Bespoke Studio — materiały i wykończenia','Bespoke Studio — materials and finishes')}</summary>
     <div class="uve-panel">
       ${ultimateToggle('engineEnabled','Włącz materiały Bespoke')}
       ${section('materials','Materiały — Tło / Przyciski',`<div class="uve-two-zone"><fieldset><legend>Tło aplikacji</legend>${ultimateSelect('bgMaterial','Materiał',ultimateMaterials)}</fieldset><fieldset><legend>Przyciski i karty</legend>${ultimateSelect('buttonMaterial','Materiał',ultimateMaterials)}</fieldset></div>${ultimateRange('textureIntensity','Intensywność tekstury',0,100,45)}`,' open')}
       ${section('stitch-hardware','Przeszycia i okucia',`${ultimateSelect('stitchType','Wariant szwu',stitches)}${ultimateSelect('threadPreset','Kolor nici',threads)}<p class="uve-subtitle">Hardware & Trim</p>${ultimateSelect('hardwareMetal','Metal okuć',[['titanium','Szczotkowany Tytan'],['rose-gold','Różowe Złoto'],['dark-chrome','Ciemny Chrom'],['brass','Mosiądz'],['stainless','Stal']])}<div class="uve-toggle-grid">${ultimateToggle('torx','Śruby Torx')}${ultimateToggle('buckle','Klamra i pasek')}${ultimateToggle('debossing','Tłoczenie napisu')}</div>${ultimateSelect('decorTrim','Listwa dekoracyjna',[['none','Bez listwy'],['walnut','Orzech włoski'],['forged-carbon','Kuty karbon'],['slate','Kamień łupkowy']])}`)}
+      ${section('led',t('Delikatna ramka LED przycisków','Subtle LED button border'),`${ultimateToggle('lightEnabled',t('Włącz ramkę LED','Enable LED border'))}<div class="uve-led-simple" role="group" aria-label="${e(t('Kolor ramki LED','LED border color'))}">${led.map(([color,label])=>`<button type="button" style="--swatch:${color}" data-uve-color="${color}" title="${e(label)}" aria-label="${e(label)}"></button>`).join('')}</div>${ultimateRange('edgeGlow',t('Delikatność poświaty','Glow softness'),0,18,8)}`)}
       ${ultimateToggle('oledPureBlack','OLED Pure Black — głęboka czerń')}
       <button class="uve-reset" type="button" data-uve-action="reset">Przywróć spokojne ustawienia</button>
     </div>

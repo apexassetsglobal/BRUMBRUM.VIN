@@ -144,7 +144,7 @@ function photoReel(ctx,offer,phone) {
       </div>
     </section>`;
   return `<article class="reel-slide" data-reel-slide data-photo-reel>
-    <div class="reel-panel-track" data-reel-panel-track aria-label="${t('Przesuwaj w bok: zdjęcia, dane i film','Swipe sideways: photos, details and video')}">
+    <div class="reel-panel-track" data-reel-panel-track aria-label="${t('Przesuwaj w bok: zdjęcia, filmy i opis','Swipe sideways: photos, videos and description')}">
       <section class="reel-panel reel-photos-panel" data-reel-panel="photos">
         <div class="reel-photo-stack" style="--photo-count:${Math.min(3,photos.length)}" role="group" aria-label="${e(name+' · '+t('Zdjęcia','Photos'))}">
           ${photos.map((shot,index)=>`<img src="${e(shot.thumb||shot.url)}"
@@ -164,7 +164,7 @@ function photoReel(ctx,offer,phone) {
         </div>
         <button class="reel-info-tab" type="button" data-reel-info-tab data-button-finish-action aria-expanded="true" aria-label="${t('Pokaż nagłówek ogłoszenia','Show listing heading')}">${icon('back',18)}<span>${t('Pokaż cenę i model','Show price and model')}</span></button>
       </section>
-      ${details}${media}
+      ${media}${details}
     </div>
     <div class="reel-panel-controls" data-reel-panel-controls role="group" aria-label="${t('Widok ogłoszenia','Listing view')}">
       <button type="button" data-reel-panel-prev data-button-finish-action="icon" aria-label="${t('Poprzedni widok','Previous view')}">${icon('back',18)}</button>

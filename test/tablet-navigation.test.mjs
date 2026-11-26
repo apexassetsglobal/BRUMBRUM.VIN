@@ -122,7 +122,7 @@ function harness({compact=true,hasNav=true,slide}={}) {
   const flush=()=>{for(let count=0;deferred.length&&count<50;count++)deferred.shift()();assert.equal(deferred.length,0);};
   flush();
   const click=(node,props={})=>{fire(node,'pointerdown',props);node.closest('a[href],button,summary')?.focus();const event=fire(node,'click',props);flush();return event;};
-  return {document,body,sideNav,toggle,toggleLabel,panel,link,linkIcon,linkLabel,action,actionLabel,themePicker,themeSummary,dialogAction,
+  return {document,body,sideNav,toggle,toggleLabel,panel,link,linkIcon,linkLabel,action,actionLabel,themePicker,themeSummary,dialogAction,isRail:()=>media.matches,
     notifyResize:()=>observeSize(),
     profile,profileIcon,outside,dialog,window,queries,fire,click,flush,
     changeMode(value){media.matches=!value;fire(media,'change',{matches:!value});flush();},
@@ -135,13 +135,13 @@ function harness({compact=true,hasNav=true,slide}={}) {
 function assertRail(env,visible,expanded=false) {
   assert.equal(env.sideNav.hasAttribute('data-side-visible'),visible);
   assert.equal(env.sideNav.hasAttribute('data-side-open'),expanded);
-  assert.equal(env.profile.getAttribute('aria-expanded'),String(visible));
+  assert.equal(env.profile.getAttribute('aria-expanded'),String(env.isRail()?expanded:visible));
   assert.equal(env.toggle.getAttribute('aria-expanded'),String(expanded));
   assert.equal(env.sideNav.inert,!visible);
   assert.equal(env.sideNav.getAttribute('aria-hidden')==='true',!visible);
 }
 
-for (const compact of [true,false]) {
+for (const compact of [true]) {
   test('profile reveals icons, hover reveals one caption, and the toggle pins all captions, compact='+compact,()=>{
     const env=harness({compact});
     assert.deepEqual(env.queries,[railQuery]);assertRail(env,false);
@@ -165,6 +165,18 @@ for (const compact of [true,false]) {
     assert.equal(env.document.activeElement,env.profile);
   });
 }
+
+test('desktop keeps the icon rail visible and expands every caption on hover',()=>{
+  const env=harness({compact:false});
+  assert.deepEqual(env.queries,[railQuery]);assertRail(env,true,false);
+  env.fire(env.sideNav,'pointerenter',{pointerType:'mouse'});assertRail(env,true,true);
+  assert.equal(env.sideNav.hasAttribute('data-side-ready'),true);
+  env.fire(env.sideNav,'pointerleave',{pointerType:'mouse'});assertRail(env,true,false);
+  assert.equal(env.sideNav.hasAttribute('data-side-ready'),false);
+  env.click(env.toggle);assertRail(env,true,true);
+  env.fire(env.sideNav,'pointerleave',{pointerType:'mouse'});assertRail(env,true,true);
+  env.click(env.toggle);assertRail(env,true,false);
+});
 
 test('touch previews one icon at a time and pressing its caption activates the original action',()=>{
   for(const pointerType of ['touch','pen']) {
@@ -284,7 +296,7 @@ test('dialog actions return focus to the profile launcher after dismissal',()=>{
 
 test('rotation and back navigation reset the disclosure',()=>{
   const env=harness();env.open();env.click(env.toggle);assertRail(env,true,true);
-  env.changeMode(false);assertRail(env,false);
+  env.changeMode(false);assertRail(env,true,false);
   env.open();env.changeMode(true);assertRail(env,false);
   env.open();env.fire(env.window,'pageshow',{persisted:true});assertRail(env,false);
 });
