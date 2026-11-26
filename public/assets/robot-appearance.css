@@ -1,0 +1,100 @@
+/* Personal frame preferences are confined to the Robot Zone. */
+html[data-market="robotics"] {
+  --robot-frame-color:#13c8ff;--robot-frame-rgb:19 200 255;--robot-frame-width:2px;
+  --robot-frame-blur:18px;--robot-frame-aura:.24;
+  --robot-frame-line:var(--robot-frame-color);
+  --robot-frame-halo:0 0 var(--robot-frame-blur) rgb(var(--robot-frame-rgb) / var(--robot-frame-aura));
+  --robot-frame-soft-halo:0 2px 10px #113c6010,0 0 calc(var(--robot-frame-blur) * .65) rgb(var(--robot-frame-rgb) / calc(var(--robot-frame-aura) * .7));
+  --robot-cyan:var(--robot-frame-color);--robot-glow:var(--robot-frame-halo);
+}
+html[data-market="robotics"][data-robot-frame-mode="normal"] {
+  --robot-frame-line:#ccdbe7;
+  --robot-frame-halo:none;--robot-frame-soft-halo:0 3px 14px #173a6608;
+}
+.robot-app:not(.reels-screen):not(.watch-page) {padding-bottom:var(--robot-nav-offset);}
+.robot-app :is(.robot-showcase,.robot-hero-cta,.robot-frame-preview) {
+  border-color:var(--robot-frame-line);border-width:var(--robot-frame-width);
+  box-shadow:var(--robot-frame-halo);
+}
+.robot-app :is(.robot-category-card,.robot-offer-card,.robot-bottom-nav) {
+  border-color:var(--robot-frame-line);border-width:var(--robot-frame-width);
+  box-shadow:var(--robot-frame-soft-halo);
+}
+.robot-app .robot-bottom-nav {border-bottom-width:0;}
+.robot-app :is(.robot-nav-link.robot-nav-add,.robot-nav-link.is-active) {
+  border-color:var(--robot-frame-line);border-width:var(--robot-frame-width);
+}
+.robot-app .robot-nav-link.robot-nav-add {box-shadow:var(--robot-frame-soft-halo);}
+.robot-app :is(.robot-category-card:hover,.robot-hero-cta:hover) {
+  border-color:var(--robot-frame-line);box-shadow:var(--robot-frame-halo);
+}
+.robot-app .robot-appearance-trigger {
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 44px;
+  width:44px;height:44px;min-height:44px;padding:3px;border:1px solid #d2e3ef;
+  border-radius:12px;color:#0064ca;background:#fff;
+}
+.robot-app .robot-appearance-trigger:hover {border-color:#7bbceb;background:#f3faff;}
+.robot-app .robot-appearance-trigger .ui-icon {width:36px;height:36px;flex:0 0 36px;}
+.robot-app .robot-appearance-trigger:focus-visible {outline:3px solid #1186d7;outline-offset:3px;}
+.robot-app .robot-frame-settings {
+  display:grid;gap:16px;min-width:0;padding:16px;border:1px solid #d8e5ee;
+  border-radius:18px;background:#fff;color:#102d4b;
+}
+.robot-app .robot-frame-settings h3 {margin:0;font-size:20px;font-weight:600;}
+.robot-app .robot-frame-help {margin:-9px 0 0;font-size:14px;color:#5d7186;line-height:1.6;}
+.robot-app .robot-frame-settings fieldset {min-width:0;margin:0;padding:0;border:0;}
+.robot-app .robot-frame-settings legend {margin-bottom:8px;padding:0;font-size:15px;font-weight:600;}
+.robot-app .robot-frame-mode {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.robot-app .robot-frame-mode label {
+  display:grid;grid-template-columns:20px 1fr;align-items:start;gap:5px 9px;cursor:pointer;
+  padding:10px;border:1px solid #d8e5ee;border-radius:13px;background:#fff;min-height:76px;
+}
+.robot-app .robot-frame-mode input {grid-row:1/3;width:18px;height:18px;margin:2px 0 0;accent-color:#0674e8;}
+.robot-app .robot-frame-mode label>span {font-size:15px;font-weight:600;line-height:1.4;}
+.robot-app .robot-frame-mode label>small {grid-column:2;font-size:13px;line-height:1.5;color:#60758a;}
+.robot-app .robot-frame-mode label:has(input:checked) {border-color:#77bdeb;background:#f3faff;}
+.robot-app .robot-neon-options {display:grid;gap:14px;}
+.robot-app .robot-neon-options[hidden] {display:none;}
+.robot-app .robot-frame-swatches {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;}
+.robot-app .robot-frame-swatch {
+  position:relative;display:flex;align-items:center;gap:8px;min-height:44px;min-width:0;
+  padding:7px 8px;cursor:pointer;border:1px solid #d8e5ee;border-radius:11px;background:#fff;
+}
+.robot-app .robot-frame-swatch input {position:absolute;opacity:0;width:1px;height:1px;}
+.robot-app .robot-frame-swatch>span:last-child {font-size:14px;line-height:1.3;overflow-wrap:anywhere;}
+.robot-app .robot-frame-color-chip {width:19px;height:19px;flex:0 0 19px;border:2px solid #fff;outline:1px solid #bbcede;border-radius:50%;background:var(--swatch);}
+.robot-app .robot-frame-swatch:has(input:checked) {border-color:#0875d8;background:#f1f8ff;}
+.robot-app .robot-frame-swatch:has(input:checked) .robot-frame-color-chip {border-color:#fff;outline-color:#0875d8;}
+.robot-app .robot-frame-swatch:has(input:focus-visible),.robot-app .robot-frame-mode label:has(input:focus-visible) {outline:3px solid #1685d7;outline-offset:3px;}
+.robot-app .robot-frame-custom-inputs {display:grid;grid-template-columns:74px minmax(0,1fr);align-items:start;gap:12px;}
+.robot-app :is(.robot-frame-picker,.robot-frame-hex) {display:grid;gap:6px;min-width:0;font-size:14px;font-weight:500;}
+.robot-app .robot-frame-custom input {width:100%;min-width:0;height:44px;min-height:44px;margin:0;border:1px solid #c8dceb;border-radius:9px;background:#fff;}
+.robot-app .robot-frame-picker input {padding:4px;cursor:pointer;}
+.robot-app .robot-frame-hex input {padding:9px 12px;font-size:16px;font-variant-numeric:tabular-nums;}
+.robot-app .robot-frame-hex input[aria-invalid="true"] {border-color:#b72f32;}
+.robot-app .robot-frame-color-error {margin:8px 0 0;font-size:14px;line-height:1.5;color:#a12b30;}
+.robot-app .robot-frame-color-error[hidden] {display:none;}
+.robot-app .robot-frame-range {display:grid;gap:12px;min-width:0;}
+.robot-app .robot-frame-range>span {display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:15px;font-weight:500;}
+.robot-app .robot-frame-range output {min-width:42px;text-align:right;font-variant-numeric:tabular-nums;color:#0064bf;font-size:14px;}
+.robot-app .robot-frame-range input {width:100%;height:34px;min-height:34px;margin:0;accent-color:#0674e8;cursor:pointer;}
+.robot-app .robot-frame-preview {display:flex;align-items:center;gap:12px;min-width:0;margin:3px 0;padding:16px;border-style:solid;border-radius:18px;background:#fff;}
+.robot-app .robot-frame-preview-symbol {display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border-radius:12px;color:#0868c9;background:#eaf6ff;font-size:27px;font-weight:700;font-style:italic;}
+.robot-app .robot-frame-preview>div {display:grid;gap:4px;min-width:0;}
+.robot-app .robot-frame-preview strong {font-size:17px;font-weight:600;}
+.robot-app .robot-frame-preview>div>span {font-size:14px;color:#60758a;}
+.robot-app .robot-frame-settings-end {display:flex;align-items:center;flex-wrap:wrap;gap:12px 18px;}
+.robot-app .robot-frame-settings-end p {margin:0;font-size:13px;color:#60758a;}
+.robot-app .robot-appearance-menu {display:grid;gap:18px;}
+@media(max-width:600px) {
+  .robot-app .robot-frame-settings {padding:14px;gap:14px;}
+  .robot-app .robot-frame-swatches {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .robot-app .robot-frame-mode label {padding:10px 8px;gap:4px 7px;}
+  .robot-app .robot-frame-preview {padding:14px;gap:12px;}
+  .robot-app .robot-appearance-trigger {flex-basis:44px;width:44px;height:44px;padding:3px;}
+  .robot-app .robot-header-inner {gap:9px;}
+}
+@media(forced-colors:active) {
+  .robot-app .robot-frame-swatch:has(input:checked),.robot-app .robot-frame-mode label:has(input:checked) {outline:2px solid Highlight;}
+  .robot-app .robot-frame-color-chip {forced-color-adjust:none;}
+}

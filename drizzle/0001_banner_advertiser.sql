@@ -1,0 +1,1 @@
+ALTER TABLE banners ADD COLUMN advertiser TEXT NOT NULL DEFAULT '';

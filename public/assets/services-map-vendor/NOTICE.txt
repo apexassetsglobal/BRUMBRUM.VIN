@@ -1,0 +1,13 @@
+Map UI: Leaflet 1.9.4, distributed under the BSD-2-Clause license in LEAFLET-LICENSE.txt.
+Source: https://leafletjs.com/ and the official leaflet package on npm.
+The local ES module was minified from package/dist/leaflet-src.esm.js.
+
+World outline: Natural Earth 1:110m (public domain), derived from world-atlas 2.0.2
+countries-110m.json. The local GeoJSON contains country polygons rounded to 0.001 degrees.
+Sources: https://www.naturalearthdata.com/about/terms-of-use/ and https://github.com/topojson/world-atlas.
+The package license is in WORLD-ATLAS-LICENSE.txt.
+
+Interactive street tiles: © OpenStreetMap contributors, https://www.openstreetmap.org/copyright.
+Usage policy: https://operations.osmfoundation.org/policies/tiles/.
+Only the displayed map requests tiles directly from the user's browser, with visible attribution,
+origin referrer and normal HTTP caching. This code does not proxy or prefetch street tiles.

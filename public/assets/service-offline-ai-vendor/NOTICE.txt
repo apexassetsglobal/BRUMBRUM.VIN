@@ -1,0 +1,11 @@
+Bergamot neural machine translation (WebAssembly runtime)
+@mkljczk/bergamot-translator, package 0.4.16, source revision be5fc207aa56a894ea258a6adc54464f737a7558.
+Source and build instructions: https://codeberg.org/mkljczk/bergamot-translator
+Unmodified runtime files from https://registry.npmjs.org/@mkljczk/bergamot-translator/-/bergamot-translator-0.4.16.tgz
+Bergamot and Mozilla Firefox Translations models are distributed under the Mozilla Public License 2.0 (see MPL-2.0.txt).
+Model source: https://github.com/mozilla/translations
+The manifest pins release files from the Mozilla public model bucket and checks both compressed and expanded SHA-256 digests.
+All expanded files match the corresponding version 3.0 release in Firefox Remote Settings.
+Models are retrieved from Mozilla's public Google Cloud Storage bucket after the author confirms the download.
+https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json
+https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/translations-models-v2/records

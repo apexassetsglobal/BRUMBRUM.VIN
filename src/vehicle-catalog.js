@@ -1,0 +1,283 @@
+// Model names use the same values as the listing and search fields.
+export const vehicleModels = {
+  car: {
+    'Alfa Romeo':['Giulia','Giulietta','Stelvio','Tonale'],
+    'Aston Martin':['DBS Superleggera','Vantage'],
+    Audi:['A1','A3','A4','A5','A6','A6 allroad','Q2','Q3','Q5','Q7','Q8','R8','e-tron'],
+    Bentley:['Bentayga','Continental GT','Flying Spur'],
+    BMW:['Seria 1','Seria 2','Seria 3','Seria 4','Seria 5','Seria 7','X1','X2','X3','X5','X6','Z4','i4','iX'],
+    BYD:['Atto 3','Dolphin','Seal','Seal U'],
+    Chevrolet:['Camaro','Corvette','Cruze','Spark'],
+    Citroën:['C3','C4','C5 Aircross','Berlingo'],
+    Cupra:['Born','Formentor','Leon','Terramar'],
+    Dacia:['Duster','Sandero','Jogger','Spring'],
+    Ferrari:['488 GTB','F8 Tributo','812 Superfast','296 GTB','Roma','SF90 Stradale','GTC4Lusso'],
+    Fiat:['500','500X','Panda','Tipo'],
+    Ford:['Focus','Fiesta','Kuga','Mustang','Puma','Ranger','Mondeo'],
+    Honda:['Civic','Jazz','CR-V','HR-V'],
+    Hyundai:['i10','i20','i30','IONIQ 5','Kona','Tucson','Santa Fe'],
+    Jeep:['Avenger','Compass','Grand Cherokee','Renegade','Wrangler'],
+    Kia:['Ceed','Niro','Sportage','EV6','Picanto','Sorento'],
+    Lamborghini:['Huracán','Aventador','Revuelto','Urus'],
+    'Land Rover':['Defender','Defender 110','Discovery','Range Rover','Range Rover Evoque','Range Rover Sport'],
+    Lexus:['ES','NX','RX','UX'],
+    Lincoln:['Town Car'],
+    Mazda:['2','3','6','CX-30','CX-5','MX-5'],
+    McLaren:['720S','Artura'],
+    'Mercedes-Benz':['Klasa A','Klasa B','Klasa C','Klasa E','Klasa S','Klasa V','GLA','GLC','GLE','AMG GT'],
+    MG:['MG3','MG4','ZS','HS'],
+    MINI:['Cooper','Countryman','Clubman'],
+    Mitsubishi:['Outlander','ASX','Eclipse Cross','L200'],
+    Morgan:['Plus Four'],
+    Nissan:['Juke','Leaf','Qashqai','X-Trail','GT-R','Navara'],
+    Opel:['Astra','Corsa','Insignia','Mokka','Grandland'],
+    Peugeot:['208','308','3008','5008','508','Rifter'],
+    Porsche:['911','911 Targa 4S','Cayenne','Macan','Taycan','Panamera'],
+    Renault:['Clio','Megane','Captur','Arkana','Austral','Grand Scénic','Scénic','Talisman'],
+    Seat:['Leon','Ibiza','Ateca','Arona'],
+    Subaru:['Forester','Impreza','Outback','XV'],
+    Suzuki:['Swift','Vitara','S-Cross','Jimny'],
+    Škoda:['Fabia','Octavia','Superb','Kodiaq','Kamiq','Karoq','Enyaq'],
+    Tesla:['Model 3','Model Y','Model S','Model X'],
+    Toyota:['Aygo','Yaris','Corolla','RAV4','Hilux','C-HR','Camry','Land Cruiser','Prius','Yaris Cross'],
+    Volkswagen:['Golf','Passat','Polo','Tiguan','Touran','ID.3','ID.4','Arteon','T-Roc','Touareg'],
+    Volvo:['V60','V90','XC40','XC60','XC90','EX30']
+  },
+  van: {
+    Citroën:['Berlingo','Jumpy','Jumper'],
+    Fiat:['Doblò','Ducato','Fiorino','Scudo'],
+    Ford:['Transit','Transit Connect','Transit Courier','Transit Custom'],
+    Iveco:['Daily'], MAN:['TGE'],
+    'Mercedes-Benz':['Citan','Sprinter','Vito'],
+    Nissan:['Interstar','Primastar','Townstar'],
+    Opel:['Combo','Vivaro','Movano'],
+    Peugeot:['Partner','Expert','Boxer'],
+    Renault:['Kangoo','Master','Trafic','Express'],
+    Toyota:['Proace','Proace City','Proace Max'],
+    Volkswagen:['Caddy','Transporter','Crafter','ID. Buzz Cargo']
+  },
+  truck: {
+    DAF:['CF','LF','XD','XF','XG','XG+','XB'],
+    Iveco:['S-Way','X-Way','T-Way','Eurocargo','Stralis','Trakker'],
+    MAN:['TGL','TGM','TGS','TGX'],
+    'Mercedes-Benz':['Actros','Antos','Arocs','Atego','Econic'],
+    'Renault Trucks':['T','C','K','D','Premium','Magnum'],
+    Scania:['G 500','P 360','R 450','R 500','S 500','S 560'],
+    Volvo:['FH','FH16','FM','FMX','FL','FE']
+  },
+  camper: {
+    Adria:['Coral','Matrix','Sonic','Twin'],
+    Bürstner:['Lyseo TD','Eliseo'],
+    Carado:['T 338','T 447','CV 600'],
+    Dethleffs:['Trend','Globebus'],
+    Fiat:['Ducato'], Ford:['Transit Custom Nugget'],
+    Hymer:['B-Class ModernComfort','ML-T','Free'],
+    Knaus:['BoxStar','Sky TI','Van TI'],
+    'Mercedes-Benz':['Marco Polo','Sprinter'],
+    Volkswagen:['California','Grand California'],
+    Weinsberg:['CaraBus','CaraSuite']
+  },
+  motorcycle: {
+    Aprilia:['RS 660','Tuono 660','Tuareg 660'],
+    BMW:['F 900 R','F 900 XR','R 1250 GS','R 1300 GS','S 1000 RR'],
+    CFMOTO:['300SR','450MT','450NK','450SR','700MT','800MT Touring'],
+    Ducati:['Panigale V2','Panigale V4','Monster','Multistrada V4','Scrambler Icon'],
+    'Harley-Davidson':['Fat Boy 114','Street Bob','Sportster S','Pan America 1250'],
+    Honda:['CB500F','CB650R','CBR650R','Africa Twin','GL1800 Gold Wing','Rebel 500','Transalp'],
+    Husqvarna:['Svartpilen 401','Vitpilen 401','Norden 901','FE 350'],
+    Kawasaki:['Ninja 650','Ninja 400','Z650','Z900','Versys 650','Vulcan S'],
+    KTM:['Duke 390','390 Adventure','790 Duke','890 Adventure','EXC','350 EXC-F'],
+    'Moto Guzzi':['V7','V85 TT','V100 Mandello'],
+    'Royal Enfield':['Classic 350','Himalayan','Interceptor 650'],
+    Suzuki:['V-Strom 650','V-Strom 800','SV650','GSX-8S','GSX-R750','Hayabusa'],
+    Triumph:['Bonneville T120','Street Triple','Tiger 900','Speed Twin 900'],
+    Yamaha:['MT-03','MT-07','MT-09','MT-10','Tracer 7','Tracer 9','Ténéré 700','YZF-R3','YZF-R7','XSR700','XSR900'],
+    Zontes:['125 G1','350 T','350 R'],
+    YCF:['50A','125 Lite','150 Pilot'],
+    Kayo:['TT 140','TD 125']
+  },
+  scooter: {
+    Aprilia:['SR GT 125','SR GT 200'],
+    BMW:['C 400 GT','C 400 X','CE 04'],
+    Honda:['PCX','Forza','ADV350','SH125i','Vision 110'],
+    Kymco:['Agility 125','AK 550','Downtown 350i','Like 125'],
+    Peugeot:['Kisbee','Django','Metropolis'],
+    Piaggio:['Liberty','Beverly','Medley','Zip','MP3'],
+    Romet:['Ogar 202','Router WS 50','Retro 7'],
+    Suzuki:['Burgman','Address 125','Avenis 125'],
+    SYM:['Jet 14','Jet X','Maxsym TL'],
+    Vespa:['Primavera','Sprint','GTS'],
+    Yamaha:['NMAX','NMAX 125','XMAX 125','XMAX 300','TMAX','TMAX 560','D’elight'],
+    Zipp:['Quantum','Toros F16']
+  },
+  quad: {
+    'Can-Am':['Outlander','Renegade','DS 90'],
+    CFMOTO:['CFORCE 110','CFORCE 450','CFORCE 520','CFORCE 625','CFORCE 850 Touring','CFORCE 1000 Touring'],
+    Honda:['TRX250X','TRX420','TRX520'],
+    Kawasaki:['Brute Force'],
+    Kayo:['AU110','AU125','A200'],
+    Kymco:['MXU 300','MXU 550','MXU 700'],
+    Polaris:['Sportsman','Scrambler','Outlaw 110'],
+    Segway:['Snarler AT6','Snarler AT10'],
+    Suzuki:['KingQuad 400','KingQuad 750'],
+    TGB:['Blade 550','Blade 600','Blade 1000'],
+    Yamaha:['YFZ450R','Raptor 700','Grizzly 700','Kodiak 450','Kodiak 700']
+  },
+  utv: {
+    'Can-Am':['Maverick','Maverick X3','Maverick R','Defender','Commander'],
+    CFMOTO:['UFORCE 600','UFORCE 1000','UFORCE U10 PRO','ZFORCE 950','ZFORCE Z10 Turbo'],
+    Honda:['Pioneer 700','Pioneer 1000','Talon 1000R'],
+    Kawasaki:['Mule','Teryx KRX 1000'],
+    Kubota:['RTV-X','RTV-X900','RTV-X1100C'],
+    Polaris:['Ranger','RZR','General','Xpedition'],
+    Segway:['Fugleman UT10','Villain SX10'],
+    Yamaha:['Wolverine RMAX 1000','Viking','YXZ1000R']
+  },
+  kart: {
+    'Birel ART':['RY30','CRY30'],
+    CRG:['KT2','Road Rebel'],
+    Hammerhead:['GTS 150','MudHead'],
+    Sodi:['RT10','SR5','Sigma'],
+    'Tony Kart':['Racer 401','Rookie']
+  },
+  snowmobile: {
+    'Arctic Cat':['ZR 6000','M 8000','Bearcat 7000'],
+    Lynx:['59 Ranger','Commander','Rave','Shredder'],
+    Polaris:['850 Indy VR1','Indy','RMK','Titan','Voyageur'],
+    'Ski-Doo':['Grand Touring LE','Summit','Renegade','Skandic','Expedition'],
+    Yamaha:['Sidewinder','Venture','Transporter 800']
+  },
+  bus: {
+    Iveco:['Daily Line','Crossway','Urbanway'],
+    MAN:['Lion’s City','Lion’s Coach'],
+    'Mercedes-Benz':['Sprinter Tourer','Citaro','Tourismo'],
+    Neoplan:['Cityliner','Skyliner','Tourliner'],
+    Scania:['Citywide','Interlink'],
+    Setra:['S 515 HD','S 516 HD','S 531 DT'],
+    Solaris:['Urbino 12','Urbino 18'],
+    Temsa:['MD9','Maraton','Prestij'],
+    Volvo:['7900','9700','9900'],
+    Yutong:['E10','E12','T12']
+  },
+  garden: {
+    Husqvarna:['LC 247','TS 114','Z 242F','ST 224'],
+    Stiga:['Combi 48','Estate 384','Tornado 5108','Park 500'],
+    Toro:['TimeCutter','Titan ZX','Power Max'],
+    Loncin:['LC1P','XZ 3010','1P70'],
+    Rato:['RM 460','R210','R300'],
+    Weibang:['WB 537','WB 506'],
+    'Wacker Neuson':['DW30','DT10']
+  },
+  farm: {
+    Amazone:['Pantera 4504','UX'],
+    'Case IH':['Farmall','Maxxum','Puma','Axial-Flow'],
+    Claas:['Arion','Axion','Lexion 760','Trion'],
+    'Deutz-Fahr':['Agrotron','Agrolux','C 9306'],
+    Fendt:['300 Vario','700 Vario','900 Vario'],
+    'John Deere':['5075E','6120M','6155R','6250R','S780'],
+    Krone:['Comprima V 150 XC','BiG X 630'],
+    Kubota:['L2501','M5','M7'],
+    'Massey Ferguson':['4700 M','5700 M','7S','8S'],
+    'New Holland':['T5','T6','T7','CX','CR'],
+    Ursus:['C-330','C-360','C-385','C-380'],
+    Zetor:['Major','Proxima','Forterra']
+  },
+  construction: {
+    Bobcat:['E19','E35','S450','T590'],
+    Caterpillar:['301.8','320','330','D6','140','950'],
+    Doosan:['DX225LC','DL300'],
+    Hamm:['HD 12','HD 90'],
+    Hitachi:['ZX55U','ZX135US','ZX210LC'],
+    JCB:['3CX','4CX','19C-1','220X'],
+    Komatsu:['PC55','PC210','D65','WA380'],
+    Kubota:['U27-4','KX019','KX057-4','U55-4'],
+    Liebherr:['LTM 1050-3.1','LTM 1100-5.2','L 566','R 920'],
+    Volvo:['EC220','ECR58','L90H','L120H'],
+    Vögele:['Super 1800-3i','Super 1900-3i'],
+    'Wacker Neuson':['ET18','ET65','WL34']
+  },
+  forestry: {
+    EcoLog:['560F','590F'],'John Deere':['1270G','1510G','1910G'],Komatsu:['835TX','875','931XC'],
+    Ponsse:['Scorpion','Buffalo','Ergo'],Rottne:['H21D','F18D'],Tigercat:['1075C','625H']
+  },
+  marine_air: {
+    Bayliner:['Element E16','VR5'],Beneteau:['Antares 8','Oceanis 34.1'],Brig:['Eagle 6.7','Navigator 610'],
+    Jeanneau:['Merry Fisher 795','Sun Odyssey 349'],'Sea-Doo':['GTI','RXT-X'],Yamaha:['FX Cruiser','GP HO'],
+    Tecnam:['P92','P2002'],AutoGyro:['Calidus','Cavalon']
+  },
+  parts: {
+    Bosch:['KTS 560','KTS 590'],Brembo:['GT Kit','Sport'],Continental:['PremiumContact','WinterContact'],
+    Michelin:['Pilot Sport','CrossClimate'],ZF:['8HP','Sachs'],Valeo:['Service Kit','EasyLift']
+  },
+  industrial: {
+    Genie:['Z-45/25','GS-1932','S-65'],
+    Haulotte:['Compact 12','HA16 RTJ'],
+    Hyster:['H2.5FT','J2.5XN'],
+    JCB:['531-70','535-95','540-140'],
+    JLG:['450AJ','600AJ','1930ES'],
+    Jungheinrich:['EFG 216','ETV 216','EJE 116'],
+    Linde:['E16','H25','H35'],
+    Manitou:['MLT 737','MT 625','MT 1440'],
+    STILL:['LTX 70','RX 20','RX 60'],
+    Toyota:['Traigo 48','Traigo 80','Tonero']
+  },
+  special: {
+    Bucher:['CityCat 5006','CityCat V20'],
+    Ford:['Ranger','Transit'],
+    Iveco:['Daily','Eurocargo'],
+    MAN:['TGM','TGS'],
+    'Mercedes-Benz':['Sprinter','Econic','Unimog U 430','Arocs'],
+    Renault:['Master','Trafic'],
+    'Renault Trucks':['D','K'],
+    Scania:['P 360','G 500'],
+    Volvo:['FE','FMX']
+  },
+  trailer: {
+    'Brian James':['A Transporter','T Transporter','Race Transporter 6'],
+    Debon:['Roadster 300','Roadster 500'],
+    Hobby:['De Luxe 495 UL','Excellent','Prestige'],
+    Knaus:['Sport','Südwind'],
+    Krone:['Profi Liner','Cool Liner','Mega Liner','Box Liner'],
+    Kögel:['Cargo','Mega','Cool'],
+    Niewiadów:['N126','N127'],
+    'Schmitz Cargobull':['S.CS','S.KO','S.KI'],
+    Schwarzmueller:['Naczepa kurtynowa','Naczepa wywrotka'],
+    Temared:['Carplatform','Transporter','Prakti'],
+    Wielton:['Curtain Master','Strong Master','Bulk Master']
+  },
+  other: {
+    Aixam:['City','Coupé','Crossline'],
+    'Can-Am':['Spyder RT','Ryker'],
+    Citroën:['Ami'],
+    Cube:['Stereo Hybrid 140','Reaction Hybrid'],
+    Ligier:['JS50','Myli'],
+    Microcar:['Dué','M.Go'],
+    Renault:['Twizy'],
+    'Segway-Ninebot':['MAX G2','F2','F2 Pro'],
+    Piaggio:['Ape City','Ape Cargo'],
+    Bajaj:['RE','Maxima Cargo'],
+    Mahindra:['Alfa','Treo'],
+    TVS:['King Deluxe','King Cargo'],
+    Xiaomi:['Electric Scooter 4','Electric Scooter 4 Pro']
+  }
+};
+
+// The homepage also links directly to these two specialised vehicle markets.
+export const heavyVehicleFilters = {
+  tractor:['truck','tractor','Ciągniki siodłowe (TIR)','Tractor units',{
+    DAF:['CF','XD','XF','XG','XG+'],
+    Iveco:['S-Way','Stralis'],
+    MAN:['TGX','TGS'],
+    'Mercedes-Benz':['Actros','Arocs'],
+    'Renault Trucks':['T','Premium','Magnum'],
+    Scania:['G 500','R 450','R 500','S 500','S 560'],
+    Volvo:['FH','FH16','FM']
+  }],
+  semi_trailer:['trailer','semi_trailer','Naczepy','Semi-trailers',{
+    Krone:vehicleModels.trailer.Krone,
+    Kögel:vehicleModels.trailer.Kögel,
+    'Schmitz Cargobull':vehicleModels.trailer['Schmitz Cargobull'],
+    Schwarzmueller:vehicleModels.trailer.Schwarzmueller,
+    Wielton:vehicleModels.trailer.Wielton
+  }]
+};
