@@ -758,7 +758,9 @@ export async function detail(ctx,offer,{mode='public',extras=''}={}) {
   const name=titleOf(offer)||t('Podgląd ogłoszenia','Listing preview');
   const isPublic=mode==='public';
   const slidePanel=isPublic&&offer.status==='published';
-  const contactable=isPublic&&offer.status==='published'&&ctx.user?.id!==offer.user_id;
+  // DEMO listings must always present the complete buyer path, even when the
+  // selected demo role happens to own the illustrative listing.
+  const contactable=isPublic&&offer.status==='published'&&(ctx.demo||ctx.user?.id!==offer.user_id);
   const searchBack=cleanReturn(ctx.url.searchParams.get('powrot'),'');
   const searchUrl=href(ctx,'/szukaj');
   const allowedBack=searchBack.split(/[?#]/,1)[0]===searchUrl;
@@ -812,7 +814,7 @@ export async function detail(ctx,offer,{mode='public',extras=''}={}) {
   const backLabel=isPublic?t('Wróć do wyników','Back to results'):t('Wróć do panelu','Back to dashboard');
   return {title:name+(offer.variant?' '+offer.variant:''),index:isPublic&&offer.status==='published',listingPage:true,
     description:desc?.slice(0,155)||name,canonical:isPublic?nextOffer:undefined,image:offer.photos[0]?.url||offer.cover||undefined,
-    body:`${listingTrail(ctx,offer,name,back,allowedBack,isPublic)}<section class="listing-showcase" ${ctx.demo?'data-demo-showcase':''} aria-labelledby="listing-title">
+    body:`${listingTrail(ctx,offer,name,back,allowedBack,isPublic)}<section class="listing-showcase" ${ctx.demo?'data-demo-showcase ':''}data-listing-mode="${e(mode)}"${photos.length?'':' data-no-photos'} aria-labelledby="listing-title">
       ${media}
       <div class="wrap showcase-top"><a class="btn showcase-back" href="${e(back)}" aria-label="${backLabel}">${icon('back',19)}<span>${backLabel}</span></a>${photoActions}</div>
       <div class="wrap showcase-content"${slidePanel?' data-showcase-panel':''}>
@@ -835,7 +837,7 @@ export async function detail(ctx,offer,{mode='public',extras=''}={}) {
       </div></div></div>
       <div class="wrap showcase-bottom">
         <a class="text-link showcase-details-link" href="#dane-pojazdu">${icon('down',18)}${t('Dane pojazdu','Vehicle details')}</a>
-        <a class="btn showcase-vin-link" href="#sprawdz-vin">${icon('search',17)}${t('Sprawdź VIN','Check VIN')}${icon('down',15)}</a>
+        <a class="btn showcase-vin-link" href="#sprawdz-vin" data-button-finish-action>${icon('search',17)}${t('Sprawdź VIN','Check VIN')}${icon('down',15)}</a>
         ${mobileView?`<button type="button" class="mobile-photo-view" data-photo-view-toggle aria-controls="listing-photo-stack" aria-expanded="false" hidden>
           <span data-photo-view-open>${icon('image',20)}${t('Same zdjęcia','Photos only')}</span><span data-photo-view-close hidden>${icon('sliders',20)}${t('Pokaż dane i przyciski','Show details and buttons')}</span></button>`:''}
       </div>

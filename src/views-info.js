@@ -200,7 +200,7 @@ export function info(ctx,kind) {
   } else if (kind==='cookies') {
     body=panel(t('Niezbędne ustawienia','Essential settings'),`<p>${t('Sesja logowania oraz język korzystają z plików cookies. W tej przeglądarce zapisywane są motyw, porównanie i ulubione gościa.','Sign-in sessions and language use cookies. This browser stores your theme, comparison and guest favorites.')}</p>
       <p>${t('Pomiar banerów zapisuje dzienne sumy wyświetleń i kliknięć bez cookies ani identyfikatorów odwiedzających.','Banner measurement stores daily totals of views and clicks without cookies or visitor identifiers.')}</p>
-      <p>${t('Analityka zewnętrzna jest wyłączona.','External analytics are disabled.')}</p>
+      <p>${t('Google Tag Manager zarządza zewnętrznymi tagami serwisu. Zakres pomiaru zależy od tagów aktywnych w kontenerze GTM.','Google Tag Manager manages the site’s external tags. Measurement depends on the tags active in the GTM container.')}</p>
       <p>${t('Publiczny licznik wyświetleń działa po stronie serwera i zapisuje dzienne sumy bez cookies.','The public view counter runs on the server and stores daily totals without cookies.')}</p>
       <button class="btn" type="button" data-reset-preferences>${icon('close',18)}${t('Wyczyść ustawienia lokalne','Clear local preferences')}</button>`);
   } else if (kind==='terms'||kind==='privacy') {

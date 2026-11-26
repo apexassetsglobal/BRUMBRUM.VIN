@@ -34,7 +34,7 @@
 
 ## Analityka w tej wersji kodu
 
-W kodzie aplikacji nie znaleziono kontenera Google Tag Manager, identyfikatora pomiarowego GA4, inicjalizacji `gtag()` ani `dataLayer`. Strona ustawień cookies w `src/views-info.js` wyświetla informację o wyłączonej analityce zewnętrznej. To ustalenie dotyczy eksportowanego kodu. Konfiguracja ewentualnego zewnętrznego proxy lub konta Google wymaga odrębnego dostępu.
+Wspólny `layout()` w `src/ui.js` ładuje kontener Google Tag Manager `GTM-5QNJH39C` i inicjalizuje `dataLayer` na wszystkich stronach aplikacji. Konfiguracja konkretnych tagów, reguł uruchamiania i ewentualnego GA4 pozostaje po stronie kontenera GTM. Informację dla użytkownika wyświetla strona ustawień cookies w `src/views-info.js`.
 
 Własny licznik działa po stronie serwera. `src/app.js` sprawdza ścieżkę, status i rodzaj nawigacji, pomija demo i wywołuje `recordPageView()` z `src/traffic.js`. Dzienne sumy trafiają do `site_page_views`, a publiczny widok działa pod `/statystyki` przez `src/views-traffic.js`. Osobno `/api/banner-event` i `recordBannerEvent()` zapisują sumy wyświetleń i kliknięć w `site_banner_stats`. Definicje tabel są w `drizzle/0003_site_page_views.sql` i `drizzle/0006_banner_statistics.sql`.
 
