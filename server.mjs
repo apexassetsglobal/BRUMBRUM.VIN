@@ -125,7 +125,17 @@ const server=createServer(async (incoming,outgoing)=>{
     headers.delete('x-a4-peer');
     headers.set('x-a4-peer',incoming.socket.remoteAddress||'local');
     const origin=env.APP_ORIGIN || 'http://'+incoming.headers.host;
-    const request=new Request(new URL(incoming.url,origin),{
+    const requestUrl=new URL(incoming.url,origin);
+    if (['GET','HEAD'].includes(incoming.method) && ['/roboty-app','/roboty-app/','/roboty-app/index.html'].includes(requestUrl.pathname)) {
+      const bytes=await readFile(join(root,'roboty-app','index.html'));
+      outgoing.setHeader('Content-Type','text/html; charset=utf-8');
+      outgoing.setHeader('Cache-Control','no-cache');
+      outgoing.writeHead(200);
+      if (incoming.method==='HEAD') outgoing.end();
+      else outgoing.end(bytes);
+      return;
+    }
+    const request=new Request(requestUrl,{
       method:incoming.method,headers,
       ...(['GET','HEAD'].includes(incoming.method)?{}:{body:Readable.toWeb(incoming),duplex:'half'})
     });
