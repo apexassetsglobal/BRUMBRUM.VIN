@@ -129,6 +129,8 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
 
   for (const path of ['/?lang=de','/demo/oferta/przyklad-1','/demo/zegarek','/demo/rolki/przyklad-113']) {
     const {result:html}=await client.go(path);
+    assert.equal((html.match(/GTM-5QNJH39C/g)||[]).length,1);
+    assert.equal((html.match(/window\.dataLayer=window\.dataLayer\|\|\[\]/g)||[]).length,1);
     const iconStyle=html.match(/data-icon-style="([^"]+)"/)[1];
     const iconStyles=html.match(/data-icon-styles="([^"]+)"/)[1];
     const scriptAt=html.indexOf('<script src="/appearance.js?v=11"></script>');
