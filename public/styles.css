@@ -1305,6 +1305,60 @@ body:has(.account-menu-page) {
 }
 .settings-switch input:checked {background:var(--account-selected);border-color:var(--account-selected)}
 .settings-switch input:checked::before {transform:translateX(18px);background:var(--account-selected-text)}
+.sound-garage {min-width:0}
+.sound-garage-intro {
+  display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;padding:12px;
+  border:1px solid var(--account-line);border-radius:14px;background:linear-gradient(135deg,#130a0d,#211015 48%,#090b10);color:#fff;
+  box-shadow:inset 0 0 0 1px #ff33451f,0 8px 24px #0002;
+}
+.sound-garage-intro h3,.sound-garage-intro p,.sound-event-settings h3,.sound-catalog-section h3 {margin:0}
+.sound-garage-intro p {margin-top:4px;color:#f0dfe2!important;line-height:1.45}
+.sound-engine-icon {display:grid;place-items:center;width:72px;height:72px;border-radius:18px;filter:drop-shadow(0 0 10px #ff233f80)}
+.sound-engine-icon img {width:100%;height:100%;object-fit:contain}
+.sound-event-settings,.sound-catalog-section {display:grid;gap:10px;min-width:0}
+.sound-event-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.sound-event {
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px 12px;min-width:0;margin:0;padding:10px;
+  border:1px solid var(--account-line);border-radius:12px;background:var(--card);
+}
+.sound-event legend {grid-column:1/-1;padding:0 5px;font-size:.84rem;font-weight:850;color:var(--navy)}
+.sound-event>label:not(.settings-switch) {display:grid;gap:4px;min-width:0;font-size:.76rem;font-weight:750;color:var(--muted)}
+.sound-event>label:first-of-type {grid-column:1/-1}
+.sound-event select {width:100%;min-height:40px;padding:6px 32px 6px 8px}
+.sound-event .settings-switch {align-self:end;min-width:112px}
+.sound-event .settings-switch>span {font-size:.72rem}
+.sound-volume {min-width:0}
+.sound-volume>span {display:flex;justify-content:space-between;gap:8px}
+.sound-volume input {width:100%;accent-color:var(--blue)}
+.sound-event[data-muted] {opacity:.68}
+.sound-section-head {display:flex;align-items:end;justify-content:space-between;gap:12px}
+.sound-save-status {min-height:1em;color:var(--muted);font-size:.75rem;text-align:right}
+.sound-filters {display:grid;grid-template-columns:minmax(0,1.4fr) minmax(150px,.8fr) auto;align-items:end;gap:9px}
+.sound-favorite-filter {min-height:44px;align-items:center;padding:7px 10px;border:1px solid var(--account-line);border-radius:10px;background:var(--card)}
+.sound-catalog {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:min(56vh,620px);overflow:auto;padding:2px;scrollbar-gutter:stable}
+.sound-card {
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;min-width:0;padding:8px;
+  border:1px solid var(--account-line);border-radius:11px;background:var(--card);
+}
+.sound-card>div {min-width:0}
+.sound-card strong,.sound-card span {display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sound-card strong {font-size:.82rem;color:var(--navy)}
+.sound-card span {margin-top:2px;color:var(--muted);font-size:.7rem}
+.sound-favorite {display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid var(--account-line);border-radius:9px;background:var(--canvas);color:#89929d;font-size:18px}
+.sound-favorite[aria-pressed=true] {border-color:#d39a20;background:#fff5cf;color:#a46900}
+.sound-preview {min-height:36px;padding:5px 9px;font-size:.72rem}
+.sound-platform-note {padding:9px 11px;border-left:3px solid var(--blue);background:var(--soft);line-height:1.45}
+@media (max-width:760px) {
+  .sound-event-grid,.sound-catalog {grid-template-columns:minmax(0,1fr)}
+  .sound-filters {grid-template-columns:minmax(0,1fr)}
+  .sound-favorite-filter {justify-self:stretch}
+}
+@media (max-width:430px) {
+  .sound-garage-intro {grid-template-columns:minmax(0,1fr);text-align:center}
+  .sound-engine-icon {justify-self:center}
+  .sound-event {grid-template-columns:minmax(0,1fr)}
+  .sound-event .settings-switch {justify-self:stretch}
+}
 @media (min-width:761px) {
   .account-menu-page {--account-menu-gap:16px}
   .account-settings-columns:has(#wyglad-ikon[open])>div {display:contents}

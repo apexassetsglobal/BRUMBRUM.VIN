@@ -12,6 +12,7 @@ import { isHumanTraffic, recordBannerEvent } from './traffic.js';
 import { startSupport, supportPackage } from './support.js';
 import { createOrder, listOrders, orderDetail, changeOrderStatus } from './robot-orders.js';
 import { robotBrands, robotCategories, robotCurrencies, robotRentalUnits, robotTradeModes } from './robot-catalog.js';
+import { saveSoundSettings, soundEventsSince, soundSettings } from './sounds.js';
 
 const ok = (data = {}) => json({ok:true,...data});
 const withCookies = (data, values) => {
@@ -33,6 +34,8 @@ export async function api(ctx) {
   if(area==='dealer' && method==='POST')await allowImport(ctx);
   if(area==='listings'&&action==='submit'&&method==='POST')await allowPublication(ctx);
   if (method==='GET') {
+    if(area==='sound-settings'&&!key)return ok(await soundSettings(ctx));
+    if(area==='sound-events'&&!key)return ok(await soundEventsSince(ctx));
     if(area==='appearance'&&!key) {
       if(!ctx.user)return ok({engine:null});
       const saved=await row(ctx.db,"SELECT value FROM settings WHERE scope=? AND key='ultimate_visual'",'user:'+ctx.user.id);
@@ -93,6 +96,7 @@ export async function api(ctx) {
   }
   if (area==='asset' && method==='POST') return ok({key:await staff.uploadBrandAsset(ctx,key,action)});
   const body=await input(ctx,area==='dealer'?300000:area==='admin'?240000:65536);
+  if(area==='sound-settings'&&method==='PUT'&&!key)return ok(await saveSoundSettings(ctx,body));
   if(area==='appearance'&&method==='PUT'&&!key) {
     const user=requireUser(ctx);
     if(!body.engine||typeof body.engine!=='object'||Array.isArray(body.engine))invalid();

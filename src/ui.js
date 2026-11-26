@@ -860,6 +860,7 @@ function sideNav(ctx,accountBadge) {
         <button class="side-theme-toggle" type="button" data-theme-toggle aria-pressed="false">${themeToggleIcons}<span>${t('Zmień motyw','Change theme')}</span></button>
         ${iconStyleTrigger(ctx)}
         ${user?sideLink('/ustawienia#rozmiar-tekstu',t('Rozmiar tekstu','Text size'),'edit'):''}
+        ${user?sideLink('/ustawienia#dzwieki-aplikacji',t('Dźwięki aplikacji','App sounds'),'side-sound'):''}
         <button type="button" data-side-sound aria-pressed="true" hidden>${icon('side-sound',24)}<span>${t('Dźwięk menu','Menu sound')}</span></button>`)}
         ${group(t('Pomoc','Help'),`
         ${sideLink('/pomoc',t('Pomoc i FAQ','Help & FAQ'),'shield')}
@@ -952,19 +953,21 @@ export function layout(ctx,view) {
   <meta property="og:type" content="website"><meta property="og:site_name" content="${e(name)}"><meta property="og:url" content="${e(canonical)}"><meta property="og:image" content="${e(og)}">
   ${brandPreview?'<meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="BRUMBRUM.VIN">':''}
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="${ctx.robotics?'/assets/robots/icon.svg':'/assets/icon-32.png?v=emblem'}"><link rel="apple-touch-icon" href="${ctx.robotics?'/assets/robots/icon-180.png':'/assets/icon-180.png?v=emblem'}"><link rel="manifest" href="${href(ctx,'/manifest.webmanifest')}?lang=${ctx.lang}" crossorigin="use-credentials">
+  <link rel="icon" href="${ctx.robotics?'/assets/robots/icon.svg':'/assets/icon-32.png?v=engine-start'}"><link rel="apple-touch-icon" href="${ctx.robotics?'/assets/robots/icon-180.png':'/assets/icon-180.png?v=engine-start'}"><link rel="manifest" href="${href(ctx,'/manifest.webmanifest')}?lang=${ctx.lang}" crossorigin="use-credentials">
   ${name==='BRUMBRUM.VIN'?appleStartupImages:''}
   <script src="/appearance.js?v=11"></script><script src="/ultimate-visual.js?v=4"></script>
   ${ctx.robotics?'<script src="/assets/robot-appearance.js?v=2"></script>':''}
-  ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=13"><script defer src="/assets/header-logo.js?v=2"></script>'}
+  ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=14"><script defer src="/assets/header-logo.js?v=2"></script>'}
   ${launchScreen?'<script src="/assets/launch-screen.js"></script>':''}
-  <link rel="stylesheet" href="/styles.css?v=studio360"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail2">
+  <link rel="stylesheet" href="/styles.css?v=studio361"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail2">
   ${view.services?'<link rel="stylesheet" href="/assets/services-map.css"><link rel="stylesheet" href="/assets/services-promo.css"><script type="module" src="/assets/services-ui.js"></script><script type="module" src="/assets/services-map.js"></script><script type="module" src="/assets/services-promo.js"></script>':''}
   <link rel="stylesheet" href="/assets/robots.css?v=4">${ctx.robotics?'<link rel="stylesheet" href="/assets/robots-demo.css?v=2"><link rel="stylesheet" href="/assets/robot-appearance.css?v=3"><script type="module" src="/assets/robots.js?v=2"></script>':''}
   ${view.automation?'<script type="module" src="/assets/automation-ui.js"></script>':''}${view.structured?'<script type="application/ld+json">'+JSON.stringify(view.structured).replace(/</g,'\\u003c')+'</script>':''}
-  ${view.watchPage?'':view.reelsPage?'<script type="module" src="/assets/reels-feed.js?v=8"></script>':'<script type="module" src="/app.js?v=studio360"></script><script type="module" src="/assets/exchange-rates.js?v=4"></script>'}</head>
+  <script type="module" src="/assets/sound-garage.js?v=1"></script>
+  ${view.watchPage?'':view.reelsPage?'<script type="module" src="/assets/reels-feed.js?v=8"></script>':'<script type="module" src="/app.js?v=studio361"></script><script type="module" src="/assets/exchange-rates.js?v=4"></script>'}</head>
   <body class="${ctx.robotics?'robot-app ':''}${view.watchPage?'watch-page':view.listingPage?'listing-page':view.reelsPage?'reels-screen':''}" data-market="${ctx.robotics?'robotics':'vehicles'}" style="--accent:${e(ctx.brand.accent)}" data-prefix="${ctx.prefix}" data-user="${e(ctx.user?.id||'')}" data-lang="${ctx.lang}" data-demo="${ctx.demo?'1':'0'}">
-  ${launchScreen?`<div class="launch-screen" aria-hidden="true"><div class="launch-badge${brandLogoAsset(ctx.brand.launch_logo)?' launch-badge-preset':''}">${logoPreset(ctx,'launch_logo')}</div></div>`:''}
+  ${launchScreen?`<div class="launch-screen" aria-hidden="true"><div class="launch-badge${brandLogoAsset(ctx.brand.launch_logo)?' launch-badge-preset':''}">${logoPreset(ctx,'launch_logo')}</div>
+    <button class="launch-engine-start" type="button" data-engine-start hidden><img src="/assets/icon-192.png?v=engine-start" width="42" height="42" alt=""> <span>ENGINE START</span></button></div>`:''}
   ${iconMaterials}${(view.watchPage||view.reelsPage)?`<main id="main">${view.body}</main>`:
     `${iconCollectionBrandDefinition}${ctx.robotics?robotNav(ctx):nav(ctx,launchScreen)}<main id="main">${view.body}</main>${footer(ctx)}${languagePicker(ctx)}${view.inlineIconSettings?'':iconStyleDialog(ctx)}<aside class="compare-tray" data-compare-tray hidden></aside><div class="toast" data-toast role="status" aria-live="polite" hidden></div>`}</body></html>`;
 }

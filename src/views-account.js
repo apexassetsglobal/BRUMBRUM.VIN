@@ -232,6 +232,20 @@ async function profileSettings(ctx,nested=false) {
     t('Nowe wiadomości i status ogłoszeń','New messages and listing status'),
     `<div class="stack">${notificationSwitch('notify_messages',t('Nowe wiadomości','New messages'),u.notify_messages)}
       ${notificationSwitch('notify_listings',t('Status ogłoszeń','Listing status'),u.notify_listings)}${saveButton}</div>`,feedback);
+  const sounds=menuDisclosure('dzwieki-aplikacji','side-sound',t('Dźwięki aplikacji','App sounds'),
+    t('Sound Garage, zdarzenia i głośność','Sound Garage, events and volume'),
+    `<div class="sound-garage stack" data-sound-garage>
+      <div class="sound-garage-intro"><span class="sound-engine-icon"><img src="/assets/icon-192.png?v=engine-start" width="72" height="72" alt=""></span>
+        <div><h3>SOUND GARAGE</h3><p>${t('60 wariantów strojenia. Wszystkie dostępne odsłuchy są oryginalnymi efektami syntetycznymi BRUMBRUM.VIN, a nie autentycznymi nagraniami wskazanych pojazdów.','60 tuning variants. Every available preview is an original BRUMBRUM.VIN synthetic effect, not an authentic recording of the named vehicle.')}</p></div></div>
+      <section class="sound-event-settings" aria-labelledby="sound-events-title"><h3 id="sound-events-title">${t('Przypisanie zdarzeń','Event assignments')}</h3><div class="sound-event-grid" data-sound-events></div></section>
+      <section class="sound-catalog-section" aria-labelledby="sound-catalog-title"><div class="sound-section-head"><div><h3 id="sound-catalog-title">${t('Katalog dźwięków','Sound catalog')}</h3><p class="muted">${t('Odsłuch zatrzymuje poprzedni dźwięk.','A preview stops the previous sound.')}</p></div><span data-sound-save-status class="sound-save-status" role="status"></span></div>
+        <div class="sound-filters">${field('sound_search',t('Szukaj marki lub modelu','Search brand or model'),'',{attributes:'data-sound-search autocomplete="off"'})}
+          <label class="field"><span>${t('Kategoria','Category')}</span><select data-sound-category></select></label>
+          <label class="check sound-favorite-filter"><input type="checkbox" data-sound-favorites-only><span>${t('Tylko ulubione','Favorites only')}</span></label></div>
+        <div class="sound-catalog" data-sound-catalog></div>
+      </section>
+      <p class="sound-platform-note">${t('PWA może odtworzyć dźwięk po odblokowaniu audio przez użytkownika. iOS i Android mogą wyciszać dźwięki w tle lub powiadomienia push zgodnie z ustawieniami systemu.','The PWA can play sound after audio is unlocked by the user. iOS and Android may silence background audio or push notifications according to system settings.')}</p>
+    </div>`);
   const language=menuDisclosure('jezyk','globe',t('Język interfejsu','Interface language'),languages[ctx.lang],
     `<div class="stack">${choice(ctx,'lang',t('Język interfejsu','Interface language'),languages,ctx.lang,{placeholder:false,attributes:profileFields})}${saveButton}</div>`,feedback);
   const imageEditor=(kind,title,key)=>`<div class="stack profile-image-editor"><h3>${e(title)}</h3>
@@ -272,7 +286,7 @@ async function profileSettings(ctx,nested=false) {
   return `${saveProfile}<div class="account-menu-columns account-settings-columns">
     <div>
       ${menuGroup(t('Dane i bezpieczeństwo','Details and security'),profile+images+security+remove,{nested})}
-      ${menuGroup(t('Preferencje','Preferences'),notifications+contact+language,{nested})}
+      ${menuGroup(t('Preferencje','Preferences'),notifications+sounds+contact+language,{nested})}
     </div>
     <div>
       ${menuGroup(t('Wygląd aplikacji','App appearance'),textSize+iconStyles,{nested})}

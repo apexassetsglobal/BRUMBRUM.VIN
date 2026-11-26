@@ -531,44 +531,21 @@ if (sideNav) {
   window.addEventListener('pageshow',()=>closeSideNav());
   updateSideNav();
 
-  const Audio=window.AudioContext||window.webkitAudioContext;
-  if (Audio) {
+  if (window.BrumbrumSounds) {
     const sound=$('[data-side-sound]',sideNav);
     let enabled=local.get(keys.menuSound)!=='off';
-    let audio,lastNote=-Infinity;
-    function unlockSound() {
-      if (!enabled||!sideNav.getClientRects().length||audio?.state==='running') return;
-      try {
-        audio??=new Audio();
-        audio.resume().catch(()=>{});
-      } catch {}
-    }
+    let lastNote=-Infinity;
     sound.hidden=false;
     sound.setAttribute('aria-pressed',String(enabled));
     sound.addEventListener('click',()=>{
       enabled=!enabled;
       local.set(keys.menuSound,enabled?'on':'off');
       sound.setAttribute('aria-pressed',String(enabled));
-      unlockSound();
     });
-    document.addEventListener('pointerup',unlockSound,{passive:true});
-    document.addEventListener('keydown',unlockSound);
     for (const item of menuItems) item.addEventListener('pointerenter',event=>{
-      if (!enabled||event.pointerType!=='mouse'||audio?.state!=='running') return;
-      const time=audio.currentTime;
-      if (time-lastNote<.075) return;
-      lastNote=time;
-      const tone=audio.createOscillator();
-      const volume=audio.createGain();
-      tone.type='triangle';
-      tone.frequency.setValueAtTime(850,time);
-      tone.frequency.exponentialRampToValueAtTime(440,time+.045);
-      volume.gain.setValueAtTime(.0001,time);
-      volume.gain.linearRampToValueAtTime(.035,time+.004);
-      volume.gain.exponentialRampToValueAtTime(.0001,time+.055);
-      tone.connect(volume).connect(audio.destination);
-      tone.start(time);
-      tone.stop(time+.06);
+      if (!enabled||event.pointerType!=='mouse'||performance.now()-lastNote<75) return;
+      lastNote=performance.now();
+      window.BrumbrumSounds.menuTone().catch(()=>{});
     });
   }
 }
