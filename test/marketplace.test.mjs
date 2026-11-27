@@ -129,6 +129,8 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
 
   for (const path of ['/?lang=de','/demo/oferta/przyklad-1','/demo/zegarek','/demo/rolki/przyklad-113']) {
     const {result:html}=await client.go(path);
+    assert.equal((html.match(/GTM-5QNJH39C/g)||[]).length,1);
+    assert.equal((html.match(/window\.dataLayer=window\.dataLayer\|\|\[\]/g)||[]).length,1);
     const iconStyle=html.match(/data-icon-style="([^"]+)"/)[1];
     const iconStyles=html.match(/data-icon-styles="([^"]+)"/)[1];
     const scriptAt=html.indexOf('<script src="/appearance.js?v=11"></script>');
@@ -1233,6 +1235,9 @@ test('demo showcase serves three distinct photos per listing and full-width deta
     assert.doesNotMatch(page,/data-copy-vin=/);
     assert.match(page,/class="panel offer-section"><summary>[^<]*<svg[^>]*>.*?<span>Opis sprzedawcy<\/span>/s);
     assert.match(page,/data-gallery-autoplay/);
+    assert.match(page,/>Napisz wiadomość</);
+    assert.match(page,/>Umów oględziny</);
+    assert.match(page,/>Rolki</);
     const frames=JSON.parse(page.match(/data-gallery="([^"]+)"/)[1].replaceAll('&quot;','"'));
     assert.equal(frames.length,3);
     assert.equal(new Set(frames.map(frame=>frame.url)).size,3);
@@ -1573,10 +1578,10 @@ test('demo photo reels link to the matching listing, photos, and seller',async()
   assert.match(firstSlide,/Napisz wiadomość/);
   assert.match(firstSlide,/Umów oględziny/);
   assert.match(firstSlide,/Sprawdź VIN|Zapytaj o VIN/);
-  const detailsPanel=firstSlide.slice(firstSlide.indexOf('data-reel-panel="details"'),firstSlide.indexOf('data-reel-panel="media"'));
+  const detailsPanel=firstSlide.slice(firstSlide.indexOf('data-reel-panel="details"'));
   assert.doesNotMatch(detailsPanel,/<img /);
-  assert.ok(firstSlide.indexOf('data-reel-panel="photos"')<firstSlide.indexOf('data-reel-panel="details"'));
-  assert.ok(firstSlide.indexOf('data-reel-panel="details"')<firstSlide.indexOf('data-reel-panel="media"'));
+  assert.ok(firstSlide.indexOf('data-reel-panel="photos"')<firstSlide.indexOf('data-reel-panel="media"'));
+  assert.ok(firstSlide.indexOf('data-reel-panel="media"')<firstSlide.indexOf('data-reel-panel="details"'));
   assert.match(firstSlide,/Film nie został dodany/);
   const photoStack=firstSlide.slice(firstSlide.indexOf('<div class="reel-photo-stack'),firstSlide.indexOf('</div>',firstSlide.indexOf('<div class="reel-photo-stack')));
   assert.equal((photoStack.match(/<img /g)||[]).length,3);

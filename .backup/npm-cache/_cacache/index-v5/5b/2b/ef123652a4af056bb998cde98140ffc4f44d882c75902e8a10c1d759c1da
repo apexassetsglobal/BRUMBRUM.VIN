@@ -1,0 +1,2 @@
+
+4697730d3a068432484e3d12e2f192cdd5f64e10	{"key":"make-fetch-happen:request-cache:https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.25.12.tgz","integrity":"sha512-3wGSCDyuTHQUzt0nV7bocDy72r2lI33QL3gkDNGkod22EsYl04sMf0qLb8luNKTOmgF/eDEDP5BFNwoBKH441w==","time":1795722721801,"size":4383334,"metadata":{"time":1795722721761,"url":"https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.25.12.tgz","reqHeaders":{},"resHeaders":{"content-type":"application/octet-stream","cache-control":"public,max-age=31536000,immutable"},"options":{"compress":true}}}

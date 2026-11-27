@@ -377,7 +377,7 @@ if (sideNav) {
   const menuItems=$$(itemSelector,sideNav);
   const captions=menuItems.map(item=>$('span:not(.count)',item)).filter(Boolean);
   const railLayout=matchMedia('(min-width:1041px) and (hover:hover) and (pointer:fine), (min-width:768px) and (min-height:480px) and (orientation:landscape)');
-  let opener=null,pinned=false,captionItem=null,touchPreview=null,openingSlide=null;
+  let opener=null,pinned=false,hoverOpen=false,captionItem=null,touchPreview=null,openingSlide=null;
 
   function sizeCaptions() {
     const labels=sideNav.hasAttribute('data-side-open')?captions:captions.filter(label=>label.parentElement===captionItem);
@@ -394,14 +394,14 @@ if (sideNav) {
   }
 
   function updateSideNav() {
-    const visible=Boolean(opener);
-    const expanded=visible&&(pinned||Boolean(themePicker?.open));
+    const visible=railLayout.matches||Boolean(opener);
+    const expanded=visible&&(pinned||hoverOpen||Boolean(themePicker?.open));
     sideNav.toggleAttribute('data-side-visible',visible);
     sideNav.toggleAttribute('data-side-open',expanded);
     sideNav.inert=!visible;
     if (visible) sideNav.removeAttribute('aria-hidden');
     else sideNav.setAttribute('aria-hidden','true');
-    for (const trigger of profileTriggers) trigger.setAttribute('aria-expanded',String(visible));
+    for (const trigger of profileTriggers) trigger.setAttribute('aria-expanded',String(railLayout.matches?expanded:visible));
     toggle.setAttribute('aria-expanded',String(expanded));
     toggle.setAttribute('aria-label',expanded?t('Zwiń menu','Collapse menu'):t('Rozwiń menu','Expand menu'));
     if (toggleLabel) toggleLabel.textContent=expanded?t('Zwiń menu','Collapse menu'):t('Rozwiń menu','Expand menu');
@@ -411,6 +411,7 @@ if (sideNav) {
     const trigger=opener;
     opener=null;
     pinned=false;
+    hoverOpen=false;
     touchPreview=openingSlide=null;
     showCaption(null);
     sideNav.removeAttribute('data-side-ready');
@@ -470,6 +471,20 @@ if (sideNav) {
       pinned=false;
       if (themePicker) themePicker.open=false;
     } else pinned=true;
+    showCaption(null);
+    updateSideNav();
+  });
+  sideNav.addEventListener('pointerenter',event=>{
+    if (!railLayout.matches||event.pointerType!=='mouse') return;
+    hoverOpen=true;
+    sideNav.setAttribute('data-side-ready','');
+    updateSideNav();
+  });
+  sideNav.addEventListener('pointerleave',event=>{
+    if (!railLayout.matches||event.pointerType!=='mouse'||pinned||sideNav.contains(event.relatedTarget)) return;
+    hoverOpen=false;
+    if (themePicker) themePicker.open=false;
+    sideNav.removeAttribute('data-side-ready');
     showCaption(null);
     updateSideNav();
   });
