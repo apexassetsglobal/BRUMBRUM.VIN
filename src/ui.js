@@ -683,7 +683,7 @@ function personalLogoOptions(ctx,group) {
   const options=[
     ['default',t('Domyślne logo strony','Site default')],
     ['original',t('Oryginalne czarno-niebieskie','Original black and blue')],
-    ...brandLogoIds.map(id=>[id,t('Wariant','Variant')+' '+id])
+    ...brandLogoIds.map(id=>[id,(Number(id)>20?t('Skóra','Leather')+' '+String(Number(id)-20).padStart(2,'0'):t('Metal','Metal')+' '+id)])
   ];
   const gallery=`<fieldset class="logo-choice-grid" aria-label="${e(t('Logo w nagłówku','Header logo'))}">
     ${options.map(([value,label])=>{
@@ -696,7 +696,9 @@ function personalLogoOptions(ctx,group) {
       </label>`;
     }).join('')}
   </fieldset>`;
-  return appearanceDisclosure(t('Logo strony','Site logo'),gallery,'appearance-logo',group==='inline-icon-theme'?' open':'');
+  return appearanceDisclosure(t('Logo strony','Site logo'),gallery+`<fieldset class="logo-led-options"><legend>${t('Dodatkowa poświata LED logo','Additional logo LED glow')}</legend>
+    ${[['off','Wyłączone'],['red','Czerwone'],['blue','Niebieskie'],['violet','Fioletowe'],['cyan','Turkusowe'],['green','Zielone'],['gold','Neonowy żółty'],['white','Białe']].map(([value,label])=>`<label><input type="radio" name="${e(group)}-logo-led" value="${value}" data-logo-led-choice${value==='off'?' checked':''}><span>${e(label)}</span></label>`).join('')}
+    </fieldset>`,'appearance-logo',group==='inline-icon-theme'?' open':'');
 }
 
 const ultimateMaterials=[
@@ -995,9 +997,9 @@ export function layout(ctx,view) {
   ${name==='BRUMBRUM.VIN'?appleStartupImages:''}
   <script src="/appearance.js?v=13"></script>
   ${ctx.robotics?'<script src="/assets/robot-appearance.js?v=2"></script>':''}
-  ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=14"><script defer src="/assets/header-logo.js?v=2"></script>'}
+  ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=uniform-logo"><script defer src="/assets/header-logo.js?v=5"></script>'}
   ${launchScreen?'<script src="/assets/launch-screen.js"></script>':''}
-  <link rel="stylesheet" href="/styles.css?v=photo309"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
+  <link rel="stylesheet" href="/styles.css?v=wizard-layout"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
   ${view.services?'<link rel="stylesheet" href="/assets/services-map.css"><link rel="stylesheet" href="/assets/services-promo.css"><script type="module" src="/assets/services-ui.js"></script><script type="module" src="/assets/services-map.js"></script><script type="module" src="/assets/services-promo.js"></script>':''}
   <link rel="stylesheet" href="/assets/robots.css?v=6">${ctx.robotics?'<link rel="stylesheet" href="/assets/robots-demo.css?v=2"><link rel="stylesheet" href="/assets/robot-appearance.css?v=3"><script type="module" src="/assets/robots.js?v=3"></script>':''}
   ${view.automation?'<script type="module" src="/assets/automation-ui.js"></script>':''}${view.structured?'<script type="application/ld+json">'+JSON.stringify(view.structured).replace(/</g,'\\u003c')+'</script>':''}

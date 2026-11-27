@@ -1560,9 +1560,12 @@ body:has(.account-menu-page) {
 .wizard-steps button[aria-current=step] {color:var(--blue);background:var(--soft);border-color:var(--line)}
 .wizard-steps button[aria-current=step] span,.wizard-steps button.done span {background:var(--accent);color:#fff}
 .wizard-body {padding:22px}
+.wizard-body .field-grid .field {grid-template-rows:1fr auto;align-content:stretch}
+.wizard-body .field-grid>[data-vehicle-field]>.field {height:100%}
 .wizard-body>section {display:grid;gap:15px}
 .wizard-body .section-head {margin-bottom:0}
 .wizard-footer {padding:12px 22px;display:flex;justify-content:space-between;align-items:center;gap:7px;border-top:1px solid var(--line)}
+.wizard-action-label {font-size:.875rem;font-weight:650;line-height:1.25;text-shadow:none}
 .wizard .form-status {padding:0 22px 13px}
 .dropzone {background:var(--soft);border:1px dashed #6a98ce;border-radius:13px;padding:18px;text-align:center;display:grid;justify-items:center;gap:8px}
 .dropzone p,.review-step p {color:var(--muted);font-size:13px}
@@ -4804,13 +4807,18 @@ body:has(.side-nav[data-side-ready]) {--side-rail:calc(40px * max(1,var(--active
   .camera-launch-actions .btn {width:100%;min-width:0;justify-content:center;text-align:center;white-space:normal}
   .camera-launch-actions .btn:first-child {grid-column:1/-1}
   .wizard-body .dropzone .file-button,.listing-reel-editor .file-button {width:100%;justify-content:center}
-  .wizard-footer {gap:8px}
-  .wizard-footer>.inline {flex:1;justify-content:flex-end;gap:8px}
-  .wizard-footer .btn {min-width:0;justify-content:center;text-align:center;white-space:normal}
+  .wizard-footer {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);align-items:stretch;gap:6px}
+  .wizard-footer:has([data-step-next][hidden]) {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .wizard-footer>.inline {display:contents}
+  .wizard-footer .btn {min-width:0;min-height:46px;padding-inline:6px;gap:5px;justify-content:center;text-align:center;white-space:normal}
   .reel-detail-sheet {padding-inline:16px;padding-top:4.5rem}
   .reel-data-content {gap:.65rem;margin-top:.85rem;padding-top:.75rem}
   .reel-detail-actions .btn {width:100%;white-space:normal;text-align:center}
   .reel-data-section summary {min-height:50px;padding:.7rem}
+}
+@media (max-width:365px) {
+  .wizard-footer .btn {flex-direction:column;gap:2px;padding-block:6px}
+  .wizard-footer .wizard-action-label {order:1}
 }
 @media (max-width:700px) {
   .reel-photo-contact .btn {min-height:36px;padding:.2rem .55rem;font-size:.75rem}

@@ -465,7 +465,7 @@ export async function wizard(ctx,offer,state) {
     ${check('negotiable',t('Cena do negocjacji','Price negotiable'),d.negotiable)}`,
     `<div class="review-step"><span class="mini-icon">${icon('image',27)}</span><h3>${t('Sprawdź pełne ogłoszenie','Review the full listing')}</h3>
     <p>${t('Sprawdź galerię i dane sprzedawcy przed przesłaniem ogłoszenia.','Check the gallery and seller details before submitting the listing.')}</p>
-    <button class="btn primary" data-preview type="button">${icon('image',19)}${t('Otwórz pełny podgląd','Open full preview')}</button></div>`
+    <button class="btn primary" data-preview type="button">${icon('image',19)}<span class="wizard-action-label">${e(t('Otwórz pełny podgląd','Open full preview'))}</span></button></div>`
   ];
   return {title:t('Edytuj ogłoszenie','Edit listing'),body:wrap(pageHead(offer.status==='draft'?(ctx.robotics?t('Wystaw sprzęt','List equipment'):t('Dodaj pojazd','Add a vehicle')):t('Edytuj ogłoszenie','Edit listing'),cardTitle(ctx,offer),link(ctx,'/moje-ogloszenia',t('Moje ogłoszenia','My listings'),'btn','back',{buttonFinish:true}))+
     ((state.data.importSeller?.name||state.data.importSeller?.email)?'<details class="panel"><summary>'+t('Dane sprzedawcy ze źródła','Seller details from source')+'</summary><p>'+e([state.data.importSeller.name,state.data.importSeller.email].filter(Boolean).join(' · '))+'</p></details>':'')+
@@ -477,9 +477,9 @@ export async function wizard(ctx,offer,state) {
       data-video="${e(state.video)}" ${listingVideoLimitAttributes(t)} data-vehicle-catalog="${embed(catalog.makesByType)}" data-vehicle-profiles="${embed(profiles)}">
       <div class="wizard-steps" aria-label="${t('Kroki formularza','Form steps')}">${stepNames.map((name,i)=>`<button type="button" data-step-to="${i+1}" data-button-finish-action="step"${state.step===i+1?' aria-current="step"':''}><span>${i+1}</span><strong>${e(name)}</strong></button>`).join('')}</div>
       <div class="wizard-body">${steps.map((html,i)=>`<section data-step-body="${i+1}" ${i+1===state.step?'':'hidden'}><div class="section-head"><div><h2>${e(stepNames[i])}</h2>${i<4?`<p>${t('Pola z gwiazdką są wymagane do publikacji.','Fields marked with an asterisk are required to publish.')}</p>`:''}</div></div>${html}</section>`).join('')}</div>
-      <div class="wizard-footer"><button class="btn" type="button" data-step-back data-button-finish-action>${icon('back',17)}${buttonEmbroideryLabel(t('Wstecz','Back'))}</button><div class="inline">
-      <button type="button" class="btn" data-save-draft data-button-finish-action>${icon('check',18)}${buttonEmbroideryLabel(t('Zapisz szkic','Save draft'))}</button>
-      <button type="button" class="btn primary" data-step-next>${buttonEmbroideryLabel(t('Dalej','Next'))} ${icon('arrow',17)}</button></div></div>
+      <div class="wizard-footer"><button class="btn" type="button" data-step-back data-button-finish-action>${icon('back',17)}<span class="wizard-action-label">${e(t('Wstecz','Back'))}</span></button><div class="inline">
+      <button type="button" class="btn" data-save-draft data-button-finish-action>${icon('check',18)}<span class="wizard-action-label">${e(t('Zapisz szkic','Save draft'))}</span></button>
+      <button type="button" class="btn primary" data-step-next><span class="wizard-action-label">${e(t('Dalej','Next'))}</span>${icon('arrow',17)}</button></div></div>
       <p class="form-status" data-save-status role="status" aria-live="polite">${t('Szkic zapisany na koncie.','Draft saved to your account.')}</p></form>`+photoStudio(ctx))};
 }
 
