@@ -9,7 +9,7 @@ export const robotCategories = {
   magazynowe:['Magazynowe','Warehouse robots'],
   rolnicze:['Rolnicze','Agricultural robots'],
   budowlane:['Budowlane','Construction robots'],
-  'domowe-ogrodowe':['Domowe i ogrodowe','Home and garden robots'],
+  'domowe-ogrodowe':['Dom i posesja','Home & property'],
   medyczne:['Medyczne','Medical robots'],
   drony:['Drony i systemy bezzałogowe','Drones and unmanned systems'],
   inspekcyjne:['Inspekcyjne i specjalistyczne','Inspection and specialist robots']
@@ -28,7 +28,7 @@ export const robotTradeModes = {
   sale:['Sprzedaż','For sale'],rent:['Wynajem','For rent'],both:['Sprzedaż i wynajem','Sale and rental']
 };
 export const robotRentalUnits = {day:['dzień','day'],week:['tydzień','week'],month:['miesiąc','month']};
-export const robotCurrencies = ['PLN','EUR','USD','GBP','CHF','CZK'];
+export const robotCurrencies = ['PLN','EUR','USD','CNY','GBP','CHF','CZK','SEK','NOK','DKK'];
 export const robotDefaultData = {
   type:'robot',market:'robotics',robotCategory:'',tradeMode:'sale',condition:'used',damage:'unknown',
   country:'Polska',currency:'PLN',contact:'message',equipment:[],rentalPrice:null,rentalUnit:'day',
