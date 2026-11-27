@@ -1,6 +1,7 @@
 import { vehicleModels } from './vehicle-catalog.js';
 import { marqueFiles } from './marque-files.js';
 import { appleStartupImages } from './apple-startup.js';
+import { launchSurfaceFamilies, launchSurfaceIds } from './launch-surfaces.js';
 import { brandLogoAsset, brandLogoIds } from './brand-logos.js';
 import { id, isStaff, withAuthReturn } from './core.js';
 import { blackStoneFinishPresets, buttonEmbroideryOptions, buttonFinishChoices, buttonFinishFields, buttonFinishPalettes, buttonFinishPresets, buttonFinishes, buttonHardwareChoices, buttonHardwareFields, carbonAndMetalFinishPresets, defaultButtonHardware, luxuryBrandPresetGroups, rollsRoyceFinishPresets } from './button-finishes.js';
@@ -297,7 +298,17 @@ const threeDIconStyles = [
   ['crystal-night','Crystal Night','Crystal Night'],
   ['neon-tachometer','Neon Tachometer','Neon Tachometer']
 ];
-const iconStyleValues = [...lineIconStyles,...threeDIconStyles].map(([id])=>id).join(' ');
+const premiumIconStyles = [
+  ['premium-embroidered-noir','Czarna Alcantara · haft','Black Alcantara · embroidery'],
+  ['premium-obsidian-deboss','Czarny mat · tłoczenie','Matte black · debossed'],
+  ['premium-glacier-glass','Kryształowy błękit','Crystal blue'],
+  ['premium-midnight-gold','Granat · szczotkowane złoto','Midnight · brushed gold'],
+  ['premium-racing-green','Zieleń · kość słoniowa','Racing green · ivory'],
+  ['premium-ivory-rosso','Jasna skóra · Rosso','Ivory leather · Rosso'],
+  ['premium-graphite-chrome','Grafitowy chrom','Graphite chrome'],
+  ['premium-racing-tricolour','Granat · czerwień · złoto','Navy · red · gold']
+];
+const iconStyleValues = [...lineIconStyles,...premiumIconStyles,...threeDIconStyles].map(([id])=>id).join(' ');
 
 const iconCatalog = [
   ["Nawigacja", "Navigation", [
@@ -451,6 +462,7 @@ function iconStyleControls(ctx) {
   const t=ctx.t;
   const surfaceTitle=t('Tło przycisków ikon','Icon button background');
   const linesTitle=t('Cienkie linie','Fine lines');
+  const premiumTitle=t('Nowe wzory premium','New premium styles');
   const collectionsTitle=t('Kolekcje 3D','3D collections');
   const group=(id,title,content)=>appearanceDisclosure(title,content,'appearance-icon-group',` data-appearance-icon-group="${id}"`);
   return `<section class="appearance-icons">
@@ -469,6 +481,9 @@ function iconStyleControls(ctx) {
     </fieldset>`)}
     ${group('lines',linesTitle,`<fieldset class="icon-style-grid icon-style-grid-lines" aria-label="${e(linesTitle)}">
       ${iconStyleCards(ctx,lineIconStyles)}
+    </fieldset>`)}
+    ${group('premium',premiumTitle,`<p class="premium-style-note">${t('Nowe warianty inspirowane przesłanymi wzorami. Wszystkie zachowują czytelne, znaczeniowe ikony.','New variants inspired by your references. All keep clear, meaningful icons.')}</p><fieldset class="icon-style-grid premium-icon-style-grid" aria-label="${e(premiumTitle)}">
+      ${iconStyleCards(ctx,premiumIconStyles)}
     </fieldset>`)}
     ${group('collections',collectionsTitle,`<fieldset class="icon-style-grid" aria-label="${e(collectionsTitle)}">
       ${iconStyleCards(ctx,threeDIconStyles)}
@@ -688,6 +703,37 @@ function buttonHardwareControls(ctx,group) {
   </details>`;
 }
 
+function launchBadge(ctx,thumbnail=false) {
+  const preset=brandLogoAsset(ctx.brand.launch_logo);
+  return `<span class="launch-badge${preset?' launch-badge-preset':''}${thumbnail?' launch-surface-mark':''}">${logoPreset(ctx,'launch_logo')}</span>`;
+}
+
+function launchSurfaceOptions(ctx,group) {
+  const t=ctx.t;
+  const badge=launchBadge(ctx,true);
+  const families=launchSurfaceFamilies.map(({pl,en,choices})=>`<fieldset class="launch-surface-family">
+    <legend>${e(t(pl,en))}</legend><div class="launch-surface-grid">
+      ${choices.map(([id,label,name])=>`<label class="launch-surface-choice">
+        <input type="radio" name="${e(group)}-launch-surface" value="${id}" data-launch-surface-option${id==='leather-classic'?' checked':''}>
+        <span class="launch-surface-swatch" aria-hidden="true">
+          <img class="launch-surface-thumb" src="/assets/launch/thumbs/${id}.webp" width="240" height="200" loading="lazy" decoding="async" alt="">${badge}
+        </span>
+        <span class="launch-surface-name">${e(t(label,name))}</span>
+      </label>`).join('')}
+    </div></fieldset>`).join('');
+  return appearanceDisclosure(t('Ekran startowy','Startup screen'),families+`
+    <button type="button" class="btn secondary launch-surface-preview-button" data-launch-preview-open aria-haspopup="dialog" aria-controls="launch-preview-dialog">
+      ${icon('play',18)} ${e(t('Podgląd pełnoekranowy','Full-screen preview'))}
+    </button>`,'appearance-launch-surfaces');
+}
+
+function launchPreviewDialog(ctx) {
+  return `<dialog id="launch-preview-dialog" class="launch-preview" data-launch-preview aria-label="${e(ctx.t('Podgląd ekranu startowego','Startup screen preview'))}">
+    <div class="launch-preview-scene">${launchBadge(ctx)}</div>
+    <button type="button" class="launch-preview-close" data-launch-preview-close aria-label="${e(ctx.t('Zamknij podgląd','Close preview'))}" autofocus>${icon('close')}</button>
+  </dialog>`;
+}
+
 function personalLogoOptions(ctx,group) {
   const t=ctx.t;
   const options=[
@@ -782,6 +828,7 @@ export function appearanceControls(ctx,group) {
     ${iconStyleControls(ctx)}
     ${photoRevealChoices(ctx,group)}
     ${personalLogoOptions(ctx,group)}
+    ${ctx.brand.name==='BRUMBRUM.VIN'?launchSurfaceOptions(ctx,group):''}
     ${appearanceDisclosure(t('Przyciski','Buttons'),`<div class="appearance-button-options">
       ${buttonGroup('upholstery',upholstery,buttonFinishSection(ctx,group,upholstery))}
       ${buttonGroup('account-style',accountStyle,accountButtonOptions(ctx,accountStyle))}
@@ -995,8 +1042,9 @@ export function layout(ctx,view) {
   const canonical=new URL(view.canonical||ctx.url.pathname,ctx.origin);
   if (ctx.lang!=='pl') canonical.searchParams.set('lang',ctx.lang);
   const noindex=ctx.demo||!view.index||ctx.env.PUBLIC_INDEXING!=='1';
-  const launchScreen=!ctx.robotics&&ctx.path==='/'&&name==='BRUMBRUM.VIN';
-  return `<!doctype html><html lang="${ctx.lang}" data-market="${ctx.robotics?'robotics':'vehicles'}" data-theme="light" data-palette="light" data-theme-modes="${e(JSON.stringify(themeModes))}" data-theme-materials="${themeMaterials}" data-theme-stitch-values="${e(JSON.stringify(themeStitchValues))}" data-icon-surface="none" data-icon-style="${defaultIconStyle}" data-icon-styles="${iconStyleValues}" ${buttonFinishAttributes(buttonFinishes.stock)} data-button-finish-choices="${e(JSON.stringify(buttonFinishChoices))}" data-button-finish-presets="${e(JSON.stringify(buttonFinishes))}" data-button-hardware-choices="${e(JSON.stringify(buttonHardwareChoices))}" data-button-hardware="${e(JSON.stringify(defaultButtonHardware))}" data-button-embroidery="${defaultButtonEmbroidery}" data-button-embroidery-choices="${buttonEmbroideryValues}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  const launchSettings=!ctx.robotics&&name==='BRUMBRUM.VIN'&&!view.watchPage&&!view.reelsPage;
+  const launchScreen=launchSettings&&ctx.path==='/';
+  return `<!doctype html><html lang="${ctx.lang}" data-market="${ctx.robotics?'robotics':'vehicles'}" ${launchSettings?`data-launch-surfaces="${embed(launchSurfaceIds)}" `:''}data-theme="light" data-palette="light" data-theme-modes="${e(JSON.stringify(themeModes))}" data-theme-materials="${themeMaterials}" data-theme-stitch-values="${e(JSON.stringify(themeStitchValues))}" data-icon-surface="none" data-icon-style="${defaultIconStyle}" data-icon-styles="${iconStyleValues}" ${buttonFinishAttributes(buttonFinishes.stock)} data-button-finish-choices="${e(JSON.stringify(buttonFinishChoices))}" data-button-finish-presets="${e(JSON.stringify(buttonFinishes))}" data-button-hardware-choices="${e(JSON.stringify(buttonHardwareChoices))}" data-button-hardware="${e(JSON.stringify(defaultButtonHardware))}" data-button-embroidery="${defaultButtonEmbroidery}" data-button-embroidery-choices="${buttonEmbroideryValues}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-5QNJH39C"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());</script>
   <title>${e(title)}</title><meta name="description" content="${e(desc)}"><meta name="theme-color" content="${ctx.robotics?'#ffffff':'#000000'}"><meta name="robots" content="${noindex?'noindex, nofollow':'index, follow'}">
   <link rel="canonical" href="${e(canonical)}"><meta property="og:title" content="${e(title)}"><meta property="og:description" content="${e(desc)}">
@@ -1007,18 +1055,18 @@ export function layout(ctx,view) {
   ${name==='BRUMBRUM.VIN'?appleStartupImages:''}
   <script src="/appearance.js?v=13"></script>
   ${ctx.robotics?'<script src="/assets/robot-appearance.js?v=2"></script>':''}
-  ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=onyx"><script defer src="/assets/header-logo.js?v=6"></script>'}
-  ${launchScreen?'<script src="/assets/launch-screen.js"></script>':''}
-  <link rel="stylesheet" href="/styles.css?v=black-stone"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
+  ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=surfaces"><script defer src="/assets/header-logo.js?v=6"></script>'}
+  ${launchSettings?`<script src="/assets/launch-screen.js?v=surfaces" ${launchScreen?'data-launch-home':'defer'}></script>`:''}
+  <link rel="stylesheet" href="/styles.css?v=black-stone-premium-icon-finishes"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
   ${view.services?'<link rel="stylesheet" href="/assets/services-map.css"><link rel="stylesheet" href="/assets/services-promo.css"><script type="module" src="/assets/services-ui.js"></script><script type="module" src="/assets/services-map.js"></script><script type="module" src="/assets/services-promo.js"></script>':''}
   <link rel="stylesheet" href="/assets/robots.css?v=6">${ctx.robotics?'<link rel="stylesheet" href="/assets/robots-demo.css?v=2"><link rel="stylesheet" href="/assets/robot-appearance.css?v=3"><script type="module" src="/assets/robots.js?v=3"></script>':''}
   ${view.automation?'<script type="module" src="/assets/automation-ui.js"></script>':''}${view.structured?'<script type="application/ld+json">'+JSON.stringify(view.structured).replace(/</g,'\\u003c')+'</script>':''}
   ${view.watchPage?'':view.reelsPage?'<script type="module" src="/assets/reels-feed.js?v=9"></script>':'<script type="module" src="/app.js?v=listingvideo90"></script><script type="module" src="/assets/exchange-rates.js?v=4"></script>'}</head>
   <body class="${ctx.robotics?'robot-app ':''}${view.watchPage?'watch-page':view.listingPage?'listing-page':view.reelsPage?'reels-screen':''}" data-market="${ctx.robotics?'robotics':'vehicles'}" style="--accent:${e(ctx.brand.accent)}" data-prefix="${ctx.prefix}" data-user="${e(ctx.user?.id||'')}" data-lang="${ctx.lang}" data-demo="${ctx.demo?'1':'0'}">
-  ${launchScreen?`<div class="launch-screen" aria-hidden="true"><div class="launch-badge${brandLogoAsset(ctx.brand.launch_logo)?' launch-badge-preset':''}">${logoPreset(ctx,'launch_logo')}</div>
+  ${launchScreen?`<div class="launch-screen" aria-hidden="true">${launchBadge(ctx)}
     <button class="launch-engine-start" type="button" data-engine-start hidden><img src="/assets/icon-192.png?v=engine-start" width="42" height="42" alt=""> <span>ENGINE START</span></button></div>`:''}
   ${iconMaterials}${(view.watchPage||view.reelsPage)?`<main id="main">${view.body}</main>`:
-    `${iconCollectionBrandDefinition}${ctx.robotics?robotNav(ctx):nav(ctx,launchScreen)}<main id="main">${view.body}</main>${footer(ctx)}${languagePicker(ctx)}${view.inlineIconSettings?'':iconStyleDialog(ctx)}<aside class="compare-tray" data-compare-tray hidden></aside><div class="toast" data-toast role="status" aria-live="polite" hidden></div>`}</body></html>`;
+    `${iconCollectionBrandDefinition}${ctx.robotics?robotNav(ctx):nav(ctx,launchScreen)}<main id="main">${view.body}</main>${footer(ctx)}${languagePicker(ctx)}${view.inlineIconSettings?'':iconStyleDialog(ctx)}${launchSettings?launchPreviewDialog(ctx):''}<aside class="compare-tray" data-compare-tray hidden></aside><div class="toast" data-toast role="status" aria-live="polite" hidden></div>`}</body></html>`;
 }
 
 export const wrap = (html,className='') => `<div class="wrap page${className?' '+className:''}">${html}</div>`;

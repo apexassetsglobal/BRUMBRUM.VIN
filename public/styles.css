@@ -4960,3 +4960,96 @@ body:has(.side-nav[data-side-ready]) {--side-rail:calc(40px * max(1,var(--active
  @keyframes nav-label-retract {0%,72% {opacity:1;transform:translate(-50%,0)}100% {opacity:0;transform:translate(-50%,-8px)}}
 }
 @media (prefers-reduced-motion:reduce) {.bottom-nav>a>span:not(.count) {animation:none!important;opacity:1;transform:translate(-50%,0)}}
+
+/* Reference-led premium icon finishes: keep the app's semantic SVG glyphs intact. */
+:is(html[data-icon-style^="premium-"],.icon-style-sample[data-icon-style^="premium-"]) {
+  --icon-metal:0%;--icon-tint:0%;--icon-stroke:1.9;
+  --icon-silhouette:none;--icon-line:visible;
+}
+:is(html[data-icon-style^="premium-"],.icon-style-sample[data-icon-style^="premium-"]) .ui-icon[data-icon-name] {
+  box-sizing:border-box;padding:1.5px;border:1px solid var(--premium-icon-edge);
+  border-radius:var(--premium-icon-radius,7px);
+  background-color:var(--premium-icon-base);
+  background-image:var(--premium-icon-surface)!important;
+  background-position:center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;
+  box-shadow:var(--premium-icon-shadow);color:var(--premium-icon-ink);
+}
+:is(html[data-icon-style^="premium-"],.icon-style-sample[data-icon-style^="premium-"]) .ui-icon-glyph {
+  stroke:var(--premium-icon-ink);filter:drop-shadow(0 1px 1px var(--premium-icon-depth));
+}
+:is(html[data-icon-style^="premium-"],.icon-style-sample[data-icon-style^="premium-"]) .ui-icon-glyph .icon-detail {
+  stroke:var(--premium-icon-detail,var(--premium-icon-ink));
+}
+:is(html[data-icon-style^="premium-"],.icon-style-sample[data-icon-style^="premium-"]) .ui-icon-glyph .icon-body {
+  fill:var(--premium-icon-fill,transparent);
+}
+:is(.appearance-menu,.icon-style-card) .icon-style-sample[data-icon-style^="premium-"] {
+  background:var(--premium-sample-surface)!important;
+  border:1px solid var(--premium-icon-edge);border-radius:10px;
+}
+.premium-style-note {margin:0 0 10px;color:var(--muted);font-size:.9rem}
+
+[data-icon-style="premium-embroidered-noir"] {
+  --premium-icon-base:#101113;--premium-icon-edge:#545457;--premium-icon-ink:#d6d4d0;--premium-icon-detail:#aaa9a6;
+  --premium-icon-fill:#ffffff10;--premium-icon-radius:50%;--premium-icon-depth:#000b;
+  --premium-icon-surface:radial-gradient(ellipse at 32% 24%,#353536 0,#171719 48%,#09090a 100%);
+  --premium-icon-shadow:inset 0 2px 3px #ffffff18,inset 0 -4px 5px #000b,0 2px 4px #0008;
+  --premium-sample-surface:radial-gradient(ellipse at 25% 15%,#373739,#121214 70%);
+  --collection-brand-accent:#c9c7c2;
+}
+[data-icon-style="premium-obsidian-deboss"] {
+  --premium-icon-base:#101114;--premium-icon-edge:#353941;--premium-icon-ink:#aab0b8;--premium-icon-detail:#737983;
+  --premium-icon-fill:#ffffff08;--premium-icon-radius:8px;--premium-icon-depth:#000d;
+  --premium-icon-surface:linear-gradient(145deg,#24272c 0%,#111316 48%,#08090b 100%);
+  --premium-icon-shadow:inset 0 1px 2px #ffffff13,inset 0 -3px 5px #000d,0 2px 5px #0009;
+  --premium-sample-surface:linear-gradient(145deg,#1e2024,#090a0c 72%);
+  --collection-brand-accent:#9da5af;
+}
+[data-icon-style="premium-glacier-glass"] {
+  --premium-icon-base:#102238;--premium-icon-edge:#a8d9ff;--premium-icon-ink:#e9f6ff;--premium-icon-detail:#9ad4ff;
+  --premium-icon-fill:#b8e4ff26;--premium-icon-radius:9px;--premium-icon-depth:#09274288;
+  --premium-icon-surface:linear-gradient(145deg,#d5f1ffbb 0%,#75b5e780 20%,#172e4ea8 55%,#badfff9c 100%);
+  --premium-icon-shadow:inset 0 1px 2px #ffffffb0,inset 0 -2px 3px #07192b88,0 2px 5px #06162988;
+  --premium-sample-surface:linear-gradient(135deg,#223c61,#9bbfe5 48%,#263b5c);
+  --collection-brand-accent:#a9d9ff;
+}
+[data-icon-style="premium-midnight-gold"] {
+  --premium-icon-base:#111927;--premium-icon-edge:#b99453;--premium-icon-ink:#f0d28e;--premium-icon-detail:#c9a86e;
+  --premium-icon-fill:#e9c87316;--premium-icon-radius:8px;--premium-icon-depth:#05091499;
+  --premium-icon-surface:linear-gradient(145deg,#25354b 0%,#111c2e 52%,#080e19 100%);
+  --premium-icon-shadow:inset 0 1px 2px #ffffff35,inset 0 -3px 4px #0009,0 2px 5px #0009;
+  --premium-sample-surface:linear-gradient(145deg,#25364c,#0d1523 75%);
+  --collection-brand-accent:#e2c17c;
+}
+[data-icon-style="premium-racing-green"] {
+  --premium-icon-base:#12372b;--premium-icon-edge:#c5d5be;--premium-icon-ink:#f1eadb;--premium-icon-detail:#5ed36c;
+  --premium-icon-fill:#e9ebd926;--premium-icon-radius:50%;--premium-icon-depth:#061b1388;
+  --premium-icon-surface:radial-gradient(ellipse at 30% 22%,#326b50 0%,#174432 55%,#092b22 100%);
+  --premium-icon-shadow:inset 0 1px 2px #ffffff48,inset 0 -3px 4px #001b12aa,0 2px 5px #0008;
+  --premium-sample-surface:linear-gradient(140deg,#123d2d,#e7e0d1 48%,#0e3126);
+  --collection-brand-accent:#8edb9a;
+}
+[data-icon-style="premium-ivory-rosso"] {
+  --premium-icon-base:#ede7de;--premium-icon-edge:#ad2637;--premium-icon-ink:#25272a;--premium-icon-detail:#b32639;
+  --premium-icon-fill:#ffffff50;--premium-icon-radius:50%;--premium-icon-depth:#64212b55;
+  --premium-icon-surface:linear-gradient(145deg,#fffdf8 0%,#e5ded2 58%,#c7bdb0 100%);
+  --premium-icon-shadow:inset 0 1px 2px #ffffffd9,inset 0 -3px 4px #6a5d5040,0 2px 5px #241a1933;
+  --premium-sample-surface:linear-gradient(135deg,#fffdf7 0%,#e9e3da 56%,#9e2535 100%);
+  --collection-brand-accent:#b62c3d;
+}
+[data-icon-style="premium-graphite-chrome"] {
+  --premium-icon-base:#292b2d;--premium-icon-edge:#c7cbcf;--premium-icon-ink:#eff2f4;--premium-icon-detail:#aeb5bb;
+  --premium-icon-fill:#dce2e82a;--premium-icon-radius:8px;--premium-icon-depth:#000b;
+  --premium-icon-surface:linear-gradient(145deg,#55595d 0%,#25282b 34%,#101214 62%,#8a9095 100%);
+  --premium-icon-shadow:inset 0 1px 2px #ffffff70,inset 0 -3px 4px #000b,0 2px 5px #0009;
+  --premium-sample-surface:linear-gradient(135deg,#777c80,#292c30 48%,#101113);
+  --collection-brand-accent:#d6dce1;
+}
+[data-icon-style="premium-racing-tricolour"] {
+  --premium-icon-base:#101d34;--premium-icon-edge:#bc9a61;--premium-icon-ink:#eff4fb;--premium-icon-detail:#f0484d;
+  --premium-icon-fill:#ef45451e;--premium-icon-radius:7px;--premium-icon-depth:#071020a8;
+  --premium-icon-surface:linear-gradient(145deg,#27476b 0%,#112640 52%,#09172a 100%);
+  --premium-icon-shadow:inset 0 1px 2px #ffffff38,inset 0 -3px 4px #0009,0 2px 5px #0009;
+  --premium-sample-surface:linear-gradient(145deg,#1b4774 0%,#102642 58%,#781f32 100%);
+  --collection-brand-accent:#d9b06b;
+}

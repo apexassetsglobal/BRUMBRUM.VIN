@@ -8,7 +8,6 @@ html.app-launch {background-color: #000}
   place-items: center;
   overflow: hidden;
   pointer-events: none;
-  background: #000 url("/assets/launch-leather.webp") center / cover no-repeat;
   animation: brumbrum-launch 5000ms both;
 }
 .sound-start-required .launch-screen {animation-play-state:paused;pointer-events:auto}
@@ -22,12 +21,12 @@ html.app-launch {background-color: #000}
 .launch-engine-start[hidden] {display:none}
 .launch-engine-start img {width:36px;height:36px;border-radius:50%}
 .launch-engine-start:focus-visible {outline:3px solid #fff;outline-offset:3px}
-.app-launch .launch-screen::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  height: max(env(safe-area-inset-bottom, 0px), env(safe-area-max-inset-bottom, 0px));
-  background-color: #000;
+.app-launch .launch-screen,
+.launch-preview[open] .launch-preview-scene {
+  background: #07080a var(--launch-surface-image,url("/assets/launch-leather.webp")) var(--launch-surface-position,center) / cover no-repeat;
+}
+@media (orientation: portrait) {
+  html[data-launch-surface=leather-cognac] {--launch-surface-position: 75% center}
 }
 .launch-badge {
   display: grid;
@@ -46,6 +45,7 @@ html.app-launch {background-color: #000}
 }
 .launch-badge .brumbrum-mark {
   width: 100%;
+  height: auto;
   filter: drop-shadow(0 1px 0 #ffffff85);
 }
 .launch-badge .brumbrum-accent {fill: #0a4b94}
@@ -54,12 +54,117 @@ html.app-launch {background-color: #000}
   0%, 93% {opacity: 1; visibility: visible}
   100% {opacity: 0; visibility: hidden}
 }
-@media (orientation: landscape) {
-  .app-launch .launch-screen {background-size: 100% 100%}
-}
 @media (prefers-reduced-motion: reduce) {
   .app-launch .launch-screen:not(:has(.launch-engine-start:not([hidden]))) {display: none}
 }
+
+/* The preview uses the actual launch artwork, without starting the app or its sound. */
+dialog.launch-preview {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: #07080a;
+  overflow: hidden;
+}
+.launch-preview::backdrop {background: #07080a}
+.launch-preview[open] .launch-preview-scene {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+.launch-preview-close {
+  position: absolute;
+  inset: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) auto auto;
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid #ffffff91;
+  border-radius: 50%;
+  color: white;
+  background: #101318e6;
+  cursor: pointer;
+}
+.launch-preview-close:focus-visible {outline: 3px solid white; outline-offset: 3px}
+.launch-surface-family {
+  min-width: 0;
+  margin: 12px 0;
+  padding: 0;
+  border: 0;
+}
+.launch-surface-family legend {margin-bottom: 6px; padding: 0; font-weight: 700}
+.launch-surface-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(min(100%,112px),1fr));
+  gap: 8px;
+}
+.launch-surface-choice {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--navy);
+  cursor: pointer;
+}
+.launch-surface-choice:has(input:checked) {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+.launch-surface-choice:has(input:focus-visible) {outline: 2px solid var(--focus,var(--blue)); outline-offset: 2px}
+.launch-surface-choice input[type=radio] {
+  position: absolute;
+  z-index: 1;
+  inset: 5px 5px auto auto;
+  width: 16px;
+  min-width: 0;
+  height: 16px;
+  min-height: 0;
+  margin: 0;
+  accent-color: var(--blue);
+}
+.launch-surface-swatch {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 6 / 5;
+  overflow: hidden;
+  background: #101216;
+}
+.launch-surface-thumb {position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover}
+.launch-surface-swatch .launch-surface-mark {
+  position: relative;
+  width: 82%;
+  min-height: 0;
+  padding: 3.5% 5%;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px #0009;
+}
+.launch-surface-swatch .launch-surface-mark.launch-badge-preset {
+  padding: 0;
+  box-shadow: none;
+}
+.launch-surface-name {
+  align-content: center;
+  padding: 6px 5px;
+  text-align: center;
+  font-size: .8125rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.launch-surface-preview-button {width: 100%}
 
 .site-head.home-engraved-head {
   position: sticky;

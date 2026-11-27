@@ -134,8 +134,8 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
     assert.equal(html.indexOf('<script src="/ultimate-visual.js'),-1);
     assert.equal(iconStyle,'sapphire-braid');
     const styles=iconStyles.split(' ');
-    assert.equal(styles.length,100);
-    assert.equal(new Set(styles).size,100);
+    assert.equal(styles.length,108);
+    assert.equal(new Set(styles).size,styles.length);
     assert.deepEqual(styles.slice(0,6),
       ['classic','classic-solid','classic-duotone','classic-cobalt','classic-sage','classic-copper']);
     assert.deepEqual(styles.slice(-5),newStyles);
