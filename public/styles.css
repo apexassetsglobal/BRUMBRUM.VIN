@@ -2022,11 +2022,11 @@ body:has(.account-menu-page) {
   .gallery-stack-photo {display:block;width:100%;padding:0;border:0;background:#091522;touch-action:manipulation}
   .gallery-stack-photo img {width:100%;aspect-ratio:16/9;object-fit:contain}
   .gallery-stack-photo {touch-action:pan-y pinch-zoom}
-  .listing-showcase[data-photo-view-fading] .mobile-photo-view {
+  .listing-showcase[data-photo-view-fading]:not([data-photo-view-open]) .mobile-photo-view {
     position:fixed;z-index:8;inset:auto var(--mobile-inset) calc(var(--nav-stack,var(--nav-height)) + env(safe-area-inset-bottom) + 8px);
     min-height:46px;background:#075ab9;color:#fff;
   }
-  .has-compare-tray .listing-showcase[data-photo-view-fading] .mobile-photo-view {
+  .has-compare-tray .listing-showcase[data-photo-view-fading]:not([data-photo-view-open]) .mobile-photo-view {
     bottom:calc(var(--nav-stack,var(--nav-height)) + env(safe-area-inset-bottom) + 72px)
   }
   .gallery-stack-photo:first-child {position:relative}
@@ -2035,13 +2035,11 @@ body:has(.account-menu-page) {
     background:linear-gradient(180deg,#071321df,#0713217a 40%,transparent 78%);
   }
   .gallery-stack-photo:focus-visible {outline-offset:-4px}
-  @media (prefers-reduced-motion:no-preference) {
-    .gallery-stack-photo {animation:photo-view-enter .24s ease-out both}
-    .gallery-stack-photo:nth-child(2) {animation-delay:.045s}
-    .gallery-stack-photo:nth-child(3) {animation-delay:.09s}
-    .gallery-photo-stack:is([data-reveal-style=scatter],[data-reveal-style=fade]) .gallery-stack-photo {animation:none}
-    @keyframes photo-view-enter {from {opacity:0;transform:translateY(7px)}}
+  .classic-photo-underlay {
+    position:absolute;z-index:-1;pointer-events:none;
   }
+  .listing-showcase[data-photo-view-fading=classic] {overflow-anchor:none}
+  .listing-showcase[data-photo-view-fading=classic] > * {flex-shrink:0}
   .listing-page .detail-main {
     margin:9px max(var(--space),env(safe-area-inset-right)) 0 max(var(--space),env(safe-area-inset-left));
     gap:0;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:clip;

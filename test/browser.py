@@ -1140,18 +1140,22 @@ def mobile_photo_view(browser, base):
             const observer = new MutationObserver(() => {
                 if (!card.hasAttribute('data-photo-view-fading')) return;
                 const layer = card.querySelector('[data-photo-reveal-layer]');
+                if (!layer) return;
+                const bridge = card.querySelector('.classic-photo-underlay');
                 const photo = card.querySelector('[data-gallery-image]');
                 const photosSharp = ![photo, ...card.querySelectorAll(':has([data-gallery-image])')]
                     .some(el => getComputedStyle(el).filter.includes('blur('));
                 window.revealProbe = {
                     photosSharp,
+                    overlap: Boolean(bridge?.inert && bridge.querySelector('img') &&
+                        bridge.getAnimations().length && card.querySelector('.showcase-media').getAnimations().length),
                     pieces: layer?.querySelectorAll('[style*="clip-path"]').length || 0,
                     duration: layer?.getAnimations()[0]?.effect.getTiming().duration || 0,
                     photosAnimating: photo.getAnimations().length
                 };
                 observer.disconnect();
             });
-            observer.observe(card, {attributes: true, attributeFilter: ['data-photo-view-fading']});
+            observer.observe(card, {attributes: true, childList: true, attributeFilter: ['data-photo-view-fading']});
         }""")
         page.wait_for_function("""mode => document.querySelector('.listing-showcase')
             .getAttribute('data-photo-view-fading') === mode""", arg=effect, timeout=6500)
@@ -1163,6 +1167,10 @@ def mobile_photo_view(browser, base):
             assert probe["photosAnimating"] == 0, probe
         else:
             assert probe["pieces"] == 0, probe
+            if effect == "classic":
+                assert probe["overlap"], probe
+                expect(showcase.locator(".classic-photo-underlay")).to_have_count(0)
+                assert float(stack.evaluate("el => getComputedStyle(el.firstElementChild).opacity")) > .99
             if effect == "fade":
                 assert 0 < probe["duration"] < 200, probe
         expect(toggle).to_have_accessible_name("Pokaż dane i przyciski")

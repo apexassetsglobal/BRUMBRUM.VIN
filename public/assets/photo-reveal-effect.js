@@ -61,12 +61,43 @@ function particlePath(x, y, width, height, index, turn) {
   ];
 }
 
+// Measure the real destination with its responsive sizing. Both layout reads and
+// the rollback happen in one task, before the browser paints another frame.
+function classicBackdrop(card, stack) {
+  const start = card.getBoundingClientRect();
+  card.setAttribute('data-photo-view-open', '');
+  stack.hidden = false;
+  const destination = stack.getBoundingClientRect();
+  const endHeight = card.getBoundingClientRect().height;
+  stack.hidden = true;
+  card.removeAttribute('data-photo-view-open');
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'gallery-photo-stack classic-photo-underlay';
+  backdrop.setAttribute('aria-hidden', 'true');
+  backdrop.inert = true;
+  Object.assign(backdrop.style, {
+    top: (destination.top - start.top - card.clientTop) + 'px',
+    left: (destination.left - start.left - card.clientLeft) + 'px',
+    width: destination.width + 'px'
+  });
+  for (const image of stack.querySelectorAll('img')) {
+    const tile = document.createElement('div');
+    tile.className = 'gallery-stack-photo';
+    tile.append(image.cloneNode(false));
+    backdrop.append(tile);
+  }
+  card.prepend(backdrop);
+  return {backdrop, startHeight:start.height, endHeight};
+}
+
 // The caller owns the gallery's final state and idle timer. Cancel rolls back this
 // visual transition synchronously, including when it is running inside a preview.
-export function animatePhotoReveal(card, targets, {mode='scatter', onFinish}={}) {
+export function animatePhotoReveal(card, targets, {mode='scatter', photoStack, onFinish}={}) {
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const scatter = mode === 'scatter' && !motion.matches;
-  const duration = motion.matches ? 110 : scatter ? 600 : 180;
+  const classic = mode === 'classic' && !motion.matches;
+  const duration = motion.matches ? 110 : scatter ? 600 : 360;
   const layer = document.createElement('span');
   layer.setAttribute('aria-hidden','true');
   layer.setAttribute('data-photo-reveal-layer','');
@@ -76,11 +107,13 @@ export function animatePhotoReveal(card, targets, {mode='scatter', onFinish}={})
   });
 
   const animations = [];
+  let backdrop;
   let active = true;
   function cancel() {
     if (!active) return;
     active = false;
     for (const animation of animations) animation.cancel();
+    backdrop?.remove();
     layer.remove();
   }
   function finish() {
@@ -102,15 +135,26 @@ export function animatePhotoReveal(card, targets, {mode='scatter', onFinish}={})
   const icons = new Set();
   for (const target of new Set(targets)) {
     const rect = target.getBoundingClientRect();
-    if (!rect.width || !rect.height || rect.bottom < 0 || rect.top > innerHeight) continue;
+    if (!rect.width || !rect.height || (!classic && (rect.bottom < 0 || rect.top > innerHeight))) continue;
     const {x,y} = position(rect,box);
     const opacity = getComputedStyle(target).opacity;
     effects.push([target,[{opacity},{opacity:0}], {
-      delay:scatter ? hit(x,y) + 22 : 0, duration:scatter ? 150 : duration, easing:'ease-in', fill:'forwards'
+      delay:scatter ? hit(x,y) + 22 : 0, duration:scatter ? 150 : duration, easing:classic ? 'ease-in-out' : 'ease-in', fill:'forwards'
     }]);
     if (!scatter) continue;
     if (target.matches(iconSelector)) icons.add(target);
     for (const icon of target.querySelectorAll(iconSelector)) icons.add(icon);
+  }
+
+  if (classic && photoStack) {
+    const bridge = classicBackdrop(card, photoStack);
+    backdrop = bridge.backdrop;
+    // The destination is opaque before the old layout is removed. The real
+    // buttons and gallery never move into this inert, visual-only layer.
+    effects.push([backdrop,[{opacity:0},{offset:.78,opacity:1},{opacity:1}],
+      {duration,easing:'ease-out',fill:'both'}]);
+    effects.push([card,[{height:bridge.startHeight+'px'},{height:bridge.endHeight+'px'}],
+      {duration,easing:'ease-in-out',fill:'both'}]);
   }
 
   if (scatter) {

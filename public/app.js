@@ -1,5 +1,5 @@
 import { searchCombobox } from '/assets/search-combobox.js?v=catalog307';
-import { animatePhotoReveal } from '/assets/photo-reveal-effect.js?v=1';
+import { animatePhotoReveal } from '/assets/photo-reveal-effect.js?v=classic309b';
 const root=document.body;
 const {prefix,user,lang}=root.dataset;
 const translations=['cs','sk','de','uk'].includes(lang)
@@ -1509,9 +1509,11 @@ function setupMobilePhotoView(gallery,stack,photos) {
     clearTimeout(timer);
     preparePhotos();
     const mode=motion.matches?'fade':document.documentElement.dataset.photoRevealEffect==='scatter'?'scatter':'classic';
-    // Only controls that disappear in the existing photos-only layout. Keep image layers,
-    // the listing heading and the restore action outside all opacity/fragment animations.
-    const controls=$$([
+    // Crossfade whole outgoing surfaces for Classic. Scatter acts on individual
+    // controls so their artwork can fragment independently above a sharp image.
+    const controls=mode==='classic'
+      ? $$('.showcase-media,.showcase-top,.contact-actions,.showcase-vin-link',showcase)
+      : $$([
       '.gallery-zoom','.gallery-controls button:not([data-thumb])','.gallery-count',
       '.gallery-mobile-facts .facts-grid>div','.gallery-detail-chip','.gallery-hotspot',
       '.media-switch button','.showcase-top :is(a,button)','.showcase-vin-link',
@@ -1520,13 +1522,20 @@ function setupMobilePhotoView(gallery,stack,photos) {
     const keyboard=manual&&toggle.matches(':focus-visible');
     if (manual) used=true;
     showcase.dataset.photoViewFading=mode;
-    stack.dataset.revealStyle=mode;
     updateToggle(true);
-    cancelEffect=animatePhotoReveal(showcase,controls,{mode,onFinish:()=>{
-      setView(true);
-      if (manual) showcase.scrollIntoView({block:'start'});
-      if (keyboard) $('#listing-title',showcase)?.focus({preventScroll:true});
-    }});
+    function start() {
+      cancelEffect=animatePhotoReveal(showcase,controls,{mode,photoStack:stack,onFinish:()=>{
+        setView(true);
+        if (manual) showcase.scrollIntoView({block:'start'});
+        if (keyboard) $('#listing-title',showcase)?.focus({preventScroll:true});
+      }});
+    }
+    const firstImage=$('img',stack);
+    if (mode==='classic'&&firstImage?.decode&&!firstImage.complete) {
+      let waiting=true;
+      cancelEffect=()=>{waiting=false;};
+      firstImage.decode().catch(()=>{}).then(()=>{if (waiting) start();});
+    } else start();
   }
   function schedule() {
     clearTimeout(timer);

@@ -991,11 +991,11 @@ export function layout(ctx,view) {
   ${ctx.robotics?'<script src="/assets/robot-appearance.js?v=2"></script>':''}
   ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=14"><script defer src="/assets/header-logo.js?v=2"></script>'}
   ${launchScreen?'<script src="/assets/launch-screen.js"></script>':''}
-  <link rel="stylesheet" href="/styles.css?v=photo308"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
+  <link rel="stylesheet" href="/styles.css?v=photo309"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
   ${view.services?'<link rel="stylesheet" href="/assets/services-map.css"><link rel="stylesheet" href="/assets/services-promo.css"><script type="module" src="/assets/services-ui.js"></script><script type="module" src="/assets/services-map.js"></script><script type="module" src="/assets/services-promo.js"></script>':''}
   <link rel="stylesheet" href="/assets/robots.css?v=6">${ctx.robotics?'<link rel="stylesheet" href="/assets/robots-demo.css?v=2"><link rel="stylesheet" href="/assets/robot-appearance.css?v=3"><script type="module" src="/assets/robots.js?v=2"></script>':''}
   ${view.automation?'<script type="module" src="/assets/automation-ui.js"></script>':''}${view.structured?'<script type="application/ld+json">'+JSON.stringify(view.structured).replace(/</g,'\\u003c')+'</script>':''}
-  ${view.watchPage?'':view.reelsPage?'<script type="module" src="/assets/reels-feed.js?v=9"></script>':'<script type="module" src="/app.js?v=photo308"></script><script type="module" src="/assets/exchange-rates.js?v=4"></script>'}</head>
+  ${view.watchPage?'':view.reelsPage?'<script type="module" src="/assets/reels-feed.js?v=9"></script>':'<script type="module" src="/app.js?v=photo309"></script><script type="module" src="/assets/exchange-rates.js?v=4"></script>'}</head>
   <body class="${ctx.robotics?'robot-app ':''}${view.watchPage?'watch-page':view.listingPage?'listing-page':view.reelsPage?'reels-screen':''}" data-market="${ctx.robotics?'robotics':'vehicles'}" style="--accent:${e(ctx.brand.accent)}" data-prefix="${ctx.prefix}" data-user="${e(ctx.user?.id||'')}" data-lang="${ctx.lang}" data-demo="${ctx.demo?'1':'0'}">
   ${launchScreen?`<div class="launch-screen" aria-hidden="true"><div class="launch-badge${brandLogoAsset(ctx.brand.launch_logo)?' launch-badge-preset':''}">${logoPreset(ctx,'launch_logo')}</div>
     <button class="launch-engine-start" type="button" data-engine-start hidden><img src="/assets/icon-192.png?v=engine-start" width="42" height="42" alt=""> <span>ENGINE START</span></button></div>`:''}
