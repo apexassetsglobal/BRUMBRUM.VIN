@@ -121,7 +121,7 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
     'leather-crema-cross':'light','leather-bordeaux-double':'dark','alcantara-petrol-piping':'dark',
     'leather-forest-saddle':'dark','leather-graphite-rs':'dark','leather-black-acid':'dark'
   };
-  const {result:script,headers}=await client.go('/appearance.js?v=12');
+  const {result:script,headers}=await client.go('/appearance.js?v=13');
   assert.match(headers.get('content-type'),/javascript/);
   for (const path of ['/?lang=de','/demo/oferta/przyklad-1','/demo/zegarek','/demo/rolki/przyklad-113']) {
     const {result:html}=await client.go(path);
@@ -129,7 +129,7 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
     assert.equal((html.match(/window\.dataLayer=window\.dataLayer\|\|\[\]/g)||[]).length,1);
     const iconStyle=html.match(/data-icon-style="([^"]+)"/)[1];
     const iconStyles=html.match(/data-icon-styles="([^"]+)"/)[1];
-    const scriptAt=html.indexOf('<script src="/appearance.js?v=12"></script>');
+    const scriptAt=html.indexOf('<script src="/appearance.js?v=13"></script>');
     assert.ok(scriptAt>=0&&scriptAt<html.indexOf('<link rel="stylesheet"'));
     assert.equal(html.indexOf('<script src="/ultimate-visual.js'),-1);
     assert.equal(iconStyle,'sapphire-braid');
@@ -173,6 +173,7 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
     const stitchControls=Object.entries(stitchValues).flatMap(([field,values])=>values.map(value=>({
       value,checked:false,dataset:{themeStitchChoice:field},matches:selector=>selector==='[data-theme-stitch-choice]'
     })));
+    const revealChoices=['classic','scatter'].map(value=>({value,checked:false,matches:selector=>selector==='input[data-photo-reveal-choice]'}));
     const stitchPanel={hidden:true};
     const pick=control=>{
       control.checked=true;
@@ -192,6 +193,7 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
         addEventListener:(type,callback)=>{documentListeners[type]=callback;},
         querySelectorAll:selector=>({
           '[data-theme-choice]':choices,
+          'input[data-photo-reveal-choice]':revealChoices,
           '[data-theme-stitch-choice]':stitchControls,
           '[data-theme-stitch-settings]':[stitchPanel],
         })[selector]||[]
@@ -199,6 +201,17 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
       localStorage:{getItem:key=>preferences.get(key)??null,setItem:(key,value)=>preferences.set(key,value),removeItem:key=>preferences.delete(key)},
       window:{matchMedia:()=>systemTheme,addEventListener:(type,callback)=>{listeners[type]=callback;}}
     });
+    assert.equal(dataset.photoRevealEffect,'classic');
+    assert.equal(revealChoices[0].checked,true);
+    pick(revealChoices[1]);
+    assert.equal(preferences.get('a4-photo-reveal-effect'),'scatter');
+    assert.equal(dataset.photoRevealEffect,'scatter');
+    listeners.pageshow({persisted:true});
+    assert.equal(revealChoices[1].checked,true);
+    preferences.set('a4-photo-reveal-effect','obsolete');
+    listeners.storage({key:'a4-photo-reveal-effect'});
+    assert.equal(dataset.photoRevealEffect,'classic');
+    assert.equal(revealChoices[0].checked,true);
     assert.equal(dataset.iconStyle,'track-platinum');
     assert.equal(iconSizeStyle['--icon-size-tablet'],'1.2');
     documentListeners.input({target:{dataset:{iconSize:'tablet'},value:'125'}});
@@ -300,7 +313,7 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
 
 test('button upholstery presets and independent options keep one complete saved finish',async()=>{
   const client=browser();
-  const {result:script}=await client.go('/appearance.js?v=12');
+  const {result:script}=await client.go('/appearance.js?v=13');
   const {result:html}=await client.go('/');
   const buttonFinishChoices=html.match(/data-button-finish-choices="([^"]+)"/)[1].replaceAll('&quot;','"');
   const buttonFinishPresets=html.match(/data-button-finish-presets="([^"]+)"/)[1].replaceAll('&quot;','"');
@@ -1621,7 +1634,7 @@ test('demo photo reels link to the matching listing, photos, and seller',async()
   assert.equal((feed.match(/data-photo-reel>/g)||[]).length,demoListingCount);
   assert.match((await guest.go('/demo/oferta/przyklad-113')).result,/href="\/demo\/rolki\/przyklad-113"/);
   const reel=(await guest.go('/demo/rolki/przyklad-113')).result;
-  assert.match(reel,/<script src="\/appearance.js\?v=12">/);
+  assert.match(reel,/<script src="\/appearance\.js\?v=\d+">/);
   assert.match(reel,/data-reels-next data-button-finish-action="icon"/);
   const firstSlide=reel.slice(reel.indexOf('data-photo-reel>')).split('</article>',1)[0];
   assert.match(firstSlide,/<h2>Porsche Taycan<\/h2>/);

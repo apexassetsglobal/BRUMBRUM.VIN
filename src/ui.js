@@ -396,6 +396,25 @@ function appearanceDisclosure(title,content,className,attributes='') {
   </details>`;
 }
 
+function photoRevealChoices(ctx,group) {
+  const t=ctx.t;
+  const title=t('Efekt odsłaniania zdjęć','Photo reveal effect');
+  const preview=t('Podgląd','Preview');
+  const options=[['classic',t('Klasyczny','Classic')],['scatter',t('Rozproszenie','Scatter')]];
+  const cards=options.map(([value,label])=>`<div class="reveal-choice">
+    <label>
+      <span class="reveal-choice-name"><input type="radio" data-photo-reveal-choice name="${e(group)}-photo-reveal" value="${value}"${value==='classic'?' checked':''}>${e(label)}</span>
+      <span class="reveal-sample" data-photo-reveal-sample="${value}" aria-hidden="true">
+        <span class="reveal-sample-chip">${icon('gauge',20)}<span>12 500 km</span></span>
+        <span class="reveal-sample-chip">${icon('star',20)}</span>
+      </span>
+    </label>
+    <button type="button" data-photo-reveal-replay="${value}" class="reveal-replay" aria-label="${e(preview+' · '+label)}">${icon('play',15)} ${e(preview)}</button>
+  </div>`).join('');
+  return appearanceDisclosure(title,`<div class="reveal-choices" role="radiogroup" aria-label="${e(title)}">${cards}</div>`,
+    'reveal-settings',' data-photo-reveal-settings');
+}
+
 function iconBoard(ctx) {
   const t=ctx.t;
   return `<details class="icon-base-settings icon-board appearance-disclosure">
@@ -743,6 +762,7 @@ export function appearanceControls(ctx,group) {
   return `<div class="appearance-menu">
     <section class="appearance-theme"><h3>${t('Motyw strony','Site theme')}</h3>${themeOptions(ctx,group)}</section>
     ${iconStyleControls(ctx)}
+    ${photoRevealChoices(ctx,group)}
     ${personalLogoOptions(ctx,group)}
     ${appearanceDisclosure(t('Przyciski','Buttons'),`<div class="appearance-button-options">
       ${buttonGroup('upholstery',upholstery,buttonFinishSection(ctx,group,upholstery))}
@@ -967,15 +987,15 @@ export function layout(ctx,view) {
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="${ctx.robotics?'/assets/robots/icon.svg':'/assets/icon-32.png?v=engine-start'}"><link rel="apple-touch-icon" href="${ctx.robotics?'/assets/robots/icon-180.png':'/assets/icon-180.png?v=engine-start'}"><link rel="manifest" href="${href(ctx,'/manifest.webmanifest')}?lang=${ctx.lang}" crossorigin="use-credentials">
   ${name==='BRUMBRUM.VIN'?appleStartupImages:''}
-  <script src="/appearance.js?v=12"></script>
+  <script src="/appearance.js?v=13"></script>
   ${ctx.robotics?'<script src="/assets/robot-appearance.js?v=2"></script>':''}
   ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=14"><script defer src="/assets/header-logo.js?v=2"></script>'}
   ${launchScreen?'<script src="/assets/launch-screen.js"></script>':''}
-  <link rel="stylesheet" href="/styles.css?v=catalog385"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
+  <link rel="stylesheet" href="/styles.css?v=photo308"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
   ${view.services?'<link rel="stylesheet" href="/assets/services-map.css"><link rel="stylesheet" href="/assets/services-promo.css"><script type="module" src="/assets/services-ui.js"></script><script type="module" src="/assets/services-map.js"></script><script type="module" src="/assets/services-promo.js"></script>':''}
   <link rel="stylesheet" href="/assets/robots.css?v=6">${ctx.robotics?'<link rel="stylesheet" href="/assets/robots-demo.css?v=2"><link rel="stylesheet" href="/assets/robot-appearance.css?v=3"><script type="module" src="/assets/robots.js?v=2"></script>':''}
   ${view.automation?'<script type="module" src="/assets/automation-ui.js"></script>':''}${view.structured?'<script type="application/ld+json">'+JSON.stringify(view.structured).replace(/</g,'\\u003c')+'</script>':''}
-  ${view.watchPage?'':view.reelsPage?'<script type="module" src="/assets/reels-feed.js?v=9"></script>':'<script type="module" src="/app.js?v=catalog307"></script><script type="module" src="/assets/exchange-rates.js?v=4"></script>'}</head>
+  ${view.watchPage?'':view.reelsPage?'<script type="module" src="/assets/reels-feed.js?v=9"></script>':'<script type="module" src="/app.js?v=photo308"></script><script type="module" src="/assets/exchange-rates.js?v=4"></script>'}</head>
   <body class="${ctx.robotics?'robot-app ':''}${view.watchPage?'watch-page':view.listingPage?'listing-page':view.reelsPage?'reels-screen':''}" data-market="${ctx.robotics?'robotics':'vehicles'}" style="--accent:${e(ctx.brand.accent)}" data-prefix="${ctx.prefix}" data-user="${e(ctx.user?.id||'')}" data-lang="${ctx.lang}" data-demo="${ctx.demo?'1':'0'}">
   ${launchScreen?`<div class="launch-screen" aria-hidden="true"><div class="launch-badge${brandLogoAsset(ctx.brand.launch_logo)?' launch-badge-preset':''}">${logoPreset(ctx,'launch_logo')}</div>
     <button class="launch-engine-start" type="button" data-engine-start hidden><img src="/assets/icon-192.png?v=engine-start" width="42" height="42" alt=""> <span>ENGINE START</span></button></div>`:''}

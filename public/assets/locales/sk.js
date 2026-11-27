@@ -447,6 +447,8 @@ export default {
   "City · ": "Mesto · ",
   "Claimed range": "Uvádzaný dojazd",
   "Claimed range (km)": "Uvádzaný dojazd (km)",
+  "Photo reveal effect": "Efekt odhalenia fotografií",
+  "Scatter": "Rozptýlenie",
   "Classic": "Klasický",
   "Clear": "Vymazať",
   "Clear filters": "Vymazať filtre",

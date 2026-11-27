@@ -10,6 +10,8 @@
   const stitchChoices = '[data-theme-stitch-choice]';
   const temporaryStitches = new Map();
   const themeKey = 'a4-theme';
+  const photoRevealKey = 'a4-photo-reveal-effect';
+  const photoRevealChoices = 'input[data-photo-reveal-choice]';
   const paletteKeys = {light:'a4-light-palette', dark:'a4-dark-palette'};
   const themeToggles = '[data-theme-toggle]';
   const themeChoices = '[data-theme-choice]';
@@ -58,6 +60,13 @@
 
   function readPreference(key) {
     try { return localStorage.getItem(key); } catch { return null; }
+  }
+
+  function paintPhotoReveal(value = readPreference(photoRevealKey)) {
+    dataset.photoRevealEffect = value === 'scatter' ? 'scatter' : 'classic';
+    for (const control of document.querySelectorAll(photoRevealChoices)) {
+      control.checked = control.value === dataset.photoRevealEffect;
+    }
   }
 
   function paintThemeStitch() {
@@ -183,12 +192,14 @@
   }
 
   applyTheme();
+  paintPhotoReveal();
   restoreIconAppearance();
   if (buttonPresets && buttonChoices) restoreButtonFinish();
   paintButtonEmbroidery();
   restoreButtonHardware();
   document.addEventListener('DOMContentLoaded', () => {
     paintIconSizes(iconSizes);
+    paintPhotoReveal(dataset.photoRevealEffect);
     applyTheme();
     paintButtonEmbroidery();
     restoreButtonHardware();
@@ -212,12 +223,13 @@
   root.addEventListener('reset-site-theme', () => {
     temporaryStitches.clear();
     try {
-      for (const key of [themeKey, ...Object.values(paletteKeys)]) localStorage.removeItem(key);
+      for (const key of [themeKey, photoRevealKey, ...Object.values(paletteKeys)]) localStorage.removeItem(key);
       for (const palette of themeMaterials) {
         for (const field of Object.keys(themeStitchValues)) localStorage.removeItem(stitchKey(palette, field));
       }
     } catch {}
     applyTheme('light');
+    paintPhotoReveal('classic');
   });
   root.addEventListener('reset-button-finish', () => {
     if (buttonPresets && buttonChoices) paintButtonFinish(null);
@@ -231,6 +243,12 @@
     if (!control.checked) return;
     if (control.matches(themeChoices) && Object.hasOwn(themeModes, control.value)) {
       selectTheme(control.value);
+      return;
+    }
+    if (control.matches(photoRevealChoices)) {
+      if (control.value !== 'classic' && control.value !== 'scatter') return;
+      try { localStorage.setItem(photoRevealKey, control.value); } catch {}
+      paintPhotoReveal(control.value);
       return;
     }
     if (control.matches(stitchChoices)) {
@@ -274,6 +292,7 @@
   window.addEventListener('storage', event => {
     if (event.key === null || event.key === iconSizeKey) restoreIconSizes();
     if (event.key === null || event.key === themeKey) applyTheme();
+    if (event.key === null || event.key === photoRevealKey) paintPhotoReveal();
     if (event.key === null || event.key === embroideryKey) paintButtonEmbroidery();
     if (event.key === null || event.key === buttonHardwareKey) restoreButtonHardware();
     if (event.key?.startsWith(stitchPrefix)) paintThemeStitch();
@@ -285,6 +304,7 @@
   window.addEventListener('pageshow', event => {
     if (event.persisted) {
       restoreIconSizes();
+      paintPhotoReveal();
       applyTheme();
       paintButtonEmbroidery();
       restoreButtonHardware();

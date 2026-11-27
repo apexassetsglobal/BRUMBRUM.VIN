@@ -2018,9 +2018,17 @@ body:has(.account-menu-page) {
   }
   .mobile-photo-view>span {display:inline-flex;align-items:center;justify-content:center;gap:7px}
   .mobile-photo-view>span .ui-icon {width:23px;height:23px;flex:none}
-  .gallery-photo-stack {display:grid;gap:4px}
+  .gallery-photo-stack {display:grid;gap:4px;touch-action:pan-y pinch-zoom}
   .gallery-stack-photo {display:block;width:100%;padding:0;border:0;background:#091522;touch-action:manipulation}
   .gallery-stack-photo img {width:100%;aspect-ratio:16/9;object-fit:contain}
+  .gallery-stack-photo {touch-action:pan-y pinch-zoom}
+  .listing-showcase[data-photo-view-fading] .mobile-photo-view {
+    position:fixed;z-index:8;inset:auto var(--mobile-inset) calc(var(--nav-stack,var(--nav-height)) + env(safe-area-inset-bottom) + 8px);
+    min-height:46px;background:#075ab9;color:#fff;
+  }
+  .has-compare-tray .listing-showcase[data-photo-view-fading] .mobile-photo-view {
+    bottom:calc(var(--nav-stack,var(--nav-height)) + env(safe-area-inset-bottom) + 72px)
+  }
   .gallery-stack-photo:first-child {position:relative}
   .gallery-stack-photo:first-child::after {
     content:"";position:absolute;inset:0;pointer-events:none;
@@ -2028,13 +2036,10 @@ body:has(.account-menu-page) {
   }
   .gallery-stack-photo:focus-visible {outline-offset:-4px}
   @media (prefers-reduced-motion:no-preference) {
-    .listing-showcase[data-photo-view-fading] > :is(.showcase-media,.showcase-top,.showcase-content,.showcase-bottom) {
-      animation:photo-view-fade .18s ease-in forwards;
-    }
     .gallery-stack-photo {animation:photo-view-enter .24s ease-out both}
     .gallery-stack-photo:nth-child(2) {animation-delay:.045s}
     .gallery-stack-photo:nth-child(3) {animation-delay:.09s}
-    @keyframes photo-view-fade {to {opacity:0}}
+    .gallery-photo-stack:is([data-reveal-style=scatter],[data-reveal-style=fade]) .gallery-stack-photo {animation:none}
     @keyframes photo-view-enter {from {opacity:0;transform:translateY(7px)}}
   }
   .listing-page .detail-main {
@@ -2411,6 +2416,39 @@ html[data-icon-surface] .offer-image .favorite.selected {--icon-button-bg:#fff2d
 .appearance-disclosure[open]>summary::after {margin-block:4px 0;transform:rotate(225deg)}
 .appearance-disclosure>summary:hover {background:var(--soft)}
 .appearance-disclosure>summary:focus-visible {outline:2px solid var(--focus);outline-offset:-3px}
+.reveal-choices {
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+  max-inline-size:42rem;margin-inline:auto;padding:var(--appearance-inset);
+}
+.reveal-choice {
+  min-width:0;border:1px solid var(--line);border-radius:10px;
+  background:var(--card);color:var(--navy);overflow:hidden;
+}
+.reveal-choice:has(input:checked) {border-color:var(--focus);box-shadow:inset 0 0 0 1px var(--focus)}
+.reveal-choice label {display:block;cursor:pointer}
+.reveal-choice-name {
+  display:flex;align-items:center;gap:6px;min-height:40px;padding:5px 9px;
+  font-size:.87rem;font-weight:700;overflow-wrap:anywhere;
+}
+.reveal-choice-name input {margin:0;flex:none;width:15px;height:15px;accent-color:var(--accent)}
+.reveal-sample {
+  position:relative;isolation:isolate;display:block;overflow:hidden;margin:0 5px;
+  aspect-ratio:16/9;max-height:118px;border-radius:6px;background:#142335 url('/assets/hero-mobile.webp') center / cover;
+}
+.reveal-sample-chip {
+  position:absolute;inset:5px auto auto 5px;display:inline-flex;align-items:center;gap:4px;
+  padding:3px 5px;border:1px solid #fff5;border-radius:5px;background:#101722ec;color:#fff;
+  font-size:10px;line-height:1.15;font-weight:600;
+}
+.reveal-sample-chip+.reveal-sample-chip {inset:auto 5px 5px auto}
+.reveal-sample-chip .ui-icon {width:18px;height:18px;flex:none}
+.reveal-sample[data-preview-finished]>.reveal-sample-chip {visibility:hidden}
+.reveal-replay {
+  display:flex;align-items:center;justify-content:center;gap:5px;width:100%;min-height:44px;
+  margin:0;padding:4px;border:none;background:transparent;color:inherit;cursor:pointer;font-size:.8rem;font-weight:600;
+}
+.reveal-replay .ui-icon {width:15px;height:15px}
+.reveal-replay:focus-visible {outline-offset:-4px}
 .appearance-buttons>summary {font-size:1rem}
 .appearance-button-options,
 .appearance-icon-group>:is(.icon-style-grid,.icon-surfaces),

@@ -1107,25 +1107,71 @@ def sliding_offer_panel(browser, base):
 
 
 def mobile_photo_view(browser, base):
-    with browser.new_context(viewport={"width":390,"height":844}, is_mobile=True, has_touch=True) as context:
-        page = context.new_page()
-        page.goto(base + "/demo/oferta/przyklad-27", wait_until="domcontentloaded")
+    phone = dict(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
+    first_offer = base + "/demo/oferta/przyklad-27"
+    other_offer = base + "/demo/oferta/przyklad-29"
+
+    def swipe(context, page, target, dx, dy=0):
+        target.scroll_into_view_if_needed()
+        rect = target.bounding_box()
+        x = round(rect["x"] + rect["width"] / 2)
+        y = round(rect["y"] + rect["height"] / 2)
+        touch = context.new_cdp_session(page)
+        try:
+            touch.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": x, "y": y}]})
+            for step in range(1, 6):
+                point = {"x": round(x + dx * step / 5), "y": round(y + dy * step / 5)}
+                touch.send("Input.dispatchTouchEvent", {"type": "touchMove", "touchPoints": [point]})
+            touch.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+        finally:
+            touch.detach()
+
+    def check_offer(context, page, route, effect):
+        page.goto(route, wait_until="domcontentloaded")
         showcase = page.locator(".listing-showcase")
         stack = showcase.locator("[data-photo-stack]")
         toggle = showcase.locator("[data-photo-view-toggle]")
-        expect(showcase.locator(".contact-actions")).to_be_visible()
+        actions = showcase.locator(".contact-actions")
+        expect(toggle).to_have_accessible_name("Same zdjęcia")
+        expect(actions).to_be_visible()
         expect(stack).to_be_hidden()
-        page.wait_for_function("() => document.querySelector('.listing-showcase').hasAttribute('data-photo-view-fading')",
-                               timeout=4400)
+        # Sample actual CSS and animation timelines as the hiding state is applied.
+        showcase.evaluate("""card => {
+            const observer = new MutationObserver(() => {
+                if (!card.hasAttribute('data-photo-view-fading')) return;
+                const layer = card.querySelector('[data-photo-reveal-layer]');
+                const photo = card.querySelector('[data-gallery-image]');
+                const photosSharp = ![photo, ...card.querySelectorAll(':has([data-gallery-image])')]
+                    .some(el => getComputedStyle(el).filter.includes('blur('));
+                window.revealProbe = {
+                    photosSharp,
+                    pieces: layer?.querySelectorAll('[style*="clip-path"]').length || 0,
+                    duration: layer?.getAnimations()[0]?.effect.getTiming().duration || 0,
+                    photosAnimating: photo.getAnimations().length
+                };
+                observer.disconnect();
+            });
+            observer.observe(card, {attributes: true, attributeFilter: ['data-photo-view-fading']});
+        }""")
+        page.wait_for_function("""mode => document.querySelector('.listing-showcase')
+            .getAttribute('data-photo-view-fading') === mode""", arg=effect, timeout=6500)
         expect(stack).to_be_visible()
+        probe = page.evaluate("window.revealProbe")
+        assert probe["photosSharp"], probe
+        if effect == "scatter":
+            assert probe["pieces"] >= 5 and 500 <= probe["duration"] <= 700, probe
+            assert probe["photosAnimating"] == 0, probe
+        else:
+            assert probe["pieces"] == 0, probe
+            if effect == "fade":
+                assert 0 < probe["duration"] < 200, probe
         expect(toggle).to_have_accessible_name("Pokaż dane i przyciski")
-        expect(toggle).to_be_in_viewport(ratio=1)
         expect(showcase.locator(".gallery-main")).to_be_hidden()
-        expect(showcase.locator(".contact-actions")).to_be_hidden()
-        expect(showcase.get_by_role("heading", name="Lamborghini Revuelto")).to_be_visible()
-        expect(showcase.locator(".showcase-heading .detail-heading > p")).to_have_text("6.5 V12 Plug-in")
+        expect(actions).to_be_hidden()
+        expect(showcase.locator("#listing-title")).to_be_visible()
         expect(showcase.locator(".showcase-heading .detail-price")).to_be_visible()
-        expect(stack.locator("[data-stack-photo]")).to_have_count(3)
+        photos = stack.locator("[data-stack-photo]")
+        expect(photos).to_have_count(3)
         page.wait_for_function("""() => [...document.querySelectorAll('[data-photo-stack] img')]
             .every(image => image.complete && image.naturalWidth > 0)""")
         assert stack.evaluate("""group => {
@@ -1139,31 +1185,81 @@ def mobile_photo_view(browser, base):
                 cards.every((card,index) => Math.abs(card.width - group.clientWidth) < 1 &&
                 (index === 0 || card.top >= cards[index - 1].bottom));
         }""")
-        stack.locator("[data-stack-photo='1']").tap()
+        frames = json.loads(showcase.locator("[data-gallery]").get_attribute("data-gallery"))
+        top = photos.first.locator("img")
+        expect(top).to_have_attribute("src", frames[0]["url"])
+        swipe(context, page, photos.nth(1), -104)
+        expect(top).to_have_attribute("src", frames[1]["url"])
+        swipe(context, page, photos.nth(1), 104)
+        expect(top).to_have_attribute("src", frames[0]["url"])
         dialog = showcase.locator("[data-lightbox]")
+        expect(dialog).to_be_hidden()
+        photos.nth(1).tap()
         expect(dialog).to_be_visible()
-        expect(dialog.locator("img")).to_have_attribute("src", "/assets/showcase-hd/27-rear.webp")
+        expect(dialog.locator("img")).to_have_attribute("src", frames[1]["url"])
+        swipe(context, page, dialog.locator(".lightbox-inner"), -104)
+        expect(dialog.locator("img")).to_have_attribute("src", frames[2]["url"])
         button(dialog, "Zamknij").tap()
-        stack.locator("[data-stack-photo='2']").scroll_into_view_if_needed()
-        assert toggle.evaluate("""action => {
-            const rect = action.getBoundingClientRect();
-            return action.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
-        }""")
+        # Native vertical pan must still scroll and never rotate or open a stack photo.
+        middle = photos.nth(1)
+        middle.scroll_into_view_if_needed()
+        before_pan = page.evaluate("scrollY")
+        swipe(context, page, middle, 0, -96)
+        page.wait_for_function("before => window.scrollY > before + 12", arg=before_pan)
+        expect(top).to_have_attribute("src", frames[0]["url"])
+        expect(dialog).to_be_hidden()
+        expect(toggle).to_be_in_viewport(ratio=1)
         time_origin = page.evaluate("performance.timeOrigin")
         toggle.tap()
         expect(stack).to_be_hidden()
-        expect(showcase.locator(".showcase-heading .detail-price")).to_be_visible()
-        expect(showcase.locator(".contact-actions .primary")).to_be_in_viewport(ratio=1)
+        expect(actions).to_be_visible()
+        expect(toggle).to_have_accessible_name("Same zdjęcia")
         assert page.evaluate("performance.timeOrigin") == time_origin
-        page.wait_for_timeout(3300)
-        expect(stack).to_be_hidden()
-        page.emulate_media(reduced_motion="reduce")
-        page.reload()
-        page.wait_for_timeout(3300)
-        expect(stack).to_be_hidden()
+        return showcase
+
+    with browser.new_context(**phone) as context:
+        page = context.new_page()
+        check_offer(context, page, first_offer, "classic")
+        page.goto(base + "/demo/zaloguj")
+        button(page, "Wybierz rolę · Kupujący").tap()
+        page.wait_for_url("**/demo/konto")
+        page.goto(base + "/demo/ustawienia")
+        page.locator("#wyglad-ikon > summary").tap()
+        settings = page.locator("#wyglad-ikon [data-photo-reveal-settings]")
+        settings.locator("summary").tap()
+        classic = settings.get_by_role("radio", name="Klasyczny", exact=True)
+        scatter = settings.get_by_role("radio", name="Rozproszenie", exact=True)
+        expect(classic).to_be_checked()
+        for effect in ("classic", "scatter"):
+            expect(settings.locator(f'[data-photo-reveal-sample="{effect}"]')).to_be_visible()
+            settings.locator(f'[data-photo-reveal-replay="{effect}"]').tap()
+        expect(classic).to_be_checked()
+        scatter.check()
+        expect(scatter).to_be_checked()
+        state = context.storage_state()
+
+    # A fresh phone context restores the change through the same persistent storage.
+    with browser.new_context(**phone, storage_state=state) as context:
+        page = context.new_page()
+        showcase = check_offer(context, page, other_offer, "scatter")
+        toggle = showcase.locator("[data-photo-view-toggle]")
+        stack = showcase.locator("[data-photo-stack]")
+        actions = showcase.locator(".contact-actions")
         toggle.tap()
-        expect(stack).to_be_visible()
-    print("Mobile listing switches once to three stacked photos and restores its controls on request")
+        expect(showcase).to_have_attribute("data-photo-view-fading", "scatter")
+        expect(toggle).to_have_accessible_name("Pokaż dane i przyciski")
+        toggle.tap()
+        expect(toggle).to_have_accessible_name("Same zdjęcia")
+        expect(showcase).not_to_have_attribute("data-photo-view-fading", "scatter")
+        expect(actions).to_be_visible()
+        # Cross the old animation deadline and debounce period. A stale callback must not reopen.
+        page.wait_for_timeout(3700)
+        expect(stack).to_be_hidden()
+        expect(actions).to_be_visible()
+        page.emulate_media(reduced_motion="reduce")
+        check_offer(context, page, first_offer, "fade")
+        expect(page.locator("html")).to_have_attribute("data-photo-reveal-effect", "scatter")
+    print("Phone 390×844: classic, scatter, reduced motion, native touch gallery gestures, immediate cancellation and saved preference")
 
 
 def desktop_collection_logo(page, base):

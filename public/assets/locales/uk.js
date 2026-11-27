@@ -447,6 +447,8 @@ export default {
   "City · ": "Місто · ",
   "Claimed range": "Заявлений запас ходу",
   "Claimed range (km)": "Заявлений запас ходу (км)",
+  "Photo reveal effect": "Ефект відкриття фотографій",
+  "Scatter": "Розсіювання",
   "Classic": "Класичний",
   "Clear": "Очистити",
   "Clear filters": "Скинути фільтри",

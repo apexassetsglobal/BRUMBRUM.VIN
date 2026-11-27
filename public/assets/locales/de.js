@@ -447,6 +447,8 @@ export default {
   "City · ": "Ort · ",
   "Claimed range": "Angegebene Reichweite",
   "Claimed range (km)": "Angegebene Reichweite (km)",
+  "Photo reveal effect": "Effekt beim Einblenden der Fotos",
+  "Scatter": "Zerstreuung",
   "Classic": "Klassisch",
   "Clear": "Zurücksetzen",
   "Clear filters": "Filter zurücksetzen",

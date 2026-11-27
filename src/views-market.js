@@ -564,7 +564,7 @@ export function photoGallery(ctx,offer,{autoplay=false,photos=listingPhotos(offe
       </button>${captions[i]||''}
     </div>`;
   }).join(''):'';
-  const photoStack=mobileView?`<div class="gallery-photo-stack" id="listing-photo-stack" data-photo-stack role="group" aria-label="${t('Zdjęcia','Photos')}" hidden>
+  const photoStack=mobileView?`<div class="gallery-photo-stack" id="listing-photo-stack" data-photo-stack data-swipe role="group" aria-label="${t('Zdjęcia','Photos')}" hidden>
     ${photos.slice(0,3).map(({detail,wide},index)=>{
       const label=t('Powiększ zdjęcie','Enlarge photo')+' '+(index+1)+(detail?' · '+t(...photoDetailLabels[detail]):'');
       return `<button type="button" class="gallery-stack-photo" data-stack-photo="${index}" aria-label="${e(label)}" aria-haspopup="dialog">
