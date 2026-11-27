@@ -5,6 +5,7 @@ import { listingsByKeys, search, spinLimits } from './market.js';
 import { robotBrands, robotCategories, robotCurrencies, robotRentalUnits, robotTradeModes } from './robot-catalog.js';
 import { featuredRobotDemos, getRobotDemo, listRobotDemos } from './robot-demo.js';
 import { robotOrderLimits } from './robot-orders.js';
+import { robotTypeCatalog, robotTypeGroups } from './robot-types.js';
 import { apiForm, area, check, choice, day, e, embed, empty, field, flash, formStatus, hidden, href, icon, keyInput, lang, link, localized, loginLink, pageHead, panel, price, sectionHead, submit, tag, titleOf } from './ui.js';
 import { photoGallery, reportDialog } from './views-market.js';
 
@@ -38,6 +39,21 @@ function categoryCards(ctx) {
       <span class="robot-category-art robot-category-overview" aria-hidden="true"><img src="/assets/robots/hero.png" width="1536" height="1024" alt="" loading="lazy" decoding="async"></span>
       <span>${ctx.t('Wszystkie roboty','All robots')}</span>
     </a></div>`;
+}
+
+function robotTypeCatalogSection(ctx) {
+  const grouped=Object.entries(robotTypeGroups).map(([group,label])=>{
+    const items=robotTypeCatalog.filter(item=>item[0]===group);
+    return `<section class="robot-type-group"><div class="robot-type-group-head"><h3>${e(label)}</h3><span>${items.length}</span></div>
+      <div class="robot-type-grid">${items.map(([,categoryKey,name])=>`<a class="robot-type-card" href="${e(href(ctx,'/szukaj?category='+encodeURIComponent(categoryKey)+'&q='+encodeURIComponent(name)))}">
+        ${robotIllustration(categoryKey)}<span>${e(name)}</span></a>`).join('')}</div></section>`;
+  }).join('');
+  return `<section class="robot-type-catalog" aria-labelledby="robot-type-catalog-heading">
+    <div class="section-head"><div><h2 id="robot-type-catalog-heading">${ctx.t('56 typów maszyn i osprzętu','56 equipment types')}</h2>
+      <p class="robot-small">${ctx.t('Wybierz konkretny rodzaj urządzenia. Otworzymy od razu prawdziwe ogłoszenia i właściwe filtry.','Choose a specific equipment type to open matching real listings and filters.')}</p></div>
+      ${link(ctx,'/szukaj',ctx.t('Wszystkie ogłoszenia','All listings'),'robot-text-link','search')}</div>
+    <div class="robot-type-groups">${grouped}</div>
+  </section>`;
 }
 
 function amount(ctx,offer) {
@@ -136,9 +152,10 @@ export async function home(ctx) {
       <div class="robot-hero-copy"><h1 id="robot-title"><span>${t('ROBOTY','ROBOTS')}</span><em>${t('I AUTOMATYKA','& AUTOMATION')}</em></h1>
         <p>${t('Technologia gotowa do działania.','Technology ready to work.')}</p>
         <a class="robot-hero-cta" href="${e(href(ctx,'/szukaj'))}">${t('PRZEJDŹ DO STREFY ROBOTÓW','EXPLORE THE ROBOT ZONE')}</a>
-        <div class="robot-hero-links">${link(ctx,'/sprzedaj',t('Wystaw sprzęt','List equipment'),'robot-text-link','plus')}${link(ctx,'/szukaj?tradeMode=rent',t('Znajdź do wynajęcia','Find a rental'),'robot-text-link','calendar')}</div>
+        <div class="robot-hero-links">${link(ctx,'/sprzedaj',t('Wystaw sprzęt','List equipment'),'robot-text-link','plus')}${link(ctx,'/szukaj?tradeMode=rent',t('Znajdź do wynajęcia','Find a rental'),'robot-text-link','calendar')}${link(ctx,'/szukaj?tradeMode=sale',t('Kup robota','Buy a robot'),'robot-text-link','grid')}</div>
       </div><div class="robot-hero-art"><img src="/assets/robots/hero.png" width="1536" height="1024" alt="${t('Humanoid, robot kroczący i dron na białym tle','Humanoid, legged robot and drone on a white background')}" fetchpriority="high" decoding="async"></div>
     </div><section id="kategorie" class="robot-categories" aria-label="${t('Kategorie robotów','Robot categories')}">${categoryCards(ctx)}</section></section>
+    ${robotTypeCatalogSection(ctx)}
     <section class="robot-market-section">${sectionHead(t('Znajdź swojego robota','Find your robot'))}${searchForm(ctx,new URLSearchParams(),true)}</section>
     ${latest.total?`<section class="robot-market-section">${sectionHead(t('Najnowsze ogłoszenia','Latest listings'),link(ctx,'/szukaj',t('Wszystkie ogłoszenia','All listings'),'robot-text-link'))}${await cards(ctx,latest.offers)}</section>`:''}
     ${demoSection(ctx,featuredRobotDemos,{realEmpty:!latest.total})}
