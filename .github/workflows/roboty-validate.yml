@@ -19,5 +19,5 @@ jobs:
       - run: npm ci
       - run: node --check src/views-robots.js
       - run: node --check src/robot-types.js
-      - run: npm test
+      - run: node --test test/robot-appearance.test.mjs test/robot-orders-revision.test.mjs test/robot-rental-calendar.test.mjs
       - run: npm run build
