@@ -20,6 +20,8 @@ Większość tras przyjmuje JSON i zwraca `200` z `{"ok":true,...}`. Błąd obs�
 | `POST /auth/resend`, `/auth/reset-request`, `/auth/reset`, `/auth/change`, `/auth/delete`, `/auth/owner` | Potwierdzenie adresu, odzyskanie dostępu, zmiana hasła, usunięcie konta i jednorazowa aktywacja uprawnień właściciela. | Właściwe poświadczenie, token lub sesja |
 | `PUT /profile`, `GET` / `PUT /appearance` | Edycja profilu. Wygląd zapisuje obiekt `engine` na koncie; gość otrzymuje `engine:null`. | Własne konto przy zapisie |
 | `GET` / `POST /favorites`, `GET /badges`, `POST /notifications/read` | Do zmiany ulubionych służą `key` lub `keys` oraz `add`. Liczniki wiadomości i powiadomień są powiązane z kontem. | Zapis na własnym koncie |
+| `GET` / `PUT /sound-settings` | Odczyt lub zapis katalogu ulubionych dźwięków i niezależnego przypisania `soundId`, `volume` oraz `muted` dla ośmiu zdarzeń. Serwer normalizuje identyfikatory i zakres głośności. | Własne konto |
+| `GET /sound-events?after={timestamp}` | Zwraca nowe zdarzenia dźwiękowe konta oraz aktualne ceny obserwowanych ofert. Klient wykorzystuje wynik tylko podczas aktywnej sesji aplikacji. | Własne konto |
 | `POST /offers/{id}/message`, `GET` / `POST /messages/{thread}`, `POST /messages/{thread}/{read,block,proposal}` | Wiadomość przy ofercie tworzy lub odnajduje wątek. Odpowiedź zawiera `thread` i `message`. | Zalogowany kupujący i uczestnicy wątku |
 | `POST /report`, `POST /contact` | Zgłoszenie lub zapytanie. Kontakt przyjmuje `name`, `email`, `body`, opcjonalnie `kind:"ad"`; zwraca `id`. | Według formularza; kontakt wymaga zalogowania |
 

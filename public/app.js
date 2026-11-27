@@ -377,7 +377,7 @@ if (sideNav) {
   const menuItems=$$(itemSelector,sideNav);
   const captions=menuItems.map(item=>$('span:not(.count)',item)).filter(Boolean);
   const railLayout=matchMedia('(min-width:1041px) and (hover:hover) and (pointer:fine), (min-width:768px) and (min-height:480px) and (orientation:landscape)');
-  let opener=null,pinned=false,hoverOpen=false,captionItem=null,touchPreview=null,openingSlide=null;
+  let opener=null,pinned=false,hoverOpen=false,captionItem=null,touchPreview=false,openingSlide=null;
 
   function sizeCaptions() {
     const labels=sideNav.hasAttribute('data-side-open')?captions:captions.filter(label=>label.parentElement===captionItem);
@@ -412,7 +412,8 @@ if (sideNav) {
     opener=null;
     pinned=false;
     hoverOpen=false;
-    touchPreview=openingSlide=null;
+    touchPreview=false;
+    openingSlide=null;
     showCaption(null);
     sideNav.removeAttribute('data-side-ready');
     if (themePicker) themePicker.open=false;
@@ -490,19 +491,21 @@ if (sideNav) {
   });
   themePicker?.addEventListener('toggle',updateSideNav);
   sideNav.addEventListener('pointerdown',event=>{
-    const item=event.target.closest(itemSelector);
     const touch=event.pointerType==='touch'||event.pointerType==='pen';
-    touchPreview=touch&&item!==toggle&&captionItem!==item&&!sideNav.hasAttribute('data-side-open')?item:null;
+    touchPreview=touch&&!event.target.closest('[data-side-toggle]')&&!sideNav.hasAttribute('data-side-open');
   });
-  sideNav.addEventListener('pointercancel',()=>{touchPreview=null;});
-  // Capture the first tap before a link navigates or a button opens a dialog.
+  sideNav.addEventListener('pointercancel',()=>{touchPreview=false;});
+  // The first touch anywhere on the tablet rail opens the complete drawer.
   sideNav.addEventListener('click',event=>{
-    const item=touchPreview;
-    touchPreview=null;
-    if (!item||!event.detail||!item.contains(event.target)||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey) return;
+    const openDrawer=touchPreview;
+    touchPreview=false;
+    if (!openDrawer||!event.detail||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey) return;
     event.preventDefault();
     event.stopPropagation();
-    showCaption(item);
+    pinned=true;
+    sideNav.setAttribute('data-side-ready','');
+    showCaption(null);
+    updateSideNav();
   },true);
   sideNav.addEventListener('click',event=>{
     const action=event.target.closest('a[href],button');
@@ -531,44 +534,21 @@ if (sideNav) {
   window.addEventListener('pageshow',()=>closeSideNav());
   updateSideNav();
 
-  const Audio=window.AudioContext||window.webkitAudioContext;
-  if (Audio) {
+  if (window.BrumbrumSounds) {
     const sound=$('[data-side-sound]',sideNav);
     let enabled=local.get(keys.menuSound)!=='off';
-    let audio,lastNote=-Infinity;
-    function unlockSound() {
-      if (!enabled||!sideNav.getClientRects().length||audio?.state==='running') return;
-      try {
-        audio??=new Audio();
-        audio.resume().catch(()=>{});
-      } catch {}
-    }
+    let lastNote=-Infinity;
     sound.hidden=false;
     sound.setAttribute('aria-pressed',String(enabled));
     sound.addEventListener('click',()=>{
       enabled=!enabled;
       local.set(keys.menuSound,enabled?'on':'off');
       sound.setAttribute('aria-pressed',String(enabled));
-      unlockSound();
     });
-    document.addEventListener('pointerup',unlockSound,{passive:true});
-    document.addEventListener('keydown',unlockSound);
     for (const item of menuItems) item.addEventListener('pointerenter',event=>{
-      if (!enabled||event.pointerType!=='mouse'||audio?.state!=='running') return;
-      const time=audio.currentTime;
-      if (time-lastNote<.075) return;
-      lastNote=time;
-      const tone=audio.createOscillator();
-      const volume=audio.createGain();
-      tone.type='triangle';
-      tone.frequency.setValueAtTime(850,time);
-      tone.frequency.exponentialRampToValueAtTime(440,time+.045);
-      volume.gain.setValueAtTime(.0001,time);
-      volume.gain.linearRampToValueAtTime(.035,time+.004);
-      volume.gain.exponentialRampToValueAtTime(.0001,time+.055);
-      tone.connect(volume).connect(audio.destination);
-      tone.start(time);
-      tone.stop(time+.06);
+      if (!enabled||event.pointerType!=='mouse'||performance.now()-lastNote<75) return;
+      lastNote=performance.now();
+      window.BrumbrumSounds.menuTone().catch(()=>{});
     });
   }
 }
@@ -869,8 +849,6 @@ if (carousel) {
     schedule();
   };
   rotation.addEventListener('click',()=>setPlaying(!playing));
-  $('[data-ad-previous]',carousel).addEventListener('click',()=>navigate(index-1));
-  $('[data-ad-forward]',carousel).addEventListener('click',()=>navigate(index+1));
   for (const [i,dot] of dots.entries()) dot.addEventListener('click',()=>navigate(i));
   carousel.addEventListener('pointerenter',event=>{
     if (event.pointerType!=='mouse'||!mouse.matches) return;
@@ -934,10 +912,13 @@ if (ad) {
   });
   const step=direction=>{
     slides[index].hidden=true;
+    dots[index]?.removeAttribute('aria-current');
     index=(index+direction+slides.length)%slides.length;
     slides[index].hidden=false;
+    dots[index]?.setAttribute('aria-current','true');
   };
-  $('[data-ad-next]',ad)?.addEventListener('click',()=>step(1));
+  const dots=$$('[data-banner-dot]',ad);
+  for (const [target,dot] of dots.entries()) dot.addEventListener('click',()=>step(target-index));
   enableAdSwipe(ad,slides,()=>index,step,active=>{
     if (active) clearTimeout(timer);
     else if (desktop.matches) collapseAfter();

@@ -123,10 +123,6 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
   };
   const {result:script,headers}=await client.go('/appearance.js?v=11');
   assert.match(headers.get('content-type'),/javascript/);
-  const {result:ultimateScript,headers:ultimateHeaders}=await client.go('/ultimate-visual.js?v=4');
-  assert.match(ultimateHeaders.get('content-type'),/javascript/);
-  assert.match(ultimateScript,/a4-ultimate-visual-v1/);
-
   for (const path of ['/?lang=de','/demo/oferta/przyklad-1','/demo/zegarek','/demo/rolki/przyklad-113']) {
     const {result:html}=await client.go(path);
     assert.equal((html.match(/GTM-5QNJH39C/g)||[]).length,1);
@@ -135,8 +131,7 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
     const iconStyles=html.match(/data-icon-styles="([^"]+)"/)[1];
     const scriptAt=html.indexOf('<script src="/appearance.js?v=11"></script>');
     assert.ok(scriptAt>=0&&scriptAt<html.indexOf('<link rel="stylesheet"'));
-    const ultimateAt=html.indexOf('<script src="/ultimate-visual.js?v=4"></script>');
-    assert.ok(ultimateAt>scriptAt&&ultimateAt<html.indexOf('<link rel="stylesheet"'));
+    assert.equal(html.indexOf('<script src="/ultimate-visual.js'),-1);
     assert.equal(iconStyle,'sapphire-braid');
     const styles=iconStyles.split(' ');
     assert.equal(styles.length,100);
@@ -322,15 +317,7 @@ test('button upholstery presets and independent options keep one complete saved 
   assert.equal((menu.match(/class="btn primary button-finish-preview-button"/g)||[]).length,1);
   assert.match(menu,/<span class="button-embroidery-label">Dodaj ogłoszenie<\/span>/);
   assert.equal((menu.match(/\bdata-button-embroidery-choice\b/g)||[]).length,6);
-  assert.match(menu,/Bespoke Studio — materiały i wykończenia/);
-  assert.doesNotMatch(menu,/RGB \/ OLED|Gotowe Zestawy|Advanced Border System|100 zestawów ikon|20 wariantów logo/);
-  assert.equal((menu.match(/data-uve-preset="\d+"/g)||[]).length,0);
-  for(const field of ['bgMaterial','buttonMaterial','stitchType','oledPureBlack']) {
-    assert.ok(menu.includes(`data-uve-field="${field}"`),field);
-  }
-  assert.equal((menu.match(/data-uve-field="ambientColor"/g)||[]).length,0);
-  const bespokeMenu=menu.slice(menu.indexOf('Bespoke Studio'),menu.indexOf('button-finish-preview-dock'));
-  assert.doesNotMatch(bespokeMenu,/Ciepły Bursztyn|Czerwień Rosso|Animacja|Ramki LED|Neon/);
+  assert.doesNotMatch(menu,/Bespoke Studio|data-uve-root|data-uve-field=/);
   const {result:ambientCss}=await client.go('/styles.css?v=no-led-1');
   assert.doesNotMatch(ambientCss,/data-uve-ambient-enabled=true|uve-ambient-colors/);
   assert.doesNotMatch(menu,/Podświetlenie ogłoszeń|Siła podświetlenia|Kolor podświetlenia/);
@@ -795,8 +782,10 @@ test('07 · combined filters, sorting, pagination, comparison and direct URLs',a
     assert.ok([...mainTiles,...homeVariants].every(tile=>tile.filter));
     const homeLinks=new Set([...mainTiles,...homeVariants].map(tile=>tile.url));
     assert.equal(homeLinks.size,expectedTypes.length+homeVariants.length,path);
-    assert.match(html,/class="robot-entry-banner"[^>]*>[\s\S]*?<\/a>\s*<\/div><script type="module" src="\/assets\/china-market/);
-    assert.ok(html.indexOf('class="robot-entry-banner"')>html.indexOf('data-china-market'));
+    const carousel=html.slice(html.indexOf('data-ad-carousel'),html.indexOf('data-china-market'));
+    assert.match(carousel,/class="robot-entry-banner"[^>]*>[\s\S]*?<\/a>/);
+    assert.doesNotMatch(carousel,/data-ad-previous|data-ad-forward/);
+    assert.ok(html.indexOf('class="robot-entry-banner"')<html.indexOf('data-china-market'));
     for (const anchor of ['odmiany-rekreacyjne','odmiany-transportu','samochody-i-kampery','motocykle-i-rekreacja','transport-i-maszyny']) {
       assert.ok(html.includes(`id="${anchor}"`),anchor);
     }
@@ -1235,9 +1224,6 @@ test('demo showcase serves three distinct photos per listing and full-width deta
     assert.doesNotMatch(page,/data-copy-vin=/);
     assert.match(page,/class="panel offer-section"><summary>[^<]*<svg[^>]*>.*?<span>Opis sprzedawcy<\/span>/s);
     assert.match(page,/data-gallery-autoplay/);
-    assert.match(page,/>Napisz wiadomość</);
-    assert.match(page,/>Umów oględziny</);
-    assert.match(page,/>Rolki</);
     const frames=JSON.parse(page.match(/data-gallery="([^"]+)"/)[1].replaceAll('&quot;','"'));
     assert.equal(frames.length,3);
     assert.equal(new Set(frames.map(frame=>frame.url)).size,3);
@@ -1578,10 +1564,10 @@ test('demo photo reels link to the matching listing, photos, and seller',async()
   assert.match(firstSlide,/Napisz wiadomość/);
   assert.match(firstSlide,/Umów oględziny/);
   assert.match(firstSlide,/Sprawdź VIN|Zapytaj o VIN/);
-  const detailsPanel=firstSlide.slice(firstSlide.indexOf('data-reel-panel="details"'));
+  const detailsPanel=firstSlide.slice(firstSlide.indexOf('data-reel-panel="details"'),firstSlide.indexOf('data-reel-panel="media"'));
   assert.doesNotMatch(detailsPanel,/<img /);
-  assert.ok(firstSlide.indexOf('data-reel-panel="photos"')<firstSlide.indexOf('data-reel-panel="media"'));
-  assert.ok(firstSlide.indexOf('data-reel-panel="media"')<firstSlide.indexOf('data-reel-panel="details"'));
+  assert.ok(firstSlide.indexOf('data-reel-panel="photos"')<firstSlide.indexOf('data-reel-panel="details"'));
+  assert.ok(firstSlide.indexOf('data-reel-panel="details"')<firstSlide.indexOf('data-reel-panel="media"'));
   assert.match(firstSlide,/Film nie został dodany/);
   const photoStack=firstSlide.slice(firstSlide.indexOf('<div class="reel-photo-stack'),firstSlide.indexOf('</div>',firstSlide.indexOf('<div class="reel-photo-stack')));
   assert.equal((photoStack.match(/<img /g)||[]).length,3);

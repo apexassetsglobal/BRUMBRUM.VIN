@@ -4,7 +4,7 @@ Polski portal kupna i sprzedaży pojazdów. Katalog, panele i demo korzystają z
 
 Otwórz w VS Code folder zawierający ten plik i `package.json`. Uruchom aplikację z terminala według poleceń poniżej. Podgląd w edytorze, odświeżanie zmian i bezpieczny import do prywatnego repozytorium opisuje [instrukcja uruchomienia](docs/URUCHOMIENIE.md). Zasady pracy z kodem znajdziesz w [AGENTS.md](AGENTS.md) i [instrukcjach Copilota](.github/copilot-instructions.md).
 
-Pliki odpowiadające konkretnym widokom i funkcjom znajdziesz w [mapie aplikacji](MAPA_APLIKACJI.md). Trasy opisuje [dokumentacja API](docs/API.md), a działanie aparatu i prezentacji zdjęć omawia [Smart Camera 360° Studio](SMART-CAMERA.md).
+Pliki odpowiadające konkretnym widokom i funkcjom znajdziesz w [mapie aplikacji](MAPA_APLIKACJI.md). Trasy opisuje [dokumentacja API](docs/API.md), działanie aparatu i prezentacji zdjęć omawia [Smart Camera 360° Studio](SMART-CAMERA.md), a architekturę personalizacji dźwięków opisuje [Sound Garage](docs/SOUND-GARAGE.md).
 
 ## Uruchomienie lokalne
 

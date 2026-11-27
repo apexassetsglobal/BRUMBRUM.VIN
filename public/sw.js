@@ -1,9 +1,9 @@
-const cacheName='all4auto-public-v187';
+const cacheName='all4auto-public-v189';
 const languages=['pl','en','cs','sk','de','uk'];
 const offline=language=>'/offline.html?lang='+language;
 const preference='/offline-language';
-const essentials=[...languages.map(offline),'/styles.css','/styles.css?v=studio360','/assets/vehicle-catalog-layout.css?v=4','/assets/service-shell.css?v=rail2',
-  '/assets/robots.css?v=4','/assets/robot-appearance.css?v=3','/assets/robot-appearance.js?v=2','/assets/robots-demo.css?v=2','/appearance.js?v=11','/ultimate-visual.js?v=4','/assets/icon-192.png?v=emblem','/assets/icon-512.png?v=emblem',
+const essentials=[...languages.map(offline),'/styles.css','/styles.css?v=studio362','/assets/vehicle-catalog-layout.css?v=4','/assets/service-shell.css?v=rail2',
+  '/assets/robots.css?v=5','/assets/robot-appearance.css?v=3','/assets/robot-appearance.js?v=2','/assets/robots-demo.css?v=2','/appearance.js?v=11','/assets/sound-catalog.js?v=1','/assets/sound-engine.js?v=1','/assets/sound-garage.js?v=1','/assets/icon-192.png?v=engine-start','/assets/icon-512.png?v=engine-start','/assets/icon-maskable-192.png?v=engine-start','/assets/icon-maskable-512.png?v=engine-start',
   '/assets/robots/icon.svg','/assets/robots/icon-180.png','/assets/robots/icon-192.png','/assets/robots/icon-512.png'];
 
 async function offlineResponse(url) {

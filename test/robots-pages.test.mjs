@@ -99,10 +99,10 @@ test('main site advertises Robot Zone and both sites expose real project destina
     const html=(await client.go(path)).result;
     const family=html.match(/<div class="project-family">([\s\S]+?)<\/div><\/div>/)?.[1];
     assert.ok(family,'project navigation exists on '+path);
-    assert.match(family,/Nasze projekty/);
+    assert.match(family,/NASZE PROJEKTY/);
     assert.match(family,/href="https:\/\/all4rent\.app"[^>]*>ALL4RENT/);
     assert.match(family,/href="\/"[^>]*>BRUMBRUM\.VIN/);
-    assert.match(family,/href="\/roboty"[^>]*>Roboty i automatyka/);
+    assert.match(family,/href="\/roboty"[^>]*>ROBOTY I AUTOMATYKA/);
   }
 });
 
