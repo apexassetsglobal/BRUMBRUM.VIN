@@ -7,23 +7,24 @@ const title=ctx=>ctx.t('Dobrowolnie wesprzyj reklamę i rozwój BRUMBRUM.VIN','V
 const terms=ctx=>ctx.t('Publikacja ogłoszenia jest zawsze bezpłatna. Wpłata jest całkowicie dobrowolna i nie wpływa na widoczność ani pozycjonowanie ogłoszenia.',
   'Publishing a listing is always free. A contribution is entirely voluntary and does not affect your listing’s visibility or ranking.');
 const oneTime=ctx=>ctx.t('Wpłata jednorazowa','One-time contribution');
+const supportArt=id=>`<span class="support-art" data-support-art="${e(id)}" aria-hidden="true"></span>`;
 
 export function supportChoices(ctx) {
   const t=ctx.t;
   const hosted=hostedCheckout(ctx);
-  return `<details class="support-choice"><summary>${e(title(ctx))}</summary>
+  return `<section class="support-choice"><h3>${e(title(ctx))}</h3>
     <p>${e(terms(ctx))}</p><p>${t('Wybór pakietu najpierw przesyła ogłoszenie do publikacji. Wpłatę potwierdzisz osobno w Stripe.',
       'Choosing a package first submits your listing for publication. You confirm the contribution separately in Stripe.')}</p>
-    <div class="support-grid">${supportPackages.map(item=>`<button type="submit" class="support-option" name="support" value="${item.id}"${hosted&&!ctx.demo&&(!hosted.enabled||!hosted.links.has(item.id))?' disabled':''}>
-      <strong>${e(item.name)}</strong><span class="support-price">${e(price(ctx,item.amount/100,'PLN'))}</span>
-      <small>${e(ctx.t(...item.description))}</small><span class="support-once">${oneTime(ctx)}</span></button>`).join('')}</div>
-  </details>`;
+    <div class="support-grid">${supportPackages.map(item=>`<button type="submit" class="panel support-option" name="support" value="${item.id}"${hosted&&!ctx.demo&&(!hosted.enabled||!hosted.links.has(item.id))?' disabled':''}>
+      ${supportArt(item.id)}<strong>${e(item.name)}</strong><span class="support-price">${e(price(ctx,item.amount/100,'PLN'))}</span>
+      <small>${e(ctx.t(...item.description))}</small><span class="support-once">${oneTime(ctx)}</span><span class="support-choice-action">${e(t('Wybierz wsparcie','Choose support'))} · ${e(price(ctx,item.amount/100,'PLN'))}</span></button>`).join('')}</div>
+  </section>`;
 }
 
 export function supportInvitation(ctx,listing='') {
   return panel(ctx.t('Dobrowolne wsparcie BRUMBRUM.VIN','Voluntary support for BRUMBRUM.VIN'),
     `<p>${e(terms(ctx))}</p><div class="inline">${link(ctx,'/wsparcie'+(listing?'?ogloszenie='+encodeURIComponent(listing):''),
-      ctx.t('Zobacz cztery pakiety wsparcia','View the four support packages'),'btn')}
+      ctx.t('Zobacz cztery pakiety wsparcia','View the four support packages'),'btn','',{buttonFinish:true})}
     ${listing?link(ctx,'/moje-ogloszenia',ctx.t('Przejdź do moich ogłoszeń','Go to my listings'),'text-link'):''}</div>`,'listing-support');
 }
 
@@ -41,13 +42,13 @@ export async function supportPage(ctx) {
   const cancelled=ctx.url.searchParams.get('anulowano')==='1'?flash(t('Przerwano płatność. Możesz wrócić do ogłoszeń lub ponownie wybrać wsparcie.',
     'Payment was interrupted. You can return to your listings or choose a contribution again.')):'';
   const cards=supportPackages.map(item=>{
-    const caption=t('Przejdź do Stripe','Continue to Stripe');
+    const caption=t('Przejdź do Stripe','Continue to Stripe')+' · '+price(ctx,item.amount/100,'PLN');
     const target=hosted?.enabled && hosted.links.get(item.id);
     let form=`<button class="btn" type="button" disabled>${t('Wpłaty niedostępne','Contributions unavailable')}</button>`;
     if (target) form=`<a class="btn primary" referrerpolicy="no-referrer" href="${e(target)}">${e(caption)}</a>`;
     else if (!hosted && ready) form=apiForm('/support/start',keyInput()+hidden('listing',listing)+hidden('package',item.id)+submit(caption,'','btn primary'));
     return `<article data-package="${item.id}" class="panel support-package${selected?.id===item.id?' support-selected':''}">
-      <h2>${e(item.name)}</h2><p class="support-price">${e(price(ctx,item.amount/100,'PLN'))}</p>
+      ${supportArt(item.id)}<h2>${e(item.name)}</h2><p class="support-price">${e(price(ctx,item.amount/100,'PLN'))}</p>
       <p>${e(t(...item.description))}</p><small>${oneTime(ctx)}</small>${form}</article>`;
   }).join('');
   return {title:title(ctx),body:wrap(pageHead(title(ctx))+`<section class="support-intro"><p>${e(terms(ctx))}</p>

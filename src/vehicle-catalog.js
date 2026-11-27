@@ -262,6 +262,40 @@ export const vehicleModels = {
   }
 };
 
+// Model/body pairings for specialised markets. The same entries also feed the parent category.
+export const modelsByBody = {
+  // Adria motorhomes and vans; Carado model guide (faq.carado.com, seating areas by vehicle class).
+  'camper:camper_integrated':{
+    Adria:['Sonic','Supersonic'],Dethleffs:['Trend','Globebus'],Hymer:['B-Class ModernComfort']
+  },
+  'camper:camper_overcab':{Carado:['A132','A361']},
+  'camper:camper_low_profile':{
+    Adria:['Coral','Matrix'],Bürstner:['Lyseo TD'],Carado:['T 338','T 447'],Dethleffs:['Trend','Globebus'],
+    Hymer:['B-Class ModernComfort','ML-T'],Knaus:['Sky TI','Van TI'],Weinsberg:['CaraSuite']
+  },
+  'camper:camper_van':{
+    Adria:['Twin','Twin Supreme'],Bürstner:['Eliseo'],Carado:['CV 600'],Ford:['Transit Custom Nugget'],
+    Hymer:['Free'],Knaus:['BoxStar'],'Mercedes-Benz':['Marco Polo'],Volkswagen:['California','Grand California'],Weinsberg:['CaraBus']
+  },
+  // Yamaha ATV lineup; Polaris Sportsman/Outlaw youth model guide.
+  'quad:atv_sport':{'Can-Am':['Renegade'],Honda:['TRX250X'],Kayo:['A200'],Polaris:['Scrambler'],Yamaha:['YFZ450R','Raptor 700','Raptor 700R']},
+  'quad:atv_utility':{
+    'Can-Am':['Outlander'],CFMOTO:['CFORCE 450','CFORCE 520','CFORCE 625','CFORCE 850 Touring','CFORCE 1000 Touring'],
+    Honda:['TRX420','TRX520'],Kawasaki:['Brute Force'],Kayo:['AU110','AU125'],Kymco:['MXU 300','MXU 550','MXU 700'],
+    Polaris:['Sportsman'],Segway:['Snarler AT6','Snarler AT10'],Suzuki:['KingQuad 400','KingQuad 750'],TGB:['Blade 550','Blade 600'],
+    Yamaha:['Kodiak 450','Kodiak 700','Grizzly 700']
+  },
+  'quad:atv_youth':{'Can-Am':['DS 90'],CFMOTO:['CFORCE 110'],Polaris:['Outlaw 70','Outlaw 110','Sportsman 110'],Yamaha:['YFZ50','Raptor 110']},
+  // BRIG Eagle 6.7 owner's manual; Beneteau Port Ginesta and Jeanneau Düsseldorf model catalogues.
+  'marine_air:motor_boat_rib':{Bayliner:['Element E16','VR5'],Brig:['Eagle 6.7','Navigator 610'],Beneteau:['Antares 8'],Jeanneau:['Merry Fisher 795','Cap Camarat 5.5 CC']},
+  'marine_air:sailboat':{Beneteau:['Oceanis 34.1','Oceanis 40.1','Oceanis 51.1'],Jeanneau:['Sun Odyssey 349','Sun Odyssey 389','Sun Odyssey 419']},
+  'marine_air:motor_yacht':{Beneteau:['Grand Trawler 62']},
+  'marine_air:fishing_boat':{Beneteau:['Antares 8 Fishing']},
+  'marine_air:catamaran':{Lagoon:['43']},
+  'marine_air:jet_ski':{'Sea-Doo':['GTI','RXT-X'],Yamaha:['FX Cruiser','GP HO']},
+  'marine_air:ultralight':{AutoGyro:['Calidus','Cavalon'],Tecnam:['P92','P2002']}
+};
+
 // The homepage also links directly to these two specialised vehicle markets.
 export const heavyVehicleFilters = {
   tractor:['truck','tractor','Ciągniki siodłowe (TIR)','Tractor units',{

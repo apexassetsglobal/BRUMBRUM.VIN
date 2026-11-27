@@ -1,5 +1,50 @@
 const normalize=value=>value.trim().toLowerCase().normalize('NFD')
   .replace(/\p{Diacritic}/gu,'').replaceAll('ł','l');
+let marqueFiles = {};
+const marquesReady = fetch('/assets/marques/manifest.json?v=catalog307')
+  .then(response => response.ok ? response.json() : {})
+  .then(files => { marqueFiles = files; })
+  .catch(() => {});
+
+function makeBadge(name) {
+  const key = normalize(name).replace(/[^a-z0-9]/g,'');
+  const badge = document.createElement('span');
+  badge.className = 'search-marque';
+  badge.setAttribute('aria-hidden','true');
+  const words = name.trim().split(/[\s-]+/);
+  badge.textContent = (words.length > 1 ? words[0][0] + words[1][0] : name.slice(0,2)).toUpperCase();
+  if (Object.hasOwn(marqueFiles,key)) {
+    const image = document.createElement('img');
+    image.alt = '';
+    image.width = 32;
+    image.height = 24;
+    image.loading = 'lazy';
+    image.addEventListener('error', () => image.remove(), {once:true});
+    image.src = '/assets/marques/' + encodeURIComponent(marqueFiles[key]);
+    badge.append(image);
+  }
+  return badge;
+}
+
+const categoryAliases = {
+  'marine_air': 'łódź łódka łódki łodzie łodzie motorowe jachty boats aircraft',
+  'marine_air:motor_boat_rib': 'motorówka motorówki łódka łódki motorowe ponton RIB',
+  'marine_air:fishing_boat': 'łódki wędkarskie łodzie wędkarskie',
+  'marine_air:sailboat': 'łódź żaglowa łodzie żaglowe żaglówki',
+  'camper': 'camper campery kampervan motorhome RV',
+  'quad': 'quad quady ATV czterokołowiec czterokołowce',
+  'utv': 'side by side SSV'
+};
+
+function optionMatches(option, query, category) {
+  const label = normalize(option.textContent);
+  if (label.includes(query)) return true;
+  const compact = value => value.replace(/[^\p{L}\p{N}]+/gu,'');
+  const needle = compact(query);
+  if (needle && compact(label).includes(needle)) return true;
+  return category && Object.hasOwn(categoryAliases,option.value) &&
+    normalize(categoryAliases[option.value]).includes(query);
+}
 
 export function searchCombobox(select,labels) {
   const label=select.closest('label');
@@ -41,7 +86,7 @@ export function searchCombobox(select,labels) {
   function sync() {
     input.disabled=select.disabled;
     input.placeholder=select.options[0]?.textContent||'';
-    input.value=select.value;
+    input.value=select.value ? select.selectedOptions[0]?.textContent||'' : '';
     edited=false;
     close();
   }
@@ -52,9 +97,9 @@ export function searchCombobox(select,labels) {
     if (changed) select.dispatchEvent(new Event('change',{bubbles:true}));
   }
   function show() {
-    const query=normalize(input.value);
+    const query=edited?normalize(input.value):'';
     matches=[...select.options].filter(option=>query
-      ? option.value&&normalize(option.value).startsWith(query)
+      ? option.value&&optionMatches(option,query,select.hasAttribute('data-filter-type'))
       : true);
     list.replaceChildren(...matches.map((option,index)=>{
       const row=document.createElement('span');
@@ -62,7 +107,10 @@ export function searchCombobox(select,labels) {
       row.dataset.option=String(index);
       row.setAttribute('role','option');
       row.setAttribute('aria-selected',String(select.value===option.value));
-      row.textContent=option.textContent;
+      if (select.hasAttribute('data-filter-make') && option.value) {
+        row.append(makeBadge(option.textContent));
+      }
+      row.append(document.createTextNode(option.textContent));
       return row;
     }));
     status.textContent=matches.length?'':labels.noResults;
@@ -71,6 +119,15 @@ export function searchCombobox(select,labels) {
     popup.hidden=false;
     input.setAttribute('aria-expanded','true');
     input.removeAttribute('aria-activedescendant');
+  }
+  if (select.hasAttribute('data-filter-make')) {
+    marquesReady.then(() => {
+      if (popup.hidden) return;
+      list.querySelectorAll('.search-marque').forEach(badge => {
+        const option = matches[Number(badge.parentElement.dataset.option)];
+        if (option) badge.replaceWith(makeBadge(option.textContent));
+      });
+    });
   }
   function point(index) {
     if (!matches.length) return;
@@ -90,7 +147,7 @@ export function searchCombobox(select,labels) {
   });
   input.addEventListener('blur',()=>{
     if (edited&&input.value.trim()) {
-      const exact=matches.find(option=>normalize(option.value)===normalize(input.value));
+      const exact=matches.find(option=>normalize(option.textContent)===normalize(input.value));
       if (exact||matches.length===1) {commit((exact||matches[0]).value);return;}
     }
     sync();
@@ -106,7 +163,7 @@ export function searchCombobox(select,labels) {
       sync();
     } else if (event.key==='Enter'&&!popup.hidden&&(active>=0||edited)) {
       event.preventDefault();
-      const option=matches[active]||matches.find(option=>normalize(option.value)===normalize(input.value))||
+      const option=matches[active]||matches.find(option=>normalize(option.textContent)===normalize(input.value))||
         (matches.length===1?matches[0]:null);
       if (option) commit(option.value);
     }

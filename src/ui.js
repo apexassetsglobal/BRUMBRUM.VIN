@@ -1,3 +1,5 @@
+import { vehicleModels } from './vehicle-catalog.js';
+import { marqueFiles } from './marque-files.js';
 import { appleStartupImages } from './apple-startup.js';
 import { brandLogoAsset, brandLogoIds } from './brand-logos.js';
 import { id, isStaff, withAuthReturn } from './core.js';
@@ -428,6 +430,10 @@ function iconStyleControls(ctx) {
   const group=(id,title,content)=>appearanceDisclosure(title,content,'appearance-icon-group',` data-appearance-icon-group="${id}"`);
   return `<section class="appearance-icons">
     <h3>${t('Ikony','Icons')}</h3>
+    ${group('size',t('Rozmiar ikon','Icon size'),`<div class="icon-size-controls">
+      <p>${t('Dostosuj rozmiar ikon osobno dla każdego ekranu. Ustawienia zapisują się w tej przeglądarce.','Adjust icons separately for each screen size. Settings are saved in this browser.')}</p>
+      ${[['phone',t('Telefon','Phone')],['tablet',t('Tablet','Tablet')],['desktop',t('Komputer','Desktop')]].map(([device,label])=>`<label class="icon-size-control"><span>${e(label)} <output data-icon-size-output="${device}">100%</output></span><input type="range" min="80" max="130" step="5" value="100" data-icon-size="${device}" aria-label="${e(t('Rozmiar ikon — ','Icon size — ')+label)}"></label>`).join('')}
+    </div>`)}
     ${iconBoard(ctx)}
     ${group('surface',surfaceTitle,`<fieldset class="icon-surfaces" aria-label="${e(surfaceTitle)}">
       ${[['none','Bez tła','No background'],['glass','Szkło','Glass'],['dark','Ciemne','Dark']].map(([id,pl,en])=>`<label class="icon-surface-option">
@@ -499,21 +505,23 @@ function themeStitchControls(t,group) {
       </div>
     </div>`;
   }).join('');
-  return `<fieldset class="theme-stitch-settings" data-theme-stitch-settings hidden>
-    <legend>${e(t('Przeszycie motywu','Theme stitching'))}</legend>
+  return `<details class="theme-stitch-settings" data-theme-stitch-settings hidden>
+    <summary>${e(t('Przeszycie motywu','Theme stitching'))}</summary>
     <i class="theme-stitch-preview" aria-hidden="true"></i>
     ${choices}
-  </fieldset>`;
+  </details>`;
 }
 
 function themeOptions(ctx,group,includeStitches=true) {
   const t=ctx.t;
   const option=([value,,pl,en])=>`<label><input type="radio" name="${e(group)}" value="${value}" data-theme-choice${value==='light'?' checked':''}>
     <span><i class="theme-swatch" data-swatch="${value}" aria-hidden="true"></i><span>${e(t(pl,en))}</span></span></label>`;
+  const materials=appearanceDisclosure(t('Materiały','Materials'),
+    `<div class="settings-segments settings-theme-options settings-theme-materials">${upholsteryThemes.map(option).join('')}</div>`,
+    'appearance-theme-materials');
   return `<div role="radiogroup" aria-label="${e(includeStitches?t('Motyw','Theme'):t('Tło strony','Site background'))}">
     <div class="settings-segments settings-theme-options">${plainThemes.map(option).join('')}</div>
-    <h4>${e(t('Materiały','Materials'))}</h4>
-    <div class="settings-segments settings-theme-options settings-theme-materials">${upholsteryThemes.map(option).join('')}</div>
+    ${materials}
   </div>${includeStitches?themeStitchControls(t,group):''}`;
 }
 
@@ -626,7 +634,6 @@ function buttonFinishSection(ctx,group,title) {
     </details>`).join('')}
     ${buttonEmbroideryControls(t,group)}
     ${buttonFinishCustomizer(ctx,group)}
-    ${buttonHardwareControls(ctx,group)}
   </fieldset>`;
 }
 
@@ -714,14 +721,12 @@ function ultimateVisualEngine(ctx,group) {
   const section=(id,title,content,open='')=>appearanceDisclosure(title,content,'uve-section',` data-uve-section="${id}"${open}`);
   const stitches=[['single','Single Stitch'],['double','Double Stitch'],['cross','Cross Stitch'],['q-citura','Q‑Citura'],['racing','Racing Stitch'],['brogue','Brogue'],['piping','Contrast Piping']];
   const threads=[['#ff003c','Czerwony'],['#9d00ff','Fioletowy'],['#ffd700','Złoty'],['#ffffff','Biały'],['#c0c0c0','Srebrny'],['#0066ff','Niebieski'],['#050505','Czarny']];
-  const led=[['#4ca7ff','Niebieski'],['#39ff88','Zielony'],['#ffd34d','Złoty'],['#ff5b68','Czerwony'],['#b47cff','Fioletowy'],['#ffffff','Biały']];
   return `<details class="appearance-disclosure ultimate-visual-engine" data-uve-root>
     <summary>${t('Bespoke Studio — materiały i wykończenia','Bespoke Studio — materials and finishes')}</summary>
     <div class="uve-panel">
       ${ultimateToggle('engineEnabled','Włącz materiały Bespoke')}
       ${section('materials','Materiały — Tło / Przyciski',`<div class="uve-two-zone"><fieldset><legend>Tło aplikacji</legend>${ultimateSelect('bgMaterial','Materiał',ultimateMaterials)}</fieldset><fieldset><legend>Przyciski i karty</legend>${ultimateSelect('buttonMaterial','Materiał',ultimateMaterials)}</fieldset></div>${ultimateRange('textureIntensity','Intensywność tekstury',0,100,45)}`,' open')}
       ${section('stitch-hardware','Przeszycia i okucia',`${ultimateSelect('stitchType','Wariant szwu',stitches)}${ultimateSelect('threadPreset','Kolor nici',threads)}<p class="uve-subtitle">Hardware & Trim</p>${ultimateSelect('hardwareMetal','Metal okuć',[['titanium','Szczotkowany Tytan'],['rose-gold','Różowe Złoto'],['dark-chrome','Ciemny Chrom'],['brass','Mosiądz'],['stainless','Stal']])}<div class="uve-toggle-grid">${ultimateToggle('torx','Śruby Torx')}${ultimateToggle('buckle','Klamra i pasek')}${ultimateToggle('debossing','Tłoczenie napisu')}</div>${ultimateSelect('decorTrim','Listwa dekoracyjna',[['none','Bez listwy'],['walnut','Orzech włoski'],['forged-carbon','Kuty karbon'],['slate','Kamień łupkowy']])}`)}
-      ${section('led',t('Delikatna ramka LED przycisków','Subtle LED button border'),`${ultimateToggle('lightEnabled',t('Włącz ramkę LED','Enable LED border'))}<div class="uve-led-simple" role="group" aria-label="${e(t('Kolor ramki LED','LED border color'))}">${led.map(([color,label])=>`<button type="button" style="--swatch:${color}" data-uve-color="${color}" title="${e(label)}" aria-label="${e(label)}"></button>`).join('')}</div>${ultimateRange('edgeGlow',t('Delikatność poświaty','Glow softness'),0,18,8)}`)}
       ${ultimateToggle('oledPureBlack','OLED Pure Black — głęboka czerń')}
       <button class="uve-reset" type="button" data-uve-action="reset">Przywróć spokojne ustawienia</button>
     </div>
@@ -744,7 +749,6 @@ export function appearanceControls(ctx,group) {
       ${buttonGroup('account-style',accountStyle,accountButtonOptions(ctx,accountStyle))}
       ${buttonGroup('account-colors',accountColors,accountButtonColors(ctx))}
     </div>`,'appearance-buttons',' data-appearance-section="buttons"')}
-    ${ultimateVisualEngine(ctx,group)}
   </div>
   <div class="button-finish-preview-dock" role="group" aria-label="${e(t('Podgląd przycisku','Button preview'))}">
     <div class="uve-live-preview" data-uve-preview><span class="uve-preview-label">LIVE PREVIEW</span>
@@ -764,6 +768,7 @@ function iconStyleDialog(ctx) {
       <form method="dialog"><button type="submit" class="icon-button" aria-label="${t('Zamknij','Close')}">${icon('close')}</button></form>
     </div>
     ${appearanceControls(ctx,'toolbar-theme')}
+    ${ctx.robotics?'':`<div class="bottom-nav icon-dialog-nav-preview" aria-hidden="true">${[['home',t('Start','Home')],['search',t('Szukaj','Search')],['video','Rolki'],['listing',t('Sprzedaj','Sell')],['star',t('Ulubione','Saved')],['user',t('Mój profil','My profile')]].map(([symbol,label])=>`<a>${icon(symbol,21)}<span>${e(label)}</span></a>`).join('')}</div>`}
   </dialog>`;
 }
 
@@ -805,10 +810,10 @@ function robotNav(ctx) {
 }
 
 function projectLinks(ctx) {
-  return `<div class="project-family"><h2>${ctx.t('Nasze projekty','Our projects')}</h2><div>
-    <a href="https://all4rent.app" rel="noopener">ALL4RENT</a>
+  return `<div class="project-family"><h2>${ctx.t('NASZE PROJEKTY','OUR PROJECTS')}</h2><div>
+    <a href="https://all4rent.app" rel="noopener">ALL4RENT.APP</a>
     <a href="${ctx.prefix||'/'}"${!ctx.robotics?' aria-current="page"':''}>BRUMBRUM.VIN</a>
-    <a href="${ctx.prefix}/roboty"${ctx.robotics?' aria-current="page"':''}>${ctx.t('Roboty i automatyka','Robots & automation')}</a>
+    <a href="${ctx.prefix}/roboty"${ctx.robotics?' aria-current="page"':''}>${ctx.t('ROBOTY I AUTOMATYKA','ROBOTS & AUTOMATION')}</a>
   </div></div>`;
 }
 
@@ -876,6 +881,13 @@ function logoPreset(ctx,key) {
   return asset?`<img class="brand-logo-preset" src="${asset}" alt="${e(ctx.brand.name)}" width="510" height="170">`:logo(ctx);
 }
 
+function makeStrip(ctx) {
+  const t=ctx.t;
+  const makes=Object.keys(vehicleModels.car).map(name=>[name,name.normalize('NFD').replace(/\p{Diacritic}/gu,'').toLowerCase().replace(/[^a-z0-9]/g,'')]).filter(([,slug])=>marqueFiles[slug]);
+  const items=duplicate=>makes.map(([name,slug],index)=>`<a href="${e(href(ctx,'/szukaj?type=car&make='+encodeURIComponent(name)))}" aria-label="${e(t('Ogłoszenia marki ','Listings for ')+name)}"${duplicate?' tabindex="-1"':''}><img src="/assets/marques/${marqueFiles[slug]}" width="34" height="28" alt="" loading="lazy"><span class="visually-hidden">${e(name)}</span></a>`).join('');
+  return `<div class="make-strip" data-make-strip role="region" aria-label="${e(t('Marki samochodów','Car brands'))}"><div class="make-strip-window" tabindex="0"><div class="make-strip-track"><div class="make-strip-group">${items(false)}</div><div class="make-strip-group" aria-hidden="true">${items(true)}</div></div></div><button type="button" class="make-strip-pause" data-make-pause aria-label="${e(t('Wstrzymaj przesuwanie marek','Pause brands'))}" aria-pressed="false">Ⅱ</button></div>`;
+}
+
 function nav(ctx,engravedHome) {
   const t=ctx.t;
   const headerAsset=brandLogoAsset(ctx.brand.home_logo);
@@ -908,6 +920,7 @@ function nav(ctx,engravedHome) {
     </div></header>
   ${sideNav(ctx,accountBadge)}
   ${ctx.demo?`<div class="demo-bar"><div class="wrap"><span>${icon('test',16)} <b>${t('Tryb demonstracyjny','Demo mode')}</b><span class="demo-desktop"> · ${t('Przykładowe ogłoszenia i zdjęcia poglądowe','Sample listings and illustrative images')}</span></span><div>${ctx.user?`<a href="${href(ctx,'/zaloguj')}">${t('Zmień rolę','Switch role')} ${icon('side-switch',15)}</a>`:''}<a href="/">${t('Przejdź do serwisu','Go to live site')} ${icon('side-exit',15)}</a></div></div></div>`:''}
+  ${makeStrip(ctx)}
   <nav class="bottom-nav" aria-label="${t('Menu główne','Main navigation')}">
     ${navItem(ctx,'/',t('Start','Home'),'home')}
     ${navItem(ctx,'/szukaj',t('Szukaj','Search'),'search')}
@@ -952,19 +965,20 @@ export function layout(ctx,view) {
   <meta property="og:type" content="website"><meta property="og:site_name" content="${e(name)}"><meta property="og:url" content="${e(canonical)}"><meta property="og:image" content="${e(og)}">
   ${brandPreview?'<meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="BRUMBRUM.VIN">':''}
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="${ctx.robotics?'/assets/robots/icon.svg':'/assets/icon-32.png?v=emblem'}"><link rel="apple-touch-icon" href="${ctx.robotics?'/assets/robots/icon-180.png':'/assets/icon-180.png?v=emblem'}"><link rel="manifest" href="${href(ctx,'/manifest.webmanifest')}?lang=${ctx.lang}" crossorigin="use-credentials">
+  <link rel="icon" href="${ctx.robotics?'/assets/robots/icon.svg':'/assets/icon-32.png?v=engine-start'}"><link rel="apple-touch-icon" href="${ctx.robotics?'/assets/robots/icon-180.png':'/assets/icon-180.png?v=engine-start'}"><link rel="manifest" href="${href(ctx,'/manifest.webmanifest')}?lang=${ctx.lang}" crossorigin="use-credentials">
   ${name==='BRUMBRUM.VIN'?appleStartupImages:''}
-  <script src="/appearance.js?v=11"></script><script src="/ultimate-visual.js?v=4"></script>
+  <script src="/appearance.js?v=12"></script>
   ${ctx.robotics?'<script src="/assets/robot-appearance.js?v=2"></script>':''}
-  ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=13"><script defer src="/assets/header-logo.js?v=2"></script>'}
+  ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=14"><script defer src="/assets/header-logo.js?v=2"></script>'}
   ${launchScreen?'<script src="/assets/launch-screen.js"></script>':''}
-  <link rel="stylesheet" href="/styles.css?v=studio360"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail2">
+  <link rel="stylesheet" href="/styles.css?v=catalog385"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
   ${view.services?'<link rel="stylesheet" href="/assets/services-map.css"><link rel="stylesheet" href="/assets/services-promo.css"><script type="module" src="/assets/services-ui.js"></script><script type="module" src="/assets/services-map.js"></script><script type="module" src="/assets/services-promo.js"></script>':''}
-  <link rel="stylesheet" href="/assets/robots.css?v=4">${ctx.robotics?'<link rel="stylesheet" href="/assets/robots-demo.css?v=2"><link rel="stylesheet" href="/assets/robot-appearance.css?v=3"><script type="module" src="/assets/robots.js?v=2"></script>':''}
+  <link rel="stylesheet" href="/assets/robots.css?v=6">${ctx.robotics?'<link rel="stylesheet" href="/assets/robots-demo.css?v=2"><link rel="stylesheet" href="/assets/robot-appearance.css?v=3"><script type="module" src="/assets/robots.js?v=2"></script>':''}
   ${view.automation?'<script type="module" src="/assets/automation-ui.js"></script>':''}${view.structured?'<script type="application/ld+json">'+JSON.stringify(view.structured).replace(/</g,'\\u003c')+'</script>':''}
-  ${view.watchPage?'':view.reelsPage?'<script type="module" src="/assets/reels-feed.js?v=8"></script>':'<script type="module" src="/app.js?v=studio360"></script><script type="module" src="/assets/exchange-rates.js?v=4"></script>'}</head>
+  ${view.watchPage?'':view.reelsPage?'<script type="module" src="/assets/reels-feed.js?v=9"></script>':'<script type="module" src="/app.js?v=catalog307"></script><script type="module" src="/assets/exchange-rates.js?v=4"></script>'}</head>
   <body class="${ctx.robotics?'robot-app ':''}${view.watchPage?'watch-page':view.listingPage?'listing-page':view.reelsPage?'reels-screen':''}" data-market="${ctx.robotics?'robotics':'vehicles'}" style="--accent:${e(ctx.brand.accent)}" data-prefix="${ctx.prefix}" data-user="${e(ctx.user?.id||'')}" data-lang="${ctx.lang}" data-demo="${ctx.demo?'1':'0'}">
-  ${launchScreen?`<div class="launch-screen" aria-hidden="true"><div class="launch-badge${brandLogoAsset(ctx.brand.launch_logo)?' launch-badge-preset':''}">${logoPreset(ctx,'launch_logo')}</div></div>`:''}
+  ${launchScreen?`<div class="launch-screen" aria-hidden="true"><div class="launch-badge${brandLogoAsset(ctx.brand.launch_logo)?' launch-badge-preset':''}">${logoPreset(ctx,'launch_logo')}</div>
+    <button class="launch-engine-start" type="button" data-engine-start hidden><img src="/assets/icon-192.png?v=engine-start" width="42" height="42" alt=""> <span>ENGINE START</span></button></div>`:''}
   ${iconMaterials}${(view.watchPage||view.reelsPage)?`<main id="main">${view.body}</main>`:
     `${iconCollectionBrandDefinition}${ctx.robotics?robotNav(ctx):nav(ctx,launchScreen)}<main id="main">${view.body}</main>${footer(ctx)}${languagePicker(ctx)}${view.inlineIconSettings?'':iconStyleDialog(ctx)}<aside class="compare-tray" data-compare-tray hidden></aside><div class="toast" data-toast role="status" aria-live="polite" hidden></div>`}</body></html>`;
 }

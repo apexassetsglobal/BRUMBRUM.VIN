@@ -19,9 +19,10 @@ const robotIllustration=key=>{
   return `<span class="robot-category-art" style="--robot-x:${(i%4)*100/3}%;--robot-y:${Math.floor(i/4)*50}%" aria-hidden="true"></span>`;
 };
 
-export function banner(ctx) {
+export function banner(ctx,{carousel=false}={}) {
   const r=robotContext(ctx);
-  return `<a class="robot-entry-banner" href="${e(href(r,'/'))}" aria-label="${ctx.t('Przejdź do Strefy Robotów','Enter the Robot Zone')}">
+  return `<a class="robot-entry-banner" href="${e(href(r,'/'))}"${carousel?' data-banner-click':''} aria-label="${ctx.t('Przejdź do Strefy Robotów','Enter the Robot Zone')}">
+    ${carousel?`<span class="ad-carousel-strip"><span class="ad-carousel-company">${ctx.t('ROBOTY I AUTOMATYKA','ROBOTS & AUTOMATION')}</span><span class="ad-carousel-action">${ctx.t('Przejdź do strefy','Enter zone')}${icon('arrow',15)}</span></span>`:''}
     <div class="robot-entry-copy"><span class="robot-entry-eyebrow">${ctx.t('ODKRYJ NOWY DZIAŁ','DISCOVER A NEW WORLD')}</span>
       <h2>${ctx.t('Roboty','Robots')}<br><span>${ctx.t('i automatyka','& automation')}</span></h2>
       <span class="robot-entry-cta">${ctx.t('Przejdź do Strefy Robotów','Enter the Robot Zone')}</span></div>

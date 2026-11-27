@@ -1,2 +1,0 @@
-
-7f49bc1805036b4dba19a5783a3af669254d0e99	{"key":"make-fetch-happen:request-cache:https://registry.npmjs.org/esbuild/-/esbuild-0.25.12.tgz","integrity":"sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg==","time":1795722720362,"size":30947,"metadata":{"time":1795722720358,"url":"https://registry.npmjs.org/esbuild/-/esbuild-0.25.12.tgz","reqHeaders":{},"resHeaders":{"content-type":"application/octet-stream","cache-control":"public,max-age=31536000,immutable"},"options":{"compress":true}}}

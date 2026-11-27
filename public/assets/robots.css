@@ -373,9 +373,9 @@ html[data-market="robotics"] .robot-app :is(.btn,.icon-button)>.ui-icon {
 .robot-footer-inner>nav a {color:#54728a;min-height:32px;display:inline-flex;align-items:center;}
 .robot-footer-inner>small {font-size:12px;align-self:center;justify-self:end;color:#6f879b;}
 .project-family {padding-block:20px;border-top:1px solid var(--line,#dce7f0);}
-.project-family>h2 {font-size:14px;font-weight:600;letter-spacing:.025em;margin:0 0 14px;color:var(--muted,#5b7186);}
+.project-family>h2 {font-size:14px;font-weight:700;letter-spacing:.075em;margin:0 0 14px;color:var(--muted,#5b7186);text-transform:uppercase;}
 .project-family>div {display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
-.project-family a {display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:9px 14px;border:1px solid var(--line,#dce7f0);border-radius:9px;background:var(--card,#fff);font-size:13px;font-weight:600;color:var(--navy,#123552);text-decoration:none!important;}
+.project-family a {display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:9px 14px;border:1px solid var(--line,#dce7f0);border-radius:9px;background:var(--card,#fff);font-size:13px;font-weight:600;color:var(--navy,#123552);text-decoration:none!important;text-transform:uppercase;}
 .project-family a:hover,.project-family a[aria-current="page"] {color:var(--blue,#006bd0);border-color:var(--blue,#006bd0);}
 .robot-footer .project-family {padding:0;border-top:0;}
 .robot-footer .project-family>h2 {font-size:13px;margin-bottom:8px;}
@@ -560,3 +560,17 @@ html[data-market="robotics"] .robot-app :is(.btn,.icon-button)>.ui-icon {
   .robot-category-card {transition:none;}
   .robot-category-card:hover {transform:none;}
 }
+
+/* In the shared carousel this banner has the same 3:1 frame as every ad. */
+.ad-carousel .robot-entry-banner {
+  width:100%;aspect-ratio:3/1;min-height:0;margin:0;box-sizing:border-box;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);
+  gap:clamp(4px,1cqw,12px);padding:clamp(5px,2cqw,24px);border-radius:14px;
+}
+.ad-carousel .robot-entry-copy {min-height:0;text-align:left}
+.ad-carousel .robot-entry-copy h2 {font-size:clamp(17px,4.3cqw,52px);line-height:1}
+.ad-carousel .robot-entry-copy h2 br {display:block}
+.ad-carousel .robot-entry-copy h2>span {display:inline;font-size:.57em}
+.ad-carousel .robot-entry-eyebrow {font-size:clamp(7px,1.1cqw,11px);margin-bottom:clamp(2px,.6cqw,8px)}
+.ad-carousel .robot-entry-cta {min-height:0;margin-top:clamp(3px,1cqw,12px);padding:clamp(4px,.8cqw,10px) clamp(6px,1.3cqw,16px);font-size:clamp(8px,1.3cqw,14px)}
+.ad-carousel .robot-entry-banner>img {min-height:0;max-height:none;height:100%;width:100%;object-fit:contain}

@@ -101,7 +101,11 @@ const manifest=ctx=>new Response(JSON.stringify({
   display:'standalone',background_color:ctx.robotics?'#ffffff':'#000000',theme_color:ctx.robotics?'#ffffff':'#000000',
   shortcuts:[{name:ctx.robotics?ctx.t('Szukaj robotów','Search robots'):ctx.t('Szukaj pojazdów','Search vehicles'),url:href(ctx,'/szukaj')},
     {name:ctx.t('Ulubione','Saved'),url:href(ctx,'/ulubione')}],
-  icons:ctx.robotics?[192,512].map(size=>({src:'/assets/robots/icon-'+size+'.png',sizes:size+'x'+size,type:'image/png',purpose:'any'})):[192,512].map(size=>({src:'/assets/icon-'+size+'.png?v=emblem',sizes:size+'x'+size,type:'image/png',purpose:'any maskable'}))}),
+  icons:ctx.robotics?[192,512].map(size=>({src:'/assets/robots/icon-'+size+'.png',sizes:size+'x'+size,type:'image/png',purpose:'any'})):
+    [192,512,1024].flatMap(size=>[
+      {src:'/assets/icon-'+size+'.png?v=engine-start',sizes:size+'x'+size,type:'image/png',purpose:'any'},
+      {src:'/assets/icon-maskable-'+size+'.png?v=engine-start',sizes:size+'x'+size,type:'image/png',purpose:'maskable'}
+    ])}),
   {headers:{'Content-Type':'application/manifest+json; charset=utf-8','Cache-Control':'private, no-cache'}});
 
 async function page(ctx) {

@@ -21,6 +21,14 @@ const reelInfoTimers = new WeakMap();
 const reelPanelTimers = new WeakMap();
 let activeSlide;
 let photoHintShown = false;
+let stepperTimer;
+function showStepper() {
+  clearTimeout(stepperTimer);
+  stepper.classList.remove('is-hidden');
+  if (!reducedMotion.matches) stepperTimer=setTimeout(()=>{
+    if (!stepper.querySelector(':focus-visible')) stepper.classList.add('is-hidden');
+  },3000);
+}
 
 function bindHint(controls) {
   const hint = controls.querySelector('[data-reel-control-hint]');
@@ -51,6 +59,7 @@ function setReelInfo(slide, hidden, schedule = false) {
   if (!info || !tab) return;
   clearTimeout(reelInfoTimers.get(slide));
   info.classList.toggle('is-hidden', hidden);
+  slide.querySelector('.reel-photo-contact')?.classList.toggle('is-hidden', hidden);
   tab.classList.toggle('is-visible', hidden);
   cue?.classList.toggle('is-visible', hidden);
   tab.setAttribute('aria-expanded', String(!hidden));
@@ -87,6 +96,7 @@ function update() {
     activeSlide = slide;
     showReelInfo(slide);
     showPanelControls(slide);
+    showStepper();
   }
   showPhotoHint();
 }
@@ -102,6 +112,9 @@ function move(delta) {
 
 previous.addEventListener('click', () => move(-1));
 next.addEventListener('click', () => move(1));
+stepper.addEventListener('focusin',showStepper);
+stepper.addEventListener('focusout',showStepper);
+feed.addEventListener('pointerdown',showStepper,{passive:true});
 feed.addEventListener('scroll', update, { passive: true });
 window.addEventListener('resize', update);
 document.addEventListener('keydown', event => {
@@ -236,5 +249,4 @@ for (const slide of feed.querySelectorAll('[data-photo-reel]:has(.reel-photo-con
 }
 
 stepper.hidden = slides.length < 2;
-bindHint(stepper)();
 update();

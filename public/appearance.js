@@ -16,6 +16,32 @@
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
   const defaultStyle = dataset.iconStyle;
   const styles = dataset.iconStyles.split(' ');
+  const iconSizeKey = 'a4-icon-sizes-v1';
+  const iconSizeDevices = ['phone','tablet','desktop'];
+  let iconSizes = {phone:100,tablet:100,desktop:100};
+  function paintIconSizes(values) {
+    for (const device of iconSizeDevices) {
+      const number = Number(values?.[device]);
+      iconSizes[device] = Number.isFinite(number) && number >= 80 && number <= 130 ? number : 100;
+      root.style.setProperty('--icon-size-'+device, String(iconSizes[device]/100));
+      for (const control of document.querySelectorAll('[data-icon-size="'+device+'"]')) control.value=String(iconSizes[device]);
+      for (const output of document.querySelectorAll('[data-icon-size-output="'+device+'"]')) output.textContent=iconSizes[device]+'%';
+    }
+  }
+  function restoreIconSizes() {
+    let stored; try { stored=JSON.parse(localStorage.getItem(iconSizeKey)); } catch {}
+    paintIconSizes(stored);
+  }
+  restoreIconSizes();
+  document.addEventListener('input', event=>{
+    const control=event.target;
+    const device=control?.dataset?.iconSize;
+    if (!iconSizeDevices.includes(device)) return;
+    const next=Number(control.value);
+    if (!Number.isFinite(next) || next < 80 || next > 130) return;
+    paintIconSizes({...iconSizes,[device]:next});
+    try { localStorage.setItem(iconSizeKey,JSON.stringify(iconSizes)); } catch {}
+  });
   const buttonFinishKey = 'a4-button-finish';
   const buttonPresets = dataset.buttonFinishPresets ? JSON.parse(dataset.buttonFinishPresets) : null;
   const buttonChoices = dataset.buttonFinishChoices ? JSON.parse(dataset.buttonFinishChoices) : null;
@@ -162,6 +188,7 @@
   paintButtonEmbroidery();
   restoreButtonHardware();
   document.addEventListener('DOMContentLoaded', () => {
+    paintIconSizes(iconSizes);
     applyTheme();
     paintButtonEmbroidery();
     restoreButtonHardware();
@@ -245,6 +272,7 @@
     }
   });
   window.addEventListener('storage', event => {
+    if (event.key === null || event.key === iconSizeKey) restoreIconSizes();
     if (event.key === null || event.key === themeKey) applyTheme();
     if (event.key === null || event.key === embroideryKey) paintButtonEmbroidery();
     if (event.key === null || event.key === buttonHardwareKey) restoreButtonHardware();
@@ -256,6 +284,7 @@
   });
   window.addEventListener('pageshow', event => {
     if (event.persisted) {
+      restoreIconSizes();
       applyTheme();
       paintButtonEmbroidery();
       restoreButtonHardware();

@@ -12,7 +12,7 @@ import { cleanImage } from '../src/images.js';
 import { hydrate } from '../src/market.js';
 import { digest } from '../src/core.js';
 import { demoBaseCount, demoListingCount, externalCatalogGalleries } from '../src/data.js';
-import { semiTrailerBodies, vehicleTypes } from '../src/vehicle-types.js';
+import { catalogBodyGroups, semiTrailerBodies, vehicleTypes } from '../src/vehicle-types.js';
 import { readBannerStats, readPageViews, recordBannerEvent, recordPageView } from '../src/traffic.js';
 
 const password='development-password-for-tests-only';
@@ -121,22 +121,17 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
     'leather-crema-cross':'light','leather-bordeaux-double':'dark','alcantara-petrol-piping':'dark',
     'leather-forest-saddle':'dark','leather-graphite-rs':'dark','leather-black-acid':'dark'
   };
-  const {result:script,headers}=await client.go('/appearance.js?v=11');
+  const {result:script,headers}=await client.go('/appearance.js?v=12');
   assert.match(headers.get('content-type'),/javascript/);
-  const {result:ultimateScript,headers:ultimateHeaders}=await client.go('/ultimate-visual.js?v=4');
-  assert.match(ultimateHeaders.get('content-type'),/javascript/);
-  assert.match(ultimateScript,/a4-ultimate-visual-v1/);
-
   for (const path of ['/?lang=de','/demo/oferta/przyklad-1','/demo/zegarek','/demo/rolki/przyklad-113']) {
     const {result:html}=await client.go(path);
     assert.equal((html.match(/GTM-5QNJH39C/g)||[]).length,1);
     assert.equal((html.match(/window\.dataLayer=window\.dataLayer\|\|\[\]/g)||[]).length,1);
     const iconStyle=html.match(/data-icon-style="([^"]+)"/)[1];
     const iconStyles=html.match(/data-icon-styles="([^"]+)"/)[1];
-    const scriptAt=html.indexOf('<script src="/appearance.js?v=11"></script>');
+    const scriptAt=html.indexOf('<script src="/appearance.js?v=12"></script>');
     assert.ok(scriptAt>=0&&scriptAt<html.indexOf('<link rel="stylesheet"'));
-    const ultimateAt=html.indexOf('<script src="/ultimate-visual.js?v=4"></script>');
-    assert.ok(ultimateAt>scriptAt&&ultimateAt<html.indexOf('<link rel="stylesheet"'));
+    assert.equal(html.indexOf('<script src="/ultimate-visual.js'),-1);
     assert.equal(iconStyle,'sapphire-braid');
     const styles=iconStyles.split(' ');
     assert.equal(styles.length,100);
@@ -167,10 +162,11 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
       ['a4-icon-style','track-platinum'],['a4-icon-surface','glass'],['a4-theme','leather-ivory'],
       ['a4-dark-palette','nappa-black'],
       ['a4-theme-stitch:leather-ivory:thread','copper'],['a4-theme-stitch:leather-ivory:contrast','subtle'],
+      ['a4-icon-sizes-v1',JSON.stringify({phone:90,tablet:120,desktop:105})],
     ]);
     const buttonEmbroideryChoices=html.match(/data-button-embroidery-choices="([^"]+)"/)[1];
     const dataset={iconStyle,iconStyles,iconSurface:'none',themeModes,themeMaterials,themeStitchValues,buttonEmbroideryChoices};
-    const listeners={}, documentListeners={}, rootListeners={};
+    const listeners={}, documentListeners={}, rootListeners={}, iconSizeStyle={};
     let changeSystemTheme, materialThemeActive;
     const systemTheme={matches:true,addEventListener:(type,callback)=>{changeSystemTheme=callback;}};
     const choices=Object.keys(JSON.parse(themeModes)).map(value=>({value,checked:false,matches:selector=>selector==='[data-theme-choice]'}));
@@ -189,6 +185,7 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
       document:{
         documentElement:{
           dataset,
+          style:{setProperty:(name,value)=>{iconSizeStyle[name]=value;}},
           addEventListener:(type,callback)=>{rootListeners[type]=callback;},
           toggleAttribute:(name,active)=>{assert.equal(name,'data-theme-material');materialThemeActive=active;}
         },
@@ -203,6 +200,11 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
       window:{matchMedia:()=>systemTheme,addEventListener:(type,callback)=>{listeners[type]=callback;}}
     });
     assert.equal(dataset.iconStyle,'track-platinum');
+    assert.equal(iconSizeStyle['--icon-size-tablet'],'1.2');
+    documentListeners.input({target:{dataset:{iconSize:'tablet'},value:'125'}});
+    assert.equal(iconSizeStyle['--icon-size-tablet'],'1.25');
+    assert.equal(JSON.parse(preferences.get('a4-icon-sizes-v1')).phone,90);
+    assert.equal(JSON.parse(preferences.get('a4-icon-sizes-v1')).desktop,105);
     assert.equal(dataset.iconSurface,'glass');
     assert.equal(dataset.palette,'leather-ivory');
     assert.equal(dataset.theme,'light');
@@ -298,7 +300,7 @@ test('saved icon collection and site theme apply before the stylesheet on all pa
 
 test('button upholstery presets and independent options keep one complete saved finish',async()=>{
   const client=browser();
-  const {result:script}=await client.go('/appearance.js?v=11');
+  const {result:script}=await client.go('/appearance.js?v=12');
   const {result:html}=await client.go('/');
   const buttonFinishChoices=html.match(/data-button-finish-choices="([^"]+)"/)[1].replaceAll('&quot;','"');
   const buttonFinishPresets=html.match(/data-button-finish-presets="([^"]+)"/)[1].replaceAll('&quot;','"');
@@ -322,15 +324,7 @@ test('button upholstery presets and independent options keep one complete saved 
   assert.equal((menu.match(/class="btn primary button-finish-preview-button"/g)||[]).length,1);
   assert.match(menu,/<span class="button-embroidery-label">Dodaj ogłoszenie<\/span>/);
   assert.equal((menu.match(/\bdata-button-embroidery-choice\b/g)||[]).length,6);
-  assert.match(menu,/Bespoke Studio — materiały i wykończenia/);
-  assert.doesNotMatch(menu,/RGB \/ OLED|Gotowe Zestawy|Advanced Border System|100 zestawów ikon|20 wariantów logo/);
-  assert.equal((menu.match(/data-uve-preset="\d+"/g)||[]).length,0);
-  for(const field of ['bgMaterial','buttonMaterial','stitchType','oledPureBlack']) {
-    assert.ok(menu.includes(`data-uve-field="${field}"`),field);
-  }
-  assert.equal((menu.match(/data-uve-field="ambientColor"/g)||[]).length,0);
-  const bespokeMenu=menu.slice(menu.indexOf('Bespoke Studio'),menu.indexOf('button-finish-preview-dock'));
-  assert.doesNotMatch(bespokeMenu,/Ciepły Bursztyn|Czerwień Rosso|Animacja|Ramki LED|Neon/);
+  assert.doesNotMatch(menu,/Bespoke Studio|data-uve-root|data-uve-field=/);
   const {result:ambientCss}=await client.go('/styles.css?v=no-led-1');
   assert.doesNotMatch(ambientCss,/data-uve-ambient-enabled=true|uve-ambient-colors/);
   assert.doesNotMatch(menu,/Podświetlenie ogłoszeń|Siła podświetlenia|Kolor podświetlenia/);
@@ -342,13 +336,11 @@ test('button upholstery presets and independent options keep one complete saved 
     'data-appearance-icon-group="collections"', 'data-appearance-section="buttons"',
     'data-appearance-button-group="upholstery"', 'data-appearance-button-axis="embroidery"', 'data-appearance-button-axis="color"',
     'data-appearance-button-axis="material"', 'data-appearance-button-axis="stitch"',
-    'data-appearance-button-axis="thread"', 'data-appearance-button-axis="hardware-metal"',
-    'data-appearance-button-axis="hardware-fasteners"', 'data-appearance-button-axis="hardware-piping"',
-    'data-appearance-button-axis="hardware-strap"', 'data-appearance-button-axis="hardware-trim"',
-    'data-appearance-button-axis="hardware-lettering"', 'data-appearance-button-axis="hardware-plaque"',
+    'data-appearance-button-axis="thread"',
     'data-appearance-button-group="account-style"',
     'data-appearance-button-group="account-colors"'
   ];
+  assert.doesNotMatch(menu,/data-appearance-button-axis="hardware-metal"/);
   assert.ok(ordered.map(section=>menu.indexOf(section)).every((index,i,indices)=>index>=0&&(!i||index>indices[i-1])),
     'appearance menu shows the board before small icon groups and all button settings');
   for (const brand of ['ferrari','porsche','bentley','rolls-royce','lamborghini','maybach','aston-martin','pagani-bugatti']) assert.ok(html.includes('data-button-finish-palette="'+brand+'"'));
@@ -368,7 +360,7 @@ test('button upholstery presets and independent options keep one complete saved 
 
   runInNewContext(script,{
     document:{
-      documentElement:{dataset,toggleAttribute(){},addEventListener:(type,callback)=>{rootListeners[type]=callback;}},
+      documentElement:{dataset,style:{setProperty(){}},toggleAttribute(){},addEventListener:(type,callback)=>{rootListeners[type]=callback;}},
       querySelectorAll:selector=>({
         'input[data-button-finish-preset]':controls,
         'input[data-button-finish-field]':fieldControls,
@@ -760,6 +752,13 @@ test('07 · combined filters, sorting, pagination, comparison and direct URLs',a
   assert.equal(taycan.offers[0].slug,'przyklad-113');
   assert.equal((await guest.go('/api/search?make=Porsche&model=Taycan')).result.total,0);
   assert.equal((await guest.go('/demo/api/search?make=Lamborghini')).result.total,4);
+  const brandHome=(await guest.go('/demo')).result;
+  assert.match(brandHome,/href="\/demo\/szukaj\?type=car&amp;make=Lamborghini"[^>]*aria-label="Ogłoszenia marki Lamborghini"/);
+  const {lamborghini:logoFile}=JSON.parse(await readFile('public/assets/marques/manifest.json','utf8'));
+  assert.ok(logoFile&&brandHome.includes('/assets/marques/'+logoFile));
+  const brandOffers=(await guest.go('/demo/api/search?type=car&make=Lamborghini')).result;
+  assert.equal(brandOffers.total,4);
+  assert.ok(brandOffers.offers.every(offer=>offer.make==='Lamborghini'));
   assert.equal((await guest.go('/demo/api/search?make=Ferrari')).result.total,7);
   assert.equal((await guest.go('/api/search?make=Ferrari')).result.total,0);
   assert.equal((await guest.go('/demo/api/search?type=quad')).result.offers[0].model,'CFORCE 520');
@@ -795,8 +794,12 @@ test('07 · combined filters, sorting, pagination, comparison and direct URLs',a
     assert.ok([...mainTiles,...homeVariants].every(tile=>tile.filter));
     const homeLinks=new Set([...mainTiles,...homeVariants].map(tile=>tile.url));
     assert.equal(homeLinks.size,expectedTypes.length+homeVariants.length,path);
-    assert.match(html,/class="robot-entry-banner"[^>]*>[\s\S]*?<\/a>\s*<\/div><script type="module" src="\/assets\/china-market/);
-    assert.ok(html.indexOf('class="robot-entry-banner"')>html.indexOf('data-china-market'));
+    const carousel=html.slice(html.indexOf('data-ad-carousel'),html.indexOf('data-china-market'));
+    assert.match(carousel,/class="robot-entry-banner"[^>]*>[\s\S]*?<\/a>/);
+    assert.match(carousel,/data-banner-id="robots-automation"/);
+    assert.match(carousel,/data-banner-id="spawn-rent"[\s\S]*?href="https:\/\/spawnrent\.pl\/"[^>]*>[\s\S]*?spawn-rent-banner\.webp/);
+    assert.doesNotMatch(carousel,/data-ad-previous|data-ad-forward/);
+    assert.ok(html.indexOf('class="robot-entry-banner"')<html.indexOf('data-china-market'));
     for (const anchor of ['odmiany-rekreacyjne','odmiany-transportu','samochody-i-kampery','motocykle-i-rekreacja','transport-i-maszyny']) {
       assert.ok(html.includes(`id="${anchor}"`),anchor);
     }
@@ -857,8 +860,56 @@ test('07 · combined filters, sorting, pagination, comparison and direct URLs',a
     assert.ok(form.includes('name="q"'));
     assert.ok(form.includes('name="body"'));
     assert.ok(form.includes('name="minPrice"')&&form.includes('name="maxPrice"'));
-    assert.ok(!form.includes('name="make"')&&!form.includes('name="model"'));
+    assert.ok(form.includes('name="make"')&&form.includes('name="model"'));
     assert.match(form,/Felgi 17 cali/);
+  }
+  const variantKeys=Object.keys(vehicleTypes).flatMap(type=>catalogBodyGroups(type).flatMap(group=>
+    Object.keys(group.bodies).map(body=>`${type}:${body}`)));
+  for (const path of ['/', '/szukaj', '/demo', '/demo/szukaj']) {
+    const html=path==='/demo'?homepage:(await guest.go(path)).result;
+    const categorySelect=html.match(/<select[^>]*data-filter-type[^>]*>([\s\S]*?)<\/select>/)?.[1];
+    assert.ok(categorySelect,path);
+    const choices=new Set([...categorySelect.matchAll(/<option value="([^"]+)"/g)].map(match=>match[1]));
+    for (const key of variantKeys) assert.ok(choices.has(key),`${path} · ${key}`);
+    if (!path.startsWith('/demo')) continue;
+    const dataAttribute=html.match(/\bdata-catalog="([^"]+)"/)[1];
+    const catalog=JSON.parse(dataAttribute.replaceAll('&quot;','"').replaceAll('&#39;',"'").replaceAll('&lt;','<').replaceAll('&gt;','>').replaceAll('&amp;','&'));
+    for (const {type,body,make,model} of offers) {
+      for (const key of ['',type,`${type}:${body}`]) {
+        assert.ok(catalog[key]?.[make]?.includes(model),`${path} · ${key} · ${make} ${model}`);
+      }
+    }
+  }
+  // These combinations should be selectable even before a seller publishes local stock.
+  for (const [category,make,model,unrelatedModel] of [
+    ['marine_air:motor_boat_rib','Beneteau','Antares 8','Oceanis 34.1'],
+    ['marine_air:motor_boat_rib','Bayliner','Element E16','Oceanis 34.1'],
+    ['marine_air:motor_boat_rib','Bayliner','VR5','Oceanis 34.1'],
+    ['marine_air:jet_ski','Yamaha','FX Cruiser','Kodiak 450'],
+    ['marine_air:jet_ski','Yamaha','GP HO','Kodiak 450'],
+    ['marine_air:ultralight','Tecnam','P92','Calidus'],
+    ['marine_air:ultralight','Tecnam','P2002','Calidus'],
+    ['marine_air:catamaran','Lagoon','43','Antares 8'],
+    ['camper:camper_van','Volkswagen','Grand California','Tiguan'],
+    ['quad:atv_youth','CFMOTO','CFORCE 110','CFORCE 625'],
+    ['camper:camper_integrated','Adria','Supersonic','Twin Supreme'],
+    ['quad:atv_sport','Yamaha','YFZ450R','Kodiak 450']
+  ]) {
+    const params=new URLSearchParams({category,make});
+    const {result:html}=await guest.go('/szukaj?'+params);
+    const modelOptions=html.match(/<select[^>]*data-filter-model[^>]*>([\s\S]*?)<\/select>/)?.[1];
+    assert.ok(modelOptions?.includes(`value="${model}"`),params.toString());
+    assert.ok(!modelOptions.includes(`value="${unrelatedModel}"`),params.toString());
+    params.set('model',model);
+    assert.equal((await guest.go('/api/search?'+params)).result.total,0);
+  }
+  const partsFallback=await guest.go('/szukaj?category=parts:rims_17&make=Michelin');
+  assert.match(partsFallback.result,/<select[^>]*data-filter-model[^>]*>(?:(?!<\/select>)[\s\S])*?value="Pilot Sport"/);
+  for (const {type,body,make,model,slug} of offers) {
+    const query=new URLSearchParams({category:`${type}:${body}`,make,model});
+    const matches=(await guest.go('/demo/api/search?'+query)).result;
+    assert.ok(matches.offers.some(offer=>offer.slug===slug),query.toString());
+    assert.ok(matches.offers.every(offer=>offer.type===type&&offer.make===make&&offer.model===model),query.toString());
   }
   const result=(await guest.go('/demo/api/search?fuel=hybrid&condition=used&make=Toyota&model=Corolla&minPrice=70000')).result;
   assert.equal(result.total,1);
@@ -1167,6 +1218,10 @@ test('banner statistics count live impressions and destination clicks per banner
   await send('all4rent-rental','click');
   await send('all4rent-advertise','impression');
   await send('jcb-rental','impression');
+  await send('spawn-rent','impression');
+  await send('spawn-rent','click');
+  await send('robots-automation','impression');
+  await send('robots-automation','click');
   await send('jcb-rental','click',422);
   await send('unlisted-banner','impression',422);
   await send('all4rent-rental','swipe',422);
@@ -1182,7 +1237,9 @@ test('banner statistics count live impressions and destination clicks per banner
     assert.match(html,/data-banner-stat="all4rent-rental"><th scope="row">ALL4RENT – wynajem<\/th><td>4<\/td><td>1<\/td>/);
     assert.match(html,/data-banner-stat="all4rent-advertise"><th scope="row">[^<]+<\/th><td>1<\/td><td>0<\/td>/);
     assert.match(html,/data-banner-stat="jcb-rental"><th scope="row">[^<]+<\/th><td>1<\/td><td>0<\/td>/);
-    assert.match(html,/<tfoot><tr><th scope="row">Razem<\/th><td>7<\/td><td>2<\/td>/);
+    assert.match(html,/data-banner-stat="spawn-rent"><th scope="row">[^<]+<\/th><td>1<\/td><td>1<\/td>/);
+    assert.match(html,/data-banner-stat="robots-automation"><th scope="row">[^<]+<\/th><td>1<\/td><td>1<\/td>/);
+    assert.match(html,/<tfoot><tr><th scope="row">Razem<\/th><td>9<\/td><td>4<\/td>/);
     assert.match(html,/Nazwa testowa QA · Baner testowy PL/);
   }
 });
@@ -1235,9 +1292,6 @@ test('demo showcase serves three distinct photos per listing and full-width deta
     assert.doesNotMatch(page,/data-copy-vin=/);
     assert.match(page,/class="panel offer-section"><summary>[^<]*<svg[^>]*>.*?<span>Opis sprzedawcy<\/span>/s);
     assert.match(page,/data-gallery-autoplay/);
-    assert.match(page,/>Napisz wiadomość</);
-    assert.match(page,/>Umów oględziny</);
-    assert.match(page,/>Rolki</);
     const frames=JSON.parse(page.match(/data-gallery="([^"]+)"/)[1].replaceAll('&quot;','"'));
     assert.equal(frames.length,3);
     assert.equal(new Set(frames.map(frame=>frame.url)).size,3);
@@ -1567,7 +1621,7 @@ test('demo photo reels link to the matching listing, photos, and seller',async()
   assert.equal((feed.match(/data-photo-reel>/g)||[]).length,demoListingCount);
   assert.match((await guest.go('/demo/oferta/przyklad-113')).result,/href="\/demo\/rolki\/przyklad-113"/);
   const reel=(await guest.go('/demo/rolki/przyklad-113')).result;
-  assert.match(reel,/<script src="\/appearance.js\?v=11">/);
+  assert.match(reel,/<script src="\/appearance.js\?v=12">/);
   assert.match(reel,/data-reels-next data-button-finish-action="icon"/);
   const firstSlide=reel.slice(reel.indexOf('data-photo-reel>')).split('</article>',1)[0];
   assert.match(firstSlide,/<h2>Porsche Taycan<\/h2>/);
@@ -1578,10 +1632,12 @@ test('demo photo reels link to the matching listing, photos, and seller',async()
   assert.match(firstSlide,/Napisz wiadomość/);
   assert.match(firstSlide,/Umów oględziny/);
   assert.match(firstSlide,/Sprawdź VIN|Zapytaj o VIN/);
-  const detailsPanel=firstSlide.slice(firstSlide.indexOf('data-reel-panel="details"'));
+  const detailsPanel=firstSlide.slice(firstSlide.indexOf('data-reel-panel="details"'),firstSlide.indexOf('data-reel-panel-controls'));
   assert.doesNotMatch(detailsPanel,/<img /);
   assert.ok(firstSlide.indexOf('data-reel-panel="photos"')<firstSlide.indexOf('data-reel-panel="media"'));
   assert.ok(firstSlide.indexOf('data-reel-panel="media"')<firstSlide.indexOf('data-reel-panel="details"'));
+  assert.match(firstSlide,/reel-photo-contact[\s\S]*?href="\/demo\/oferta\/przyklad-113"/);
+  assert.match(detailsPanel,/<details class="reel-data-section">/);
   assert.match(firstSlide,/Film nie został dodany/);
   const photoStack=firstSlide.slice(firstSlide.indexOf('<div class="reel-photo-stack'),firstSlide.indexOf('</div>',firstSlide.indexOf('<div class="reel-photo-stack')));
   assert.equal((photoStack.match(/<img /g)||[]).length,3);

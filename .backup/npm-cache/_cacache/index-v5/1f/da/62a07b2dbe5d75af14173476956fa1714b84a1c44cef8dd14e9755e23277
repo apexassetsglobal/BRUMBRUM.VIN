@@ -1,2 +1,0 @@
-
-a650150aac8b22f92ada9f19f4832226092d3eb3	{"key":"make-fetch-happen:request-cache:https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.12.tgz","integrity":"sha512-8bwX7a8FghIgrupcxb4aUmYDLp8pX06rGh5HqDT7bB+8Rdells6mHvrFHHW2JAOPZUbnjUpKTLg6ECyzvas2AQ==","time":1795722714365,"size":4042485,"metadata":{"time":1795722714342,"url":"https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.12.tgz","reqHeaders":{},"resHeaders":{"content-type":"application/octet-stream","cache-control":"public,max-age=31536000,immutable"},"options":{"compress":true}}}

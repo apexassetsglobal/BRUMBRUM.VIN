@@ -13,6 +13,7 @@ async function bannerStatistics(ctx,stats,numbers) {
   const range=Object.hasOwn(periods,selected)?selected:'all';
   const [active,counts]=await Promise.all([activeBanners(ctx),readBannerStats(ctx.db,range,stats.todayDate)]);
   const labels=new Map([[houseBannerId,ctx.brand.name+' – '+t('Kupuj i sprzedawaj pojazdy','Buy and sell vehicles')],
+    ['robots-automation',t('Roboty i automatyka','Robots and automation')],
     ...carouselBanners(ctx).map(banner=>[banner.id,t(...banner.title)])]);
   function managedLabel(banner) {
     const title=ctx.lang==='pl'?banner.title_pl:banner.title_en||banner.title_pl;

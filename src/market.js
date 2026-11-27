@@ -2,7 +2,6 @@ import { after, changes, conflict, digest, fail, forbidden, id, integer, isId, i
 import { catalogFor, demoGalleries, featureKeys, options } from './data.js';
 import { cleanImage, maxUpload, objectImage, thumbLimit } from './images.js';
 import { semiTrailerBodies, vehicleProfile } from './vehicle-types.js';
-import { heavyVehicleFilters } from './vehicle-catalog.js';
 import { videoLimit, videoMime, videoObject } from './videos.js';
 import { moderationStatement, saveSubmission, statusNotice } from './listing-review.js';
 import { robotDefaultData, validateRobotListing } from './robot-catalog.js';
@@ -185,7 +184,7 @@ export async function search(ctx, params, settings = {}) {
   const category=text(params.get('category'),100);
   if (category && !robotics) {
     const [type,body]=category.split(':');
-    if (Object.hasOwn(heavyVehicleFilters,body)&&heavyVehicleFilters[body][0]===type) {
+    if (type&&body&&category===type+':'+body) {
       values.type=type;
       if (body!=='semi_trailer'||!semiTrailerBodies.includes(values.body)) values.body=body;
     } else {

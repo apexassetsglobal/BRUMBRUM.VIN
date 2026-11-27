@@ -4,6 +4,7 @@ import { companyReels, feedReels, listingReel } from './reels.js';
 import { demoGalleries, demoListingCount, ensureDemo, features } from './data.js';
 import { byId, hydrate, phoneFor, search, spinLimits } from './market.js';
 import { robotRentalUnits } from './robot-catalog.js';
+import { specs } from './views-market.js';
 import { apiForm, buttonEmbroideryLabel, choice, day, e, field, formStatus, href, icon, link, localized, panel, price, sectionHead, submit, titleOf } from './ui.js';
 
 function reelCards(ctx,reels,manage=false) {
@@ -85,32 +86,27 @@ function reelCall(ctx,phone) {
 }
 
 const financeEligibleTypes=new Set(['car','van','truck','garden','farm','construction','forestry','industrial','special']);
-const reelDataBlock=(ctx,title,symbol,body)=>`<section class="reel-data-block"><h3>${icon(symbol,19)}<span>${title}</span></h3>${body}</section>`;
+const reelDataBlock=(ctx,title,symbol,body)=>`<details class="reel-data-section"><summary>${icon(symbol,19)}<span>${title}</span>${icon('down',19)}</summary><div>${body}</div></details>`;
 
 function reelFullData(ctx,offer) {
   const t=ctx.t;
-  const specification=[
-    [t('Rodzaj pojazdu','Vehicle type'),localized(ctx,'type',offer.type)],[t('Marka','Make'),offer.make],[t('Model','Model'),offer.model],
-    [t('Wersja','Trim'),offer.variant],[t('Moc','Power'),offer.power?offer.power+' '+(offer.powerUnit||'KM'):'' ],
-    [t('Napęd','Drivetrain'),localized(ctx,'drive',offer.drive)],[t('Kolor','Color'),offer.color],
-    [t('Kraj pochodzenia','Country of origin'),offer.countryOrigin],[t('Pierwsza rejestracja','First registration'),offer.registered]
-  ].filter(([,value])=>value&&value!=='—');
   const equipment=Object.values(features).flatMap(([, ,choices])=>Object.entries(choices)
     .filter(([key])=>offer.equipment?.includes(key)).map(([,pair])=>ctx.t(pair[0],pair[1])));
   const extras=Array.isArray(offer.importEquipment)?offer.importEquipment:[];
   const history=[offer.damage?`${t('Uszkodzenia','Damage')}: ${localized(ctx,'damage',offer.damage)}`:'',offer.history].filter(Boolean);
-  const financing=financeEligibleTypes.has(offer.type)&&Number(offer.price)>0?reelDataBlock(ctx,t('Finansowanie / leasing','Financing / leasing'),'sliders',`<p>${t('Finansowanie dostępne dla tej oferty.','Financing is available for this listing.')}</p>`):'';
+  const financing=financeEligibleTypes.has(offer.type)&&Number(offer.price)>0?reelDataBlock(ctx,t('Finansowanie / leasing','Financing / leasing'),'sliders',link(ctx,'/oferta/'+offer.slug+'#finansowanie',t('Zobacz możliwości w ogłoszeniu','See options in the listing'),'btn','arrow')):'';
   const vin=String(offer.vin||'').trim();
   return `<div class="reel-data-content">
     <dl class="reel-detail-facts">${[
-      ['calendar',t('Rok produkcji','Year'),offer.year],['gauge',t('Przebieg','Mileage'),offer.mileage?offer.mileage+' km':'—'],
+      ['calendar',t('Rok produkcji','Year'),offer.year],['gauge',t('Przebieg','Mileage'),offer.mileage!=null&&offer.mileage!==''?offer.mileage+' km':'—'],
       ['fuel',t('Paliwo','Fuel'),localized(ctx,'fuel',offer.fuel)],['gear',t('Skrzynia biegów','Transmission'),localized(ctx,'gearbox',offer.gearbox)]
     ].filter(([, ,value])=>value&&value!=='—').map(([symbol,label,value])=>`<div>${icon(symbol,25)}<span><dt>${e(label)}</dt><dd>${e(value)}</dd></span></div>`).join('')}</dl>
-    ${specification.length?reelDataBlock(ctx,t('Pełna specyfikacja','Full specifications'),'sliders',`<dl class="reel-full-specs">${specification.map(([label,value])=>`<div><dt>${e(label)}</dt><dd>${e(value)}</dd></div>`).join('')}</dl>`):''}
+    <div class="reel-all-data">${reelDataBlock(ctx,t('Opis sprzedawcy','Seller description'),'message',`<p class="prose">${e(offer.description||t('Brak opisu sprzedawcy.','No seller description.'))}</p>`)}
+    ${reelDataBlock(ctx,t('Pełna specyfikacja','Full specifications'),'sliders',specs(ctx,offer,'reel-full-specs'))}
     ${(equipment.length||extras.length)?reelDataBlock(ctx,t('Wyposażenie','Equipment'),'check',`<ul class="reel-equipment-list">${[...equipment,...extras].map(item=>`<li>${icon('check',16)}${e(item)}</li>`).join('')}</ul>`):''}
     ${history.length?reelDataBlock(ctx,t('Historia i stan','History and condition'),'shield',`<p>${e(history.join('\n'))}</p>`):''}
     ${financing}
-    ${reelDataBlock(ctx,t('Dane ogłoszenia','Listing details'),'calendar',`<p>${t('Opublikowano','Published')}: ${e(day(ctx,offer.published_at))}</p>`)}
+    ${reelDataBlock(ctx,t('Dane ogłoszenia','Listing details'),'calendar',`<p>${t('Opublikowano','Published')}: ${e(day(ctx,offer.published_at))}</p>`)}</div>
     <div class="reel-detail-actions">
       ${link(ctx,'/oferta/'+offer.slug+'?kontakt=wiadomosc',t('Napisz wiadomość','Send a message'),'btn primary','message',{buttonFinish:true})}
       ${link(ctx,'/oferta/'+offer.slug+'?kontakt=ogledziny',t('Umów oględziny','Arrange a viewing'),'btn','calendar',{buttonFinish:true})}
@@ -139,12 +135,11 @@ function photoReel(ctx,offer,phone) {
         <h2>${e(name)}</h2>
         ${offer.variant?`<p class="reel-detail-model">${e(offer.variant)}</p>`:''}
         ${reelPrice(ctx,offer)}
-        <p>${e(offer.description||t('Opis sprzedawcy jest dostępny w ogłoszeniu.','The seller description is available in the listing.'))}</p>
         ${reelFullData(ctx,offer)}
       </div>
     </section>`;
   return `<article class="reel-slide" data-reel-slide data-photo-reel>
-    <div class="reel-panel-track" data-reel-panel-track aria-label="${t('Przesuwaj w bok: zdjęcia, filmy i opis','Swipe sideways: photos, videos and description')}">
+    <div class="reel-panel-track" data-reel-panel-track aria-label="${t('Przesuwaj w bok: zdjęcia, film i dane','Swipe sideways: photos, video and details')}">
       <section class="reel-panel reel-photos-panel" data-reel-panel="photos">
         <div class="reel-photo-stack" style="--photo-count:${Math.min(3,photos.length)}" role="group" aria-label="${e(name+' · '+t('Zdjęcia','Photos'))}">
           ${photos.map((shot,index)=>`<img src="${e(shot.thumb||shot.url)}"
@@ -162,6 +157,7 @@ function photoReel(ctx,offer,phone) {
           ${offer.variant?`<p>${e(offer.variant)}</p>`:''}
           ${reelPrice(ctx,offer)}
         </div>
+        <div class="reel-photo-contact">${reelCall(ctx,phone)}${link(ctx,'/oferta/'+offer.slug,t('Przejdź do ogłoszenia','Go to listing'),'btn reel-listing-link','arrow',{buttonFinish:true})}</div>
         <button class="reel-info-tab" type="button" data-reel-info-tab data-button-finish-action aria-expanded="true" aria-label="${t('Pokaż nagłówek ogłoszenia','Show listing heading')}">${icon('back',18)}<span>${t('Pokaż cenę i model','Show price and model')}</span></button>
       </section>
       ${media}${details}

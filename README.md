@@ -1,21 +1,14 @@
 # BRUMBRUM.VIN
 
-Polski portal kupna i sprzedaży pojazdów. Katalog, panele i demo korzystają z tego samego interfejsu renderowanego przez serwer. Wdrożenie na własnym serwerze używa SQLite i katalogu z obrazami. Wariant Worker korzysta z D1 oraz R2. Pełny katalog demonstracyjny w wersji Node ma 113 pozycji. Po wybraniu roli przeglądarka otrzymuje własny obszar demonstracyjny.
+Polski portal kupna i sprzedaży pojazdów. Katalog, panele i demo korzystają z tego samego interfejsu renderowanego przez serwer. Wdrożenie na własnym serwerze używa SQLite i katalogu z obrazami. Wariant Worker korzysta z D1 oraz R2. Demo ma osobny zakres danych, 112 przykładowych pojazdów i odrębny obszar roboczy dla każdej przeglądarki. Każda kategoria i odmiana ma przynajmniej jedną ofertę demonstracyjną.
 
-Otwórz w VS Code folder zawierający ten plik i `package.json`. Uruchom aplikację z terminala według poleceń poniżej. Podgląd w edytorze, odświeżanie zmian i bezpieczny import do prywatnego repozytorium opisuje [instrukcja uruchomienia](docs/URUCHOMIENIE.md). Zasady pracy z kodem znajdziesz w [AGENTS.md](AGENTS.md) i [instrukcjach Copilota](.github/copilot-instructions.md).
-
-Pliki odpowiadające konkretnym widokom i funkcjom znajdziesz w [mapie aplikacji](MAPA_APLIKACJI.md). Trasy opisuje [dokumentacja API](docs/API.md), a działanie aparatu i prezentacji zdjęć omawia [Smart Camera 360° Studio](SMART-CAMERA.md).
+Architekturę personalizacji dźwięków opisuje [Sound Garage](docs/SOUND-GARAGE.md).
 
 ## Uruchomienie lokalne
 
-Kopia wersji 284 zawiera wszystkie pakiety potrzebne do instalacji bez internetu. Otwórz plik [BRUMBRUM-VIN.code-workspace](BRUMBRUM-VIN.code-workspace) w rozpakowanym folderze i wykonaj polecenie z [instrukcji instalacji offline](docs/ZALEZNOSCI.md). Okno podglądu w VS Code można umieścić obok edytowanego pliku.
-
-[Raport kompletności i testów](RAPORT_EKSPORTU.md) · [Stan hostingu](docs/STAN_HOSTINGU.md) · [Wdrożenie](docs/WDROZENIE.md) · [Odtworzenie oryginalnego drzewa źródeł](docs/ODTWORZENIE.md)
-
-Wymagany jest Node.js 24 lub nowszy. Przed pierwszym startem zainstaluj wersje zależności zapisane w `package-lock.json`.
+Wymagany jest Node.js 24 lub nowszy. Aplikacja działająca na Node nie wymaga pakietów z npm do uruchomienia.
 
 ```sh
-npm ci
 npm run dev
 ```
 
@@ -40,11 +33,11 @@ node --env-file=.env server.mjs
 | Zmienna | Zastosowanie |
 | --- | --- |
 | `APP_MODE` | `development` do pracy lokalnej lub `production` na własnym serwerze |
-| `APP_ORIGIN` | W produkcji dokładny adres HTTPS bez ukośnika na końcu. Lokalnie pozostaw puste, aby Node używał adresu żądania |
+| `APP_ORIGIN` | Dokładny adres HTTPS bez ukośnika na końcu. Wymagany w produkcji i dla linków e-mail |
 | `HOST`, `PORT` | Adres i port nasłuchu Node. Przy wdrożeniu ustaw reverse proxy z HTTPS |
 | `DATA_DIR` | Katalog bazy i obrazów dla Node |
 | `MAIL_API_KEY`, `MAIL_FROM` | Klucz i adres nadawcy transakcyjnego w zweryfikowanej domenie. Dostawca to Resend |
-| `OWNER_EMAIL` | Adres pierwszego administratora. Właściciel ustawia własny adres w prywatnej konfiguracji serwera |
+| `OWNER_EMAIL` | E-mail pierwszego administratora. Domyślnie `{{BRUMBRUM_SOURCE_RESTORE_OWNER_EMAIL_776E2D9C}}` |
 | `OWNER_SETUP_TOKEN` | Losowy sekret serwera używany raz przy aktywacji właściciela. Co najmniej 32 znaki |
 | `IMPORT_IMAGE_ORIGINS` | Opcjonalna lista dokładnych źródeł HTTPS, oddzielonych przecinkami. Bez niej import obsługuje zdjęcia własnych ofert i przykładowe zdjęcia w demo |
 | `PUBLIC_INDEXING` | Ustaw `1` po uruchomieniu publicznej domeny, by odblokować indeksowanie publicznych stron |
@@ -57,7 +50,7 @@ W sekcji **Administracja → Banery** pole **Nazwa firmy** ustawia nazwę widocz
 ## Dostęp właściciela
 
 1. Skonfiguruj `APP_ORIGIN`, pocztę i `OWNER_SETUP_TOKEN` po stronie serwera. Losową wartość możesz utworzyć poleceniem `openssl rand -hex 32`.
-2. W prywatnej konfiguracji serwera ustaw `OWNER_EMAIL` na własny adres. Zarejestruj konto z tym adresem, otwórz link otrzymany w tej skrzynce i potwierdź hasłem rejestracji. Następnie zaloguj się do serwisu.
+2. Zarejestruj `{{BRUMBRUM_SOURCE_RESTORE_OWNER_EMAIL_776E2D9C}}`, otwórz link z tej skrzynki i potwierdź hasłem rejestracji. Następnie zaloguj się do serwisu.
 3. Otwórz **Konto → Skonfiguruj dostęp właściciela** albo `/dostep-wlasciciela`. Wprowadź sekret konfiguracji. Serwer sprawdza potwierdzony adres, sekret i brak innego aktywnego administratora.
 4. Otwórz `/administracja`. Role zweryfikowanych użytkowników ustawisz w sekcji **Użytkownicy**. Po jednorazowym uruchomieniu usuń `OWNER_SETUP_TOKEN` z konfiguracji. Serwer odnotowuje aktywację oraz zmiany ról.
 

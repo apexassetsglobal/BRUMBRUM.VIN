@@ -1,2 +1,0 @@
-
-263b18f6204da38ed942f8385d5ab8b1663f2fbb	{"key":"make-fetch-happen:request-cache:https://registry.npmjs.org/xmlchars/-/xmlchars-2.2.0.tgz","integrity":"sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==","time":1795722720446,"size":11752,"metadata":{"time":1795722720367,"url":"https://registry.npmjs.org/xmlchars/-/xmlchars-2.2.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"application/octet-stream","cache-control":"public,max-age=31536000,immutable"},"options":{"compress":true}}}

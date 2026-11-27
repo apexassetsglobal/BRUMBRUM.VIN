@@ -20,7 +20,7 @@ export function installPage(ctx) {
   const title=t('Zainstaluj aplikację','Install the app');
   return {title,body:wrap(`
     <section class="device-intro">
-      <img src="/assets/icon-192.png?v=emblem" width="80" height="80" alt="">
+      <img src="/assets/icon-192.png?v=engine-start" width="80" height="80" alt="">
       <div>
         <h1>${e(title)}</h1>
         <p>${t('Dodaj aplikację do ekranu głównego, by otwierać ogłoszenia, ulubione i wiadomości jednym dotknięciem.','Add the app to your home screen for one-tap access to listings, saved vehicles and messages.')}</p>

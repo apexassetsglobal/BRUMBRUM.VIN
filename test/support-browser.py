@@ -57,8 +57,8 @@ def run(browser, base, directory):
 
     optional = draft()
     page.goto(base + "/podglad/" + optional)
-    page.locator(".support-choice summary").click()
     expect(page.locator('button[name="support"]')).to_have_count(4)
+    expect(page.locator('button[name="support"]').first).to_be_visible()
     page.locator('button[name="support"][value="v8-club"]').click()
     expect(page).to_have_url(base + "/wsparcie?ogloszenie=" + optional + "&pakiet=v8-club")
     expect(page.locator(".support-package")).to_have_count(4)
@@ -75,8 +75,6 @@ def run(browser, base, directory):
         for route in ["/wsparcie", "/wsparcie/powrot?session_id=cs_live_unconfirmed", "/podglad/" + pending]:
             response = page.goto(base + route)
             assert response.status == 200, (width, route, response.status)
-            if route.startswith("/podglad/"):
-                page.locator(".support-choice summary").click()
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (width, route, "horizontal overflow")
             for button in page.locator(".support-grid button").all():
                 box = button.bounding_box()

@@ -6,15 +6,21 @@ import { bodyFeatureOverrides, vehicleBodyChoices, vehicleProfile } from './vehi
 import { csvFields, robotCsvFields } from './dealer.js';
 import { photoDetailLabels, spinLimits } from './market.js';
 import { videoLimit } from './videos.js';
-import { apiForm, appearanceControls, area, buttonEmbroideryLabel, check, choice, day, e, embed, empty, field, flash, formStatus, hidden, href, icon, keyInput, km, lang, link, localized, pageHead, panel, pillCount, price, sectionHead, submit, tag, titleOf, wrap } from './ui.js';
+import { apiForm, appearanceControls, area, buttonEmbroideryLabel, check, choice, day, e, embed, empty, field, flash, formStatus, hidden, href, icon, keyInput, km, lang, link as uiLink, localized, pageHead, panel, pillCount, price, sectionHead, submit as uiSubmit, tag, titleOf, wrap } from './ui.js';
 import { reportDialog } from './views-market.js';
 import { languages } from './i18n.js';
 import { supportChoices, supportInvitation } from './views-support.js';
 
 const stringOptions=values=>Object.fromEntries(values.map(x=>[x,x]));
+const link=(ctx,path,label,cls='btn',symbol='',settings={})=>uiLink(ctx,path,label,cls,symbol,
+  cls.split(/\s+/).includes('btn')&&!cls.split(/\s+/).includes('danger')?{...settings,buttonFinish:true}:settings);
+const submit=(name,symbol='',cls='btn primary')=>{
+  const html=uiSubmit(name,symbol,cls);
+  return cls.split(/\s+/).includes('btn')&&!cls.split(/\s+/).includes('danger')?html.replace('<button ', '<button data-button-finish-action '):html;
+};
 const cardTitle = (ctx,offer) => titleOf(offer)||ctx.t('Nienazwany szkic','Untitled draft');
-const ownerEmail = ctx => emailOf(ctx.env.OWNER_EMAIL);
-const canClaim = ctx => !ctx.demo && !!ctx.user?.email && ctx.user.email===ownerEmail(ctx) && ctx.user.role!=='admin' && (ctx.env.OWNER_SETUP_TOKEN||'').length>=32;
+const ownerEmail = ctx => emailOf(ctx.env.OWNER_EMAIL||'{{BRUMBRUM_SOURCE_RESTORE_OWNER_EMAIL_776E2D9C}}');
+const canClaim = ctx => !ctx.demo && ctx.user?.email===ownerEmail(ctx) && ctx.user.role!=='admin' && (ctx.env.OWNER_SETUP_TOKEN||'').length>=32;
 
 function menuRow(symbol,title,description='',badge='') {
   return `<span class="account-menu-icon">${icon(symbol,24)}</span>
@@ -178,12 +184,12 @@ export async function account(ctx) {
   return {...menuPage(t('Twoje konto','Your account'),'user',
     accountIdentity(ctx,'/konto#ustawienia-konta',t('Zarządzaj kontem','Manage account'))+
     `<div class="account-menu-columns account-dashboard">
-      ${menuGroup(t('Aktywność','Activity'),activity,{id:'aktywnosc'})}
-      ${menuGroup(t('Ogłoszenia','Listings'),listings,{id:'ogloszenia'})}
+      <div>${menuGroup(t('Aktywność','Activity'),activity,{id:'aktywnosc'})}
       ${menuGroup(t('Usługi','Services'),
         menuLink(ctx,'/uslugi','pin',t('Usługi motoryzacyjne','Automotive services'))+
         menuLink(ctx,'/moje-uslugi','building',t('Moje firmy','My businesses')),{id:'uslugi-konta'})}
-      ${staff?menuGroup(t('Zarządzanie','Management'),staff,{id:'zarzadzanie'}):''}
+      ${staff?menuGroup(t('Zarządzanie','Management'),staff,{id:'zarzadzanie'}):''}</div>
+      <div>${menuGroup(t('Ogłoszenia','Listings'),listings,{id:'ogloszenia'})}</div>
     </div>
     <section class="account-settings" id="ustawienia-konta" aria-labelledby="ustawienia-konta-title">
       <h2 id="ustawienia-konta-title">${t('Ustawienia konta','Account settings')}</h2>
@@ -232,6 +238,20 @@ async function profileSettings(ctx,nested=false) {
     t('Nowe wiadomości i status ogłoszeń','New messages and listing status'),
     `<div class="stack">${notificationSwitch('notify_messages',t('Nowe wiadomości','New messages'),u.notify_messages)}
       ${notificationSwitch('notify_listings',t('Status ogłoszeń','Listing status'),u.notify_listings)}${saveButton}</div>`,feedback);
+  const sounds=menuDisclosure('dzwieki-aplikacji','side-sound',t('Dźwięki aplikacji','App sounds'),
+    t('Sound Garage, zdarzenia i głośność','Sound Garage, events and volume'),
+    `<div class="sound-garage stack" data-sound-garage>
+      <div class="sound-garage-intro"><span class="sound-engine-icon"><img src="/assets/icon-192.png?v=engine-start" width="72" height="72" alt=""></span>
+        <div><h3>SOUND GARAGE</h3><p>${t('60 wariantów strojenia. Wszystkie dostępne odsłuchy są oryginalnymi efektami syntetycznymi BRUMBRUM.VIN, a nie autentycznymi nagraniami wskazanych pojazdów.','60 tuning variants. Every available preview is an original BRUMBRUM.VIN synthetic effect, not an authentic recording of the named vehicle.')}</p></div></div>
+      <section class="sound-event-settings" aria-labelledby="sound-events-title"><h3 id="sound-events-title">${t('Przypisanie zdarzeń','Event assignments')}</h3><div class="sound-event-grid" data-sound-events></div></section>
+      <section class="sound-catalog-section" aria-labelledby="sound-catalog-title"><div class="sound-section-head"><div><h3 id="sound-catalog-title">${t('Katalog dźwięków','Sound catalog')}</h3><p class="muted">${t('Odsłuch zatrzymuje poprzedni dźwięk.','A preview stops the previous sound.')}</p></div><span data-sound-save-status class="sound-save-status" role="status"></span></div>
+        <div class="sound-filters">${field('sound_search',t('Szukaj marki lub modelu','Search brand or model'),'',{attributes:'data-sound-search autocomplete="off"'})}
+          <label class="field"><span>${t('Kategoria','Category')}</span><select data-sound-category></select></label>
+          <label class="check sound-favorite-filter"><input type="checkbox" data-sound-favorites-only><span>${t('Tylko ulubione','Favorites only')}</span></label></div>
+        <div class="sound-catalog" data-sound-catalog></div>
+      </section>
+      <p class="sound-platform-note">${t('PWA może odtworzyć dźwięk po odblokowaniu audio przez użytkownika. iOS i Android mogą wyciszać dźwięki w tle lub powiadomienia push zgodnie z ustawieniami systemu.','The PWA can play sound after audio is unlocked by the user. iOS and Android may silence background audio or push notifications according to system settings.')}</p>
+    </div>`);
   const language=menuDisclosure('jezyk','globe',t('Język interfejsu','Interface language'),languages[ctx.lang],
     `<div class="stack">${choice(ctx,'lang',t('Język interfejsu','Interface language'),languages,ctx.lang,{placeholder:false,attributes:profileFields})}${saveButton}</div>`,feedback);
   const imageEditor=(kind,title,key)=>`<div class="stack profile-image-editor"><h3>${e(title)}</h3>
@@ -333,10 +353,8 @@ export function listingsPage(ctx,items) {
       <div class="inline listing-actions">${actions}</div></article>`;
   }).join('');
   return {title:t('Moje ogłoszenia','My listings'),body:`<div class="wrap page listings-manage">
-    <header class="listings-manage-header">
-      ${pageHead(t('Moje ogłoszenia','My listings'),'',link(ctx,'/sprzedaj',(ctx.robotics?t('Wystaw sprzęt','List equipment'):t('Dodaj pojazd','Add a vehicle')),'btn primary','listing'))}
-      <div class="inline listings-manage-tools">${ctx.robotics?(ctx.user.profile_type==='company'?link(ctx,'/panel-dealera',t('Import CSV robotów','Robot CSV import'),'btn','upload'):''):link(ctx,'/moje-ogloszenia/import',t('Import i automatyzacja','Import and automation'),'btn','upload')}${link(ctx,'/moje-uslugi',t('Moje firmy','My businesses'),'btn','building')}</div>
-    </header>
+    ${pageHead(t('Moje ogłoszenia','My listings'),'',link(ctx,'/sprzedaj',(ctx.robotics?t('Wystaw sprzęt','List equipment'):t('Dodaj pojazd','Add a vehicle')),'btn primary','listing'))}
+    <div class="inline listings-toolbar">${ctx.robotics?(ctx.user.profile_type==='company'?link(ctx,'/panel-dealera',t('Import CSV robotów','Robot CSV import'),'btn','upload'):''):link(ctx,'/moje-ogloszenia/import',t('Import i automatyzacja','Import and automation'),'btn','upload')}${link(ctx,'/moje-uslugi',t('Moje firmy','My businesses'),'btn','building')}</div>
     ${listingConfirmation(ctx,items)}${supportInvitation(ctx,ctx.url.searchParams.get('wyslano')||'')}${tabs}<div class="listing-stack">${table||empty(ctx,t('Brak ogłoszeń','No listings'),t('Zapisz szkic lub zmień filtr statusu.','Start a draft or change the status filter.'),link(ctx,'/sprzedaj',(ctx.robotics?t('Wystaw sprzęt','List equipment'):t('Dodaj pojazd','Add a vehicle')),'btn primary','listing'))}</div>
   </div>`};
 }
@@ -395,26 +413,13 @@ export async function wizard(ctx,offer,state) {
     ${area('history',t('Historia i uszkodzenia','History and damage'),d.history,{attributes:'maxlength="1500"'})}</fieldset>
     ${groups}${area('description',t('Opis ogłoszenia','Listing description'),d.description,{required:true,attributes:'minlength="12" maxlength="7000"'})}
     ${area('description_en',t('Opis po angielsku (opcjonalnie)','English description (optional)'),d.description_en,{attributes:'maxlength="7000"'})}`,
-    `<section class="media-editor smart-camera-entry" aria-labelledby="smart-camera-heading">
+    `<section class="media-editor" aria-labelledby="smart-camera-heading">
       <h3 id="smart-camera-heading">${icon('image',22)} BRUMBRUM.VIN — SMART CAMERA 360° STUDIO</h3>
       <p>${t('Nie musisz być fotografem. Wystarczy, że dopasujesz kontur.','You don’t need to be a photographer. Just line up the outline.')}</p>
-      <div class="inline">${[
+      <div class="inline camera-launch-actions">${[
         ['guided','image',t('Zrób zdjęcie','Take a photo')],['guide','listing',t('Instrukcja zdjęć','Photo guide')],
         ['spin','rotate',t('Sesja 360°','360° session')]
       ].map(([mode,symbol,label])=>`<button class="btn${mode==='guided'?' primary':''}" type="button" data-camera-open="${mode}" data-button-finish-action>${icon(symbol,19)}${buttonEmbroideryLabel(label)}</button>`).join('')}</div>
-      <details class="photo-master-guide">
-        <summary>${icon('listing',19)}<span>${t('Pełny poradnik: 12–16 idealnych zdjęć','Complete guide: 12–16 ideal photos')}</span>${icon('down',16)}</summary>
-        <div class="photo-master-guide-content">
-          <img src="/assets/photo-guide/brumbrum-photo-guide.webp" width="1536" height="1152" loading="lazy" decoding="async"
-            alt="${e(t('Poradnik BRUMBRUM.VIN: pozycje fotografa wokół auta, kolejność 12 zdjęć, prawidłowa odległość, kąt i wysokość aparatu oraz przykłady dobrego i złego kadru.','BRUMBRUM.VIN guide showing photographer positions around a car, the 12-shot sequence, correct distance, angle and camera height, plus good and poor framing examples.'))}">
-          <div><strong>${t('Najważniejsze zasady','Key rules')}</strong><ul>
-            <li>${t('Umyj auto, wybierz równe i spokojne tło oraz miękkie światło dzienne.','Clean the vehicle and choose a level, uncluttered background with soft daylight.')}</li>
-            <li>${t('Stań 4–6 m od auta, trzymaj aparat na wysokości 1–1,3 m i użyj obiektywu 1×.','Stand 4–6 m away, hold the camera 1–1.3 m high and use the 1× lens.')}</li>
-            <li>${t('Pokaż całe auto z marginesem. Nie ucinaj zderzaków, kół ani dachu.','Show the complete vehicle with a margin. Do not crop bumpers, wheels or the roof.')}</li>
-            <li>${t('Po ośmiu ujęciach nadwozia dodaj kokpit, siedzenia, bagażnik, silnik i ważne detale.','After eight exterior angles, add the cockpit, seats, boot, engine bay and important details.')}</li>
-          </ul></div>
-        </div>
-      </details>
       </section><div class="dropzone"><span class="mini-icon">${icon('upload',24)}</span><strong>${t('Dodaj zdjęcia pojazdu','Add vehicle photos')}</strong>
       <p>${t('JPEG, PNG lub WebP. Do 30 zdjęć i 12 MB na plik. Pierwsze zdjęcie będzie okładką.','JPEG, PNG or WebP. Up to 30 photos and 12 MB per file. The first photo is the cover.')}</p>
       <label class="btn file-button" data-button-finish-action>${icon('image',18)}${buttonEmbroideryLabel(t('Wybierz zdjęcia','Choose photos'))}<input type="file" data-photo-input multiple accept="image/jpeg,image/png,image/webp" aria-label="${t('Wybierz zdjęcia','Choose photos')}"></label></div>
@@ -632,7 +637,7 @@ export async function dealerPage(ctx,imports) {
   const firm=await row(ctx.db,'SELECT name,address,hours,description,logo_key FROM companies WHERE user_id=?',ctx.user.id);
   const name=firm?.name||ctx.user.name;
   const importHead=panel(t('Import z pliku CSV','Import from CSV'),`<p>${(ctx.robotics?t('Wgraj do 25 robotów na plik. Użyj stałego ID sprzętu i tej samej nazwy źródła, aby aktualizować oferty. Szablon zawiera pola sprzedaży i wynajmu.','Upload up to 25 robots per file. Reuse equipment IDs and the source name to update listings. The template contains sale and rental fields.'):t('Wgraj do 25 wierszy na plik. Użyj stałego ID pojazdu i tej samej nazwy źródła, aby aktualizować oferty. Brak wiersza w nowym pliku nie usuwa pojazdu.','Upload up to 25 rows per file. Reuse a vehicle ID and source name to update an existing listing. Missing rows do not delete listings.'))}</p>
-    <div class="inline"><a class="btn" href="${href(ctx,'/api/dealer/template')+(ctx.robotics?'?market=robotics':'')}">${icon('download',18)}${t('Pobierz wzór CSV','Download CSV template')}</a></div>
+    <div class="inline"><a class="btn" data-button-finish-action href="${href(ctx,'/api/dealer/template')+(ctx.robotics?'?market=robotics':'')}">${icon('download',18)}${buttonEmbroideryLabel(t('Pobierz wzór CSV','Download CSV template'))}</a></div>
     <details><summary>${t('Zdjęcia i dozwolone źródła','Photos and approved sources')}</summary><p>${t('Podaj do czterech adresów rozdzielonych znakiem |. Dozwolone są adresy zdjęć własnych ofert (/media/ID) i zatwierdzone domeny HTTPS. Pierwszy import auta wymaga zdjęcia.','Enter up to four addresses separated by |. You can use your own listing photos (/media/ID) and approved HTTPS domains. A vehicle’s first import needs a photo.')}</p>
     ${ctx.demo?`<p>${t('Ścieżka zdjęcia do testu','Test photo path')} <code>/assets/vehicle-2.webp</code></p>`:''}</details>
     <form method="post" class="stack import-form" data-import data-market="${ctx.robotics?'robotics':'vehicles'}" data-fields="${embed(ctx.robotics?robotCsvFields:csvFields)}">${keyInput()}
@@ -647,5 +652,5 @@ export async function dealerPage(ctx,imports) {
     `<p class="muted">${t('Historia pojawi się po pierwszym imporcie.','Import history will appear after your first import.')}</p>`);
   return {title:t('Panel dealera','Dealer dashboard'),body:wrap(pageHead(t('Panel dealera','Dealer dashboard'),name,link(ctx,'/konto',t('Konto','Account'),'btn','back'))+
     `<div class="settings-stack">${panel(t('Wizytówka firmy','Business profile'),`<p>${e(firm?.address)}${firm?.hours?' · '+e(firm.hours):''}</p><div class="inline">${link(ctx,'/ustawienia',t('Edytuj wizytówkę','Edit profile'),'btn','edit')}
-      ${link(ctx,'/dealer/'+ctx.user.id,t('Otwórz wizytówkę','View profile'),'btn','arrow')}${link(ctx,'/moje-ogloszenia',t('Moje ogłoszenia','My listings'),'btn','car')}</div>`)}${await manageReels(ctx)}${ctx.robotics?'':panel(t('Import i automatyzacja','Import and automation'),link(ctx,'/moje-ogloszenia/import',t('Podłącz źródło ofert','Connect a listing source'),'btn','upload'))}${importHead}${history}</div>`)};
+      ${link(ctx,'/dealer/'+ctx.user.id,t('Otwórz wizytówkę','View profile'),'btn','arrow')}${link(ctx,'/moje-ogloszenia',t('Moje ogłoszenia','My listings'),'btn','car')}</div>`)}${await manageReels(ctx)}${ctx.robotics?'':panel(t('Import i automatyzacja','Import and automation'),link(ctx,'/moje-ogloszenia/import',t('Podłącz źródło ofert','Connect a listing source'),'btn','upload'))}${importHead}${history}</div>`,'dealer-dashboard')};
 }

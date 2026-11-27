@@ -32,6 +32,7 @@
     for(const key of allowed) if(typeof input[key]===typeof defaults[key]) result[key]=input[key];
     if(!/^#[\da-f]{6}$/i.test(result.ledColor)) result.ledColor=defaults.ledColor;
     if(!/^#[\da-f]{6}$/i.test(result.threadColor)) result.threadColor=defaults.threadColor;
+    result.lightEnabled=false;
     result.ambientEnabled=false;
     result.ambientIntensity=0;
     result.animation='static';
@@ -39,14 +40,15 @@
     result.disableAnimations=true;
     result.oledMode=result.oledPureBlack?'pure-black':'off';
     result.borderWidth=1;
-    result.edgeGlow=Math.max(0,Math.min(18,Number(result.edgeGlow)||0));
+    result.edgeGlow=0;
     return result;
   }
   function css(name,value,unit='') {root.style.setProperty('--uve-'+name,String(value)+unit);}
   function apply(next,{save=true}={}) {
     state=normalized(next);
+    state.ledColor='#000000';
     for(const [key,value] of Object.entries(state)) root.dataset['uve'+key[0].toUpperCase()+key.slice(1)]=String(value);
-    css('led',state.ledColor);css('thread',state.threadColor);css('texture',state.textureIntensity/100);css('gloss',state.gloss/100);css('contrast',state.materialContrast/100);css('darkening',state.darkening/100);css('pattern-scale',state.patternScale,'%');css('stitch-width',state.stitchWidth,'px');css('stitch-gap',state.stitchDensity,'px');css('stitch-inset',state.stitchInset,'px');css('stitch-shadow',state.stitchShadow,'px');css('oled-glow',state.oledGlow/100);css('surface',state.surfaceBrightness/100);css('alpha',state.alpha/100);css('speed','0s');css('brightness',state.lightEnabled?.85:0);css('blur',state.edgeGlow,'px');css('direction','0deg');css('border-width','1px');css('edge-brightness',state.lightEnabled?.9:0);css('edge-glow',state.edgeGlow,'px');css('core',state.lightEnabled?.9:0);css('radius',state.borderRadius,'px');css('border-speed','0s');
+    css('led',state.ledColor);css('thread',state.threadColor);css('texture',state.textureIntensity/100);css('gloss',state.gloss/100);css('contrast',state.materialContrast/100);css('darkening',state.darkening/100);css('pattern-scale',state.patternScale,'%');css('stitch-width',state.stitchWidth,'px');css('stitch-gap',state.stitchDensity,'px');css('stitch-inset',state.stitchInset,'px');css('stitch-shadow',state.stitchShadow,'px');css('oled-glow',state.oledGlow/100);css('surface',state.surfaceBrightness/100);css('alpha',state.alpha/100);css('speed','0s');css('brightness',state.ambientIntensity/40);css('blur',Math.max(2,state.ambientIntensity*.3),'px');css('direction','0deg');css('border-width','1px');css('edge-brightness',state.ambientIntensity/40);css('edge-glow',Math.max(0,state.ambientIntensity*.3),'px');css('core',state.ambientIntensity/40);css('radius',state.borderRadius,'px');css('border-speed','0s');
     syncControls();
     if(save) persist();
   }

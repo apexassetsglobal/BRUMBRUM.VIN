@@ -13,6 +13,8 @@ const externalBanners=[
     title:['Cars Collection – wynajem samochodów','Cars Collection – car rental']},
   {id:'cars-rent',name:'CARS-RENT',file:'cars-rent-banner.png',url:'https://cars-rent.pl/',
     title:['CARS-RENT – wynajem samochodów','CARS-RENT – car rental']},
+  {id:'spawn-rent',name:'Spawn Rent',file:'spawn-rent-banner.webp',width:1536,url:'https://spawnrent.pl/',
+    title:['Spawn Rent – wynajem aut premium','Spawn Rent – premium car rental']},
   {id:'rankomat',name:'Rankomat',file:'rankomat-banner.png',url:'https://rankomat.pl/brand',
     title:['Rankomat – porównywarka ubezpieczeń','Rankomat – insurance comparison']},
   {id:'jet-partner',name:'Jet Partner',file:'jet-partner-banner.png',url:'https://jetpartner.pl/wynajem-odrzutowcow/',
@@ -37,6 +39,7 @@ export function activeBanners(ctx) {
 
 export async function canRecordBanner(ctx,id,event) {
   if (id===houseBannerId) return true;
+  if (id==='robots-automation') return true;
   const banner=carouselBanners(ctx).find(b=>b.id===id);
   if (banner) return event==='impression'||Boolean(banner.url);
   if (!/^managed-[a-f0-9-]{36}$/.test(id)) return false;

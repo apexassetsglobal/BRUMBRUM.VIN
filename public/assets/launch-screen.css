@@ -11,6 +11,17 @@ html.app-launch {background-color: #000}
   background: #000 url("/assets/launch-leather.webp") center / cover no-repeat;
   animation: brumbrum-launch 5000ms both;
 }
+.sound-start-required .launch-screen {animation-play-state:paused;pointer-events:auto}
+.launch-engine-start {
+  position:absolute;z-index:2;left:50%;bottom:max(18px,calc(env(safe-area-inset-bottom,0px) + 12px));
+  display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 13px 4px 6px;
+  border:1px solid #ff5b5bb8;border-radius:999px;background:#09090cdd;color:#fff;
+  box-shadow:0 0 0 1px #0008,0 0 18px #ff1e2c80;font:800 12px/1 system-ui,sans-serif;letter-spacing:.08em;
+  transform:translateX(-50%);cursor:pointer;
+}
+.launch-engine-start[hidden] {display:none}
+.launch-engine-start img {width:36px;height:36px;border-radius:50%}
+.launch-engine-start:focus-visible {outline:3px solid #fff;outline-offset:3px}
 .app-launch .launch-screen::after {
   content: "";
   position: absolute;
@@ -47,7 +58,7 @@ html.app-launch {background-color: #000}
   .app-launch .launch-screen {background-size: 100% 100%}
 }
 @media (prefers-reduced-motion: reduce) {
-  .app-launch .launch-screen {display: none}
+  .app-launch .launch-screen:not(:has(.launch-engine-start:not([hidden]))) {display: none}
 }
 
 .site-head.home-engraved-head {

@@ -1,7 +1,7 @@
 import { defaultHomeLogo, originalBrandLogo } from './brand-logos.js';
 import { after, changes, id, now, row, rows, stmt, text } from './core.js';
-import { semiTrailerBodies, vehicleTypes, vehicleBodies } from './vehicle-types.js';
-import { heavyVehicleFilters, vehicleModels } from './vehicle-catalog.js';
+import { catalogBodyGroups, semiTrailerBodies, vehicleTypes, vehicleBodies, vehicleBodyChoices } from './vehicle-types.js';
+import { heavyVehicleFilters, modelsByBody, vehicleModels } from './vehicle-catalog.js';
 import { catalogDemoVehicles, taycanDemoNumber } from './demo-catalog.js';
 
 export const options = {
@@ -70,7 +70,14 @@ export async function catalogFor(ctx) {
   }
 
   const byType=new Map(Object.keys(types).map(type=>[type,new Map()]));
-  const heavyMakes=new Map();
+  const subcategories=new Map();
+  for (const [type,labels] of Object.entries(types)) {
+    for (const {bodies} of catalogBodyGroups(type)) {
+      for (const [body,label] of Object.entries(bodies)) {
+        subcategories.set(type+':'+body,{label:label.map((name,i)=>name+' · '+labels[i]),makes:new Map()});
+      }
+    }
+  }
   const allMakes=new Map();
   function addModel(group,make,model) {
     if (!group.has(make)) group.set(make,new Set());
@@ -88,16 +95,41 @@ export async function catalogFor(ctx) {
   for (const [type,makes] of byType) {
     if (Object.hasOwn(vehicleModels,type)) addConfiguredModels(makes,vehicleModels[type]);
   }
-  for (const [type,body,,,models] of Object.values(heavyVehicleFilters)) {
+  for (const [key,models] of Object.entries(modelsByBody)) {
+    const category=subcategories.get(key);
+    if (!category) continue;
+    addConfiguredModels(category.makes,models);
+    addConfiguredModels(byType.get(key.split(':')[0]),models);
+  }
+  for (const [type,body,pl,en,models] of Object.values(heavyVehicleFilters)) {
     if (!byType.has(type)) continue;
     const makes=new Map();
     addConfiguredModels(makes,models);
-    heavyMakes.set(body,makes);
+    subcategories.set(type+':'+body,{label:[pl,en],makes});
+  }
+  function addToSubcategory(type,body,make,model) {
+    const category=subcategories.get(type+':'+body);
+    if (category) addModel(category.makes,make,model);
+    if (type==='trailer'&&semiTrailerBodies.includes(body)&&body!=='semi_trailer') {
+      const semis=subcategories.get('trailer:semi_trailer');
+      if (semis) addModel(semis.makes,make,model);
+    }
+  }
+  // Reference vehicles supply verified model/body pairings even before the first local listing.
+  for (const [make,model,,type,body] of seedVehicles) {
+    if (byType.get(type)?.get(make)?.has(model)) addToSubcategory(type,body,make,model);
   }
   for (const {type,body,make,model} of lookup) {
-    if (byType.has(type)) addModel(byType.get(type),make,model);
-    const heavyBody=type==='trailer'&&semiTrailerBodies.includes(body)?'semi_trailer':body;
-    if (heavyMakes.has(heavyBody)&&heavyVehicleFilters[heavyBody][0]===type) addModel(heavyMakes.get(heavyBody),make,model);
+    if (byType.has(type)) {
+      addModel(byType.get(type),make,model);
+      // Preserve older body styles still used in public listings.
+      const key=type+':'+body;
+      if (body&&!subcategories.has(key)) {
+        const label=vehicleBodyChoices(type,body)[body]??[body,body];
+        subcategories.set(key,{label,makes:new Map()});
+      }
+      addToSubcategory(type,body,make,model);
+    }
     addModel(allMakes,make,model);
   }
   for (const makes of byType.values()) {
@@ -122,10 +154,10 @@ export async function catalogFor(ctx) {
   return {
     types,
     makesByType:Object.fromEntries([['',sorted(allMakes)],...Array.from(byType,([type,makes])=>[type,sorted(makes)])]),
-    heavyFilters:Object.fromEntries(Array.from(heavyMakes,([body,makes])=>{
-      const [type,,pl,en]=heavyVehicleFilters[body];
-      return [body,{type,label:[pl,en],makes:sorted(makes)}];
-    }))
+    subcategories:Object.fromEntries(Array.from(subcategories,([key,{label,makes}])=>[key,{label,makes:sorted(makes)}])),
+    heavyFilters:Object.fromEntries(Object.values(heavyVehicleFilters)
+      .filter(([type])=>byType.has(type))
+      .map(([type,body,pl,en])=>[body,{type,label:[pl,en],makes:sorted(subcategories.get(type+':'+body).makes)}]))
   };
 }
 

@@ -1,0 +1,9 @@
+Manufacturer names and logos remain trademarks of their respective owners.
+The emblems identify makes in the vehicle catalog and search results.
+
+Supplemental vehicle and equipment emblems: sources.json records the source
+of each asset. These marks retain their original ownership and license.
+Passenger car logo collection: https://github.com/vehiclespecs/brand-logos
+(see VEHICLESPECS-LICENSE.txt).
+Additional monochrome icons: Simple Icons contributors, CC0 1.0,
+https://simpleicons.org/.

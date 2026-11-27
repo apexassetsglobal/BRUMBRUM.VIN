@@ -5,7 +5,7 @@ const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'
 const allowedCounts = [12, 24, 36];
 const spinAngles = count => Array.from({length:count}, (_, i) => i * 360 / count);
 const exteriorAngles = steps.filter(step => step.angle != null).map(step => step.angle);
-const sizes = {width:1920,height:1440};
+const sizes = {width:1920,height:1080};
 const newCaptureId = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2,'0')).join('');
 
 // Keep at most the unacknowledged, metadata-free image for this listing. Successful
@@ -88,7 +88,7 @@ export async function openSmartCamera(bridge, options = {}) {
   if (!document.querySelector('link[data-smart-camera-css]')) {
     const css = document.createElement('link');
     css.rel = 'stylesheet';
-    css.href = '/assets/smart-camera.css';
+    css.href = '/assets/smart-camera.css?v=5';
     css.dataset.smartCameraCss = '';
     document.head.append(css);
   }
@@ -164,7 +164,7 @@ export async function openSmartCamera(bridge, options = {}) {
         <div class="sc-picture" data-sc-picture><video playsinline muted autoplay data-sc-feed></video><div class="sc-grid" data-sc-grid></div><div class="sc-ghost" data-sc-outline></div><div class="sc-horizon" data-sc-level hidden></div></div>
         <img class="sc-review" data-sc-review alt="" hidden><div class="sc-view-status" data-sc-view-status></div>
       </div>
-      <div class="sc-actions" data-sc-actions></div><p class="sc-status" role="status" aria-live="polite" data-sc-status></p>
+      <div class="sc-actions" data-sc-actions></div><p class="sc-orientation-hint">${e(t('Aby uzyskać szeroki kadr, obróć telefon poziomo i obejmij cały pojazd.','For a wide frame, turn your phone sideways and include the whole vehicle.'))}</p><p class="sc-status" role="status" aria-live="polite" data-sc-status></p>
       <div class="sc-shot-note" data-sc-hint></div>
       <div class="sc-files"><input hidden type="file" accept="image/*" capture="environment" data-sc-native><input hidden type="file" accept="image/*" data-sc-file></div>
       <details class="sc-details"><summary>${e(t('Ustawienia kadru','Frame settings'))}</summary><div class="sc-options">
@@ -177,23 +177,14 @@ export async function openSmartCamera(bridge, options = {}) {
         ${button('fullscreen',t('Pełny ekran','Full screen'))}
       </div></details>
       <details class="sc-details" data-sc-guide><summary>${e(t('Instrukcja fotografowania','Photography guide'))}</summary>
-        <figure class="sc-master-art"><img src="/assets/photo-guide/brumbrum-photo-guide.webp" width="1536" height="1152" loading="lazy" decoding="async"
-          alt="${e(t('Pełny przewodnik po ustawieniu fotografa, kątach i kolejności zdjęć samochodu.','Complete guide to photographer position, angles and vehicle photo order.'))}"><figcaption>${e(t('Plan 12–16 zdjęć: osiem stron nadwozia, wnętrze, bagażnik, silnik i detale.','12–16 shot plan: eight exterior angles, interior, boot, engine bay and details.'))}</figcaption></figure>
-        <div class="sc-guide-grid"><section><h3>${e(t('Ustawienie fotografa','Photographer setup'))}</h3><dl>
-          <div><dt>${e(t('Odległość','Distance'))}</dt><dd>4–6 m</dd></div><div><dt>${e(t('Kąt','Angle'))}</dt><dd>30–45°</dd></div>
-          <div><dt>${e(t('Wysokość','Height'))}</dt><dd>1–1,3 m</dd></div><div><dt>${e(t('Obiektyw','Lens'))}</dt><dd>1×</dd></div>
-        </dl></section><section><h3>${e(t('Kolejność podstawowa','Core sequence'))}</h3><ol class="sc-shot-sequence">
-          ${['Przód lewy 315°','Przód 0°','Przód prawy 45°','Lewy bok 270°','Prawy bok 90°','Tył lewy 225°','Tył 180°','Tył prawy 135°','Wnętrze — przód','Wnętrze — tył','Bagażnik','Komora silnika'].map((label,index)=>`<li><span>${index+1}</span>${e(label)}</li>`).join('')}
-        </ol></section></div>
-        <p class="sc-reference-name">Lamborghini Revuelto · ${e(t('Przykłady kadrowania','Framing examples'))}</p><div class="sc-examples"><figure><div data-sc-example-good></div><figcaption>${e(t('Dobre: czyste auto, spokojne tło, miękkie światło, lekki kąt 45° i całe auto w kadrze.','Good: clean vehicle, uncluttered background, soft light, a slight 45° angle and the complete car in frame.'))}</figcaption></figure>
+        <p class="sc-reference-name">Lamborghini Revuelto · ${e(t('Przykłady kadrowania','Framing examples'))}</p><div class="sc-examples"><figure><div data-sc-example-good></div><figcaption>${e(t('Cały pojazd i margines','Full vehicle with a margin'))}</figcaption></figure>
         <figure><div data-sc-example-bad></div><figcaption>${e(t('Zbyt ciasny kadr','Too tightly cropped'))}</figcaption></figure></div>
-        <div class="sc-guide-checks"><section><h3>${e(t('Dobre zdjęcie','Good photo'))}</h3><ul>${[t('Czysty pojazd','Clean vehicle'),t('Równe, spokojne tło','Level, uncluttered background'),t('Dobre dzienne światło','Good daylight'),t('Ostre i wyraźne zdjęcie','Sharp, clear photo')].map(item=>`<li>${e(item)}</li>`).join('')}</ul></section>
-        <section><h3>${e(t('Tego unikaj','Avoid this'))}</h3><ul>${[t('Uciętego auta lub zbyt małej odległości','Cropped vehicle or too little distance'),t('Kadru z góry albo z dołu','High or low camera angle'),t('Bałaganu w tle','Cluttered background'),t('Brudnego, ciemnego lub rozmazanego auta','Dirty, dark or blurred vehicle')].map(item=>`<li>${e(item)}</li>`).join('')}</ul></section></div>
-        <h3 class="sc-guide-tips-title">${e(t('Dodatkowe wskazówki','Additional tips'))}</h3><ul>${guideTips.map(tip=>`<li>${e(pick(tip))}</li>`).join('')}</ul></details>
+        <ul>${guideTips.map(tip=>`<li>${e(pick(tip))}</li>`).join('')}</ul></details>
     </main><aside class="sc-plan">
       <div data-sc-mode-config></div>
       <div class="sc-progress"><strong data-sc-progress-label></strong><progress data-sc-progress max="100"></progress></div>
       <div class="sc-orbit" data-sc-orbit></div>
+      <div class="sc-angle-reference" data-sc-angle-reference></div>
       <div class="sc-prior" data-sc-prior></div>
       <div class="sc-list" data-sc-list></div>
     </aside></div></section>`;
@@ -260,6 +251,7 @@ export async function openSmartCamera(bridge, options = {}) {
     const {sequence,complete,bypass} = syncedCounts();
     const step = current();
     const referenceAngle = step.angle ?? 315;
+    el('angle-reference').innerHTML=step.angle == null ? '' : `<small>${e(t('Przykładowy kadr · Lamborghini Revuelto','Example framing · Lamborghini Revuelto'))}</small>${exampleSvg('supercar',referenceAngle,true)}`;
     if (el('guide').dataset.exampleAngle !== String(referenceAngle)) {
       el('example-good').innerHTML = exampleSvg('supercar',referenceAngle,true);
       el('example-bad').innerHTML = exampleSvg('supercar',referenceAngle,false);
@@ -620,6 +612,7 @@ export async function openSmartCamera(bridge, options = {}) {
     document.body.append(dialog);
     dialog.showModal(); redraw();
     if (options.mode==='guide') el('guide').scrollIntoView({block:'nearest'});
+    if (['guided','spin'].includes(options.mode) && !pending) void startCamera();
     return await finished;
   } catch (error) {
     closed=true; stopCamera(); resize?.disconnect(); events.abort();

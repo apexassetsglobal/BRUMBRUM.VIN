@@ -1,2 +1,0 @@
-
-4624f3f7c3b450b216eb63eb887bea9451d3b111	{"key":"make-fetch-happen:request-cache:https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.25.12.tgz","integrity":"sha512-9meM/lRXxMi5PSUqEXRCtVjEZBGwB7P/D4yT8UG/mwIdze2aV4Vo6U5gD3+RsoHXKkHCfSxZKzmDssVlRj1QQA==","time":1795722714456,"size":4016073,"metadata":{"time":1795722714429,"url":"https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.25.12.tgz","reqHeaders":{},"resHeaders":{"content-type":"application/octet-stream","cache-control":"public,max-age=31536000,immutable"},"options":{"compress":true}}}

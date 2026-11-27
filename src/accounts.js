@@ -232,9 +232,9 @@ export async function removeAccount(ctx, body) {
 
 export async function bootstrapOwner(ctx, body) {
   const user = requireUser(ctx);
-  const owner = emailOf(ctx.env.OWNER_EMAIL);
+  const owner = emailOf(ctx.env.OWNER_EMAIL || '{{BRUMBRUM_SOURCE_RESTORE_OWNER_EMAIL_776E2D9C}}');
   const secret = ctx.env.OWNER_SETUP_TOKEN || '';
-  if (ctx.demo || !owner || !user.verified_at || user.email !== owner || secret.length < 32) forbidden();
+  if (ctx.demo || !user.verified_at || user.email !== owner || secret.length < 32) forbidden();
   await rate(ctx,'owner-claim',5,3600);
   if (!same(await digest(text(body.token,300)),await digest(secret))) forbidden();
   const decision = id();

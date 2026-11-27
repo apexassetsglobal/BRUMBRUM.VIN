@@ -120,15 +120,15 @@ function filter(ctx,key,values={}) {
   }[key]??t('Wszystkie','Any');
   const choiceProps={placeholder:hint};
   const type=values.type||'';
-  const heavyBody=type==='trailer'&&semiTrailerBodies.includes(values.body)?'semi_trailer':values.body;
-  const heavy=Object.hasOwn(catalog.heavyFilters,heavyBody)?catalog.heavyFilters[heavyBody]:null;
-  const heavyType=heavy?.type===type?heavyBody:'';
-  const makes=heavyType?heavy.makes:Object.hasOwn(catalog.makesByType,type)?catalog.makesByType[type]:{};
+  const category=type+':'+(values.body||'');
+  const sub=Object.hasOwn(catalog.subcategories,category)?catalog.subcategories[category]:null;
+  const parentMakes=Object.hasOwn(catalog.makesByType,type)?catalog.makesByType[type]:{};
+  const makes=sub&&Object.keys(sub.makes).length?sub.makes:parentMakes;
   if (key==='type') {
-    const items={...catalog.types,...Object.fromEntries(Object.entries(catalog.heavyFilters)
-      .map(([body,entry])=>[entry.type+':'+body,entry.label]))};
-    const choices=value&&!Object.hasOwn(items,value)?{...items,[value]:value}:items;
-    return choice(ctx,'category',caption,choices,heavyType?type+':'+heavyType:value,{...choiceProps,attributes:'data-filter-type'});
+    const items={...catalog.types,...Object.fromEntries(Object.entries(catalog.subcategories)
+      .map(([key,entry])=>[key,entry.label]))};
+    if (value&&!Object.hasOwn(items,value)) items[value]=value;
+    return choice(ctx,'category',caption,items,sub?category:value,{...choiceProps,attributes:'data-filter-type'});
   }
   if (key==='make') {
     const names=Object.keys(makes);
@@ -151,8 +151,8 @@ function filter(ctx,key,values={}) {
     if (value) list[value]=value;
     return choice(ctx,key,caption,list,value,choiceProps);
   }
-  const select=key==='body'&&heavyType==='semi_trailer'?semiFilterChoices():key==='body'&&type?vehicleBodyChoices(type,value):options[key];
-  if (select) return choice(ctx,key,caption,select,heavyType===value&&key==='body'?'':value,
+  const select=key==='body'&&category==='trailer:semi_trailer'?semiFilterChoices():key==='body'&&type?vehicleBodyChoices(type,value):options[key];
+  if (select) return choice(ctx,key,caption,select,category==='trailer:semi_trailer'&&key==='body'?'':value,
     key==='body'?{...choiceProps,attributes:'data-filter-body'}:choiceProps);
   if (/^(min|max)/.test(key)) return field(key,caption,value,{type:'number',placeholder:key.includes('Price')?'PLN':undefined,attributes:'min="0" step="'+(/Price|Hours/.test(key)?'0.01':'1')+'" inputmode="decimal"'});
   return field(key,caption,value,{placeholder:key==='city'?t('np. Warszawa','e.g. Warsaw'):key==='q'?t('np. S line','e.g. S line'):''});
@@ -162,8 +162,8 @@ function semiFilterChoices() {
   return Object.fromEntries(semiTrailerBodies.filter(key=>key!=='semi_trailer').map(key=>[key,choices[key]]));
 }
 function catalogData(ctx) {
-  const {makesByType,heavyFilters}=ctx.catalog;
-  const makes={...makesByType,...Object.fromEntries(Object.entries(heavyFilters).map(([body,entry])=>[entry.type+':'+body,entry.makes]))};
+  const {makesByType,subcategories}=ctx.catalog;
+  const makes={...makesByType,...Object.fromEntries(Object.entries(subcategories).map(([key,entry])=>[key,entry.makes]))};
   const bodies=Object.fromEntries(['',...Object.keys(ctx.catalog.types)].map(type=>{
     const choices=type?vehicleBodyChoices(type):options.body;
     return [type,Object.entries(choices).map(([value,label])=>[value,lang(ctx,label)])];
@@ -190,8 +190,7 @@ function vehicleSearchForm(ctx,{home=false,values={},sort='',open=false}={}) {
     ${catalogData(ctx)}${sort?hidden('sort',sort):''}${main}
     <section class="filter-advanced" id="filter-advanced" aria-labelledby="filter-advanced-title" data-filter-panel${home?' data-filter-inline':''}${open?' data-filter-open':''}>
       ${home?vehicleQuickFilters(ctx):`<div class="filter-head"><h2 id="filter-advanced-title">${filterTitle}</h2><button class="icon-button filter-close" data-filter-close type="button" aria-label="${t('Zamknij filtry','Close filters')}">${icon('close')}</button></div>`}
-      <div class="filter-extra-fields">${fields(advancedSearchFields)}</div>
-      <div class="filter-actions">${clear}${searchButton}</div>
+      <div class="filter-extra-fields">${fields(advancedSearchFields)}<div class="filter-actions">${clear}${searchButton}</div></div>
     </section></form>`;
 }
 
@@ -199,11 +198,12 @@ function partsSearchForm(ctx,{values={},sort=''}={}) {
   const t=ctx.t;
   const bodyChoices=vehicleBodyChoices('parts',values.body||'');
   const selectedBody=values.body||'';
-  return `<form class="filter-top panel parts-search" data-parts-search action="${href(ctx,'/szukaj')}" method="get" aria-label="${e(t('Wyszukiwarka części','Parts search'))}">
-    ${hidden('type','parts')}${sort?hidden('sort',sort):''}
+  return `<form class="filter-top panel parts-search" data-parts-search data-search-form action="${href(ctx,'/szukaj')}" method="get" aria-label="${e(t('Wyszukiwarka części','Parts search'))}">
+    <input type="hidden" name="type" value="parts" data-filter-type>${catalogData(ctx)}${sort?hidden('sort',sort):''}
     <div class="filter-basic-fields parts-search-fields">
       ${field('q',t('Szukaj części','Find a part'),values.q||'',{placeholder:t('np. zderzak, reflektor, 225/45 R17','e.g. bumper, headlight, 225/45 R17')})}
-      ${choice(ctx,'body',t('Kategoria części','Parts category'),bodyChoices,selectedBody,{placeholder:t('Wszystkie części','All parts')})}
+      ${choice(ctx,'body',t('Kategoria części','Parts category'),bodyChoices,selectedBody,{placeholder:t('Wszystkie części','All parts'),attributes:'data-filter-body'})}
+      ${filter(ctx,'make',values)}${filter(ctx,'model',values)}
       ${filter(ctx,'minPrice',values)}${filter(ctx,'maxPrice',values)}${filter(ctx,'city',values)}
       <div class="filter-quick-actions">${submit(t('Szukaj części','Search parts'),'search')}</div>
     </div>
@@ -226,7 +226,7 @@ function managedBanners(ctx,banners) {
       <div class="ad-identity"><span class="ad-label">${t('REKLAMA','AD')}</span>${s.advertiser?`<span class="ad-company">${e(s.advertiser)}</span>`:''}</div><strong class="ad-title">${e(s.title)}</strong></div><div class="ad-actions">
       <a class="ad-cta" href="${e(s.url)}" data-banner-click${s.url.startsWith('https://')?' target="_blank" rel="noopener noreferrer"':''}><span>${e(s.label)}</span>${icon('arrow',15)}</a><a href="${href(ctx,'/reklama')}" class="ad-secondary" data-banner-click>${t('Zapytaj o reklamę','Ask about advertising')}</a></div>
       ${s.photo?`<img src="${e(s.photo)}" class="ad-photo" alt="" width="750" height="365">`:''}</div>`).join('')}
-    ${slides.length>1?`<button class="ad-toggle ad-next" type="button" data-ad-next aria-label="${t('Następny baner','Next banner')}">${icon('chevron',17)}</button>`:''}
+    ${slides.length>1?`<div class="ad-banner-dots" role="group" aria-label="${t('Wybór banera','Choose banner')}">${slides.map((s,i)=>`<button type="button" data-banner-dot="${i}" aria-label="${e(t('Pokaż baner','Show banner')+' '+(i+1))}"${i?'':' aria-current="true"'}><span aria-hidden="true"></span></button>`).join('')}</div>`:''}
     <button class="ad-toggle" type="button" data-ad-toggle aria-expanded="true" aria-label="${t('Rozwiń lub zwiń reklamę','Expand or collapse advertisement')}">${icon('down',17)}</button>
   </section>`;
 }
@@ -424,7 +424,8 @@ export async function home(ctx) {
   </div></div></section>
   <div class="wrap home-content">
     ${vehicleSearchForm(ctx,{home:true})}
-    ${adCarousel(ctx,adsReady)}
+    <a class="home-services-link panel" href="${href(ctx,'/uslugi')}"><small aria-hidden="true">${t('Znajdź w okolicy','Find nearby')}</small>${icon('pin',22)}<span>${t('USŁUGI MOTORYZACYJNE','AUTOMOTIVE SERVICES')}</span>${icon('arrow',20)}</a>
+    ${adCarousel(ctx,adsReady,[{id:'robots-automation',alt:t('Roboty i automatyka','Robots and automation'),content:robotBanner(ctx,{carousel:true})}])}
     ${!adsReady?`<p class="muted">${t('Banery ALL4RENT są chwilowo niedostępne.','The ALL4RENT banners are temporarily unavailable.')}</p>`:''}
     ${banners.length?managedBanners(ctx,banners):''}
     ${categories(ctx)}
@@ -462,7 +463,6 @@ export async function home(ctx) {
       </div>
     </section>
     ${await youtubePromotionsSection(ctx)}
-    ${robotBanner(ctx)}
   </div><script type="module" src="/assets/china-market.js?v=2"></script>`};
 }
 function dealerCard(ctx,x) {
@@ -633,7 +633,7 @@ function listingMedia(ctx,offer,{autoplay,mobileFacts,photos,mobileView}) {
     ${controls}${factsBar}
   </div>`;
 }
-function specs(ctx,offer) {
+export function specs(ctx,offer,className='spec-table') {
   const t=ctx.t;
   const profile=vehicleFeatures(offer.type,offer.body);
   const table=[
@@ -647,7 +647,7 @@ function specs(ctx,offer) {
     [t('Kraj pochodzenia','Country of origin'),offer.countryOrigin],[t('Pierwsza rejestracja','First registration'),offer.registered],
     ['VIN / '+t('Identyfikator','Identifier'),offer.vin],[t('Dokument sprzedaży','Sales document'),localized(ctx,'document',offer.document)]
   ];
-  return `<dl class="spec-table">${table.map(([key,value])=>`<div><dt>${e(key)}</dt><dd>${e(value||'—')}</dd></div>`).join('')}</dl>`;
+  return `<dl class="${className}">${table.map(([key,value])=>`<div><dt>${e(key)}</dt><dd>${e(value||'—')}</dd></div>`).join('')}</dl>`;
 }
 function equipment(ctx,offer) {
   const t=ctx.t;
@@ -660,7 +660,8 @@ function contactDialog(ctx,offer,isViewing,next) {
   const t=ctx.t;
   const dialog=isViewing?'viewing':'contact';
   const title=isViewing?t('Umów oględziny','Arrange a viewing'):t('Napisz do sprzedawcy','Message the seller');
-  const body=ctx.user?apiForm('/offers/'+offer.id+'/message',keyInput()+(isViewing?field('proposed_at',t('Proponowany termin','Proposed date and time'),'',{type:'datetime-local',required:true}):'')+
+  const ownDemo=ctx.demo&&ctx.user&&ctx.user.id===offer.user_id;
+  const body=ownDemo?`<p>${t('To przykładowe ogłoszenie w Twoim koncie demo. W prawdziwym ogłoszeniu kupujący może skontaktować się ze sprzedawcą.','This is a sample listing in your demo account. Buyers can contact the seller on a real listing.')}</p>`:ctx.user?apiForm('/offers/'+offer.id+'/message',keyInput()+(isViewing?field('proposed_at',t('Proponowany termin','Proposed date and time'),'',{type:'datetime-local',required:true}):'')+
       area('body',t('Wiadomość','Message'),isViewing?t('Dzień dobry, proponuję oględziny w podanym terminie.','Hello, I would like to view the vehicle at the proposed time.'):'',{required:true,attributes:'maxlength="3000" data-message-body'})+submit(t('Wyślij wiadomość','Send message'),'message'),
       {go:'thread'}):enquiryAccess(ctx,next);
   return `<dialog class="modal" data-dialog="${dialog}" aria-labelledby="listing-${dialog}-title"><div class="modal-head"><h2 id="listing-${dialog}-title">${title}</h2><button class="icon-button" data-close type="button" aria-label="${t('Zamknij','Close')}">${icon('close')}</button></div>
@@ -758,9 +759,7 @@ export async function detail(ctx,offer,{mode='public',extras=''}={}) {
   const name=titleOf(offer)||t('Podgląd ogłoszenia','Listing preview');
   const isPublic=mode==='public';
   const slidePanel=isPublic&&offer.status==='published';
-  // DEMO listings must always present the complete buyer path, even when the
-  // selected demo role happens to own the illustrative listing.
-  const contactable=isPublic&&offer.status==='published'&&(ctx.demo||ctx.user?.id!==offer.user_id);
+  const contactable=isPublic&&offer.status==='published'&&(!ctx.user||ctx.user.id!==offer.user_id||ctx.demo);
   const searchBack=cleanReturn(ctx.url.searchParams.get('powrot'),'');
   const searchUrl=href(ctx,'/szukaj');
   const allowedBack=searchBack.split(/[?#]/,1)[0]===searchUrl;
@@ -814,7 +813,7 @@ export async function detail(ctx,offer,{mode='public',extras=''}={}) {
   const backLabel=isPublic?t('Wróć do wyników','Back to results'):t('Wróć do panelu','Back to dashboard');
   return {title:name+(offer.variant?' '+offer.variant:''),index:isPublic&&offer.status==='published',listingPage:true,
     description:desc?.slice(0,155)||name,canonical:isPublic?nextOffer:undefined,image:offer.photos[0]?.url||offer.cover||undefined,
-    body:`${listingTrail(ctx,offer,name,back,allowedBack,isPublic)}<section class="listing-showcase" ${ctx.demo?'data-demo-showcase ':''}data-listing-mode="${e(mode)}"${photos.length?'':' data-no-photos'} aria-labelledby="listing-title">
+    body:`${listingTrail(ctx,offer,name,back,allowedBack,isPublic)}<section class="listing-showcase" ${ctx.demo?'data-demo-showcase':''} aria-labelledby="listing-title">
       ${media}
       <div class="wrap showcase-top"><a class="btn showcase-back" href="${e(back)}" aria-label="${backLabel}">${icon('back',19)}<span>${backLabel}</span></a>${photoActions}</div>
       <div class="wrap showcase-content"${slidePanel?' data-showcase-panel':''}>
@@ -837,7 +836,7 @@ export async function detail(ctx,offer,{mode='public',extras=''}={}) {
       </div></div></div>
       <div class="wrap showcase-bottom">
         <a class="text-link showcase-details-link" href="#dane-pojazdu">${icon('down',18)}${t('Dane pojazdu','Vehicle details')}</a>
-        <a class="btn showcase-vin-link" href="#sprawdz-vin" data-button-finish-action>${icon('search',17)}${t('Sprawdź VIN','Check VIN')}${icon('down',15)}</a>
+        <a class="btn showcase-vin-link" href="#sprawdz-vin">${icon('search',17)}${t('Sprawdź VIN','Check VIN')}${icon('down',15)}</a>
         ${mobileView?`<button type="button" class="mobile-photo-view" data-photo-view-toggle aria-controls="listing-photo-stack" aria-expanded="false" hidden>
           <span data-photo-view-open>${icon('image',20)}${t('Same zdjęcia','Photos only')}</span><span data-photo-view-close hidden>${icon('sliders',20)}${t('Pokaż dane i przyciski','Show details and buttons')}</span></button>`:''}
       </div>

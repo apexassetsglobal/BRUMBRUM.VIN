@@ -1,2 +1,0 @@
-
-0c19131879f8cd5cf46c35ffd9f381cf69813f74	{"key":"make-fetch-happen:request-cache:https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.25.12.tgz","integrity":"sha512-6AAmLG7zwD1Z159jCKPvAxZd4y/VTO0VkprYy+3N2FtJ8+BQWFXU+OxARIwA46c5tdD9SsKGZ/1ocqBS/gAKHg==","time":1795722710162,"size":4221048,"metadata":{"time":1795722710116,"url":"https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.25.12.tgz","reqHeaders":{},"resHeaders":{"content-type":"application/octet-stream","cache-control":"public,max-age=31536000,immutable"},"options":{"compress":true}}}
