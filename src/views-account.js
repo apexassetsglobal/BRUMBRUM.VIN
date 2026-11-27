@@ -5,8 +5,8 @@ import { catalogFor, features, options, regions } from './data.js';
 import { bodyFeatureOverrides, vehicleBodyChoices, vehicleProfile } from './vehicle-types.js';
 import { csvFields, robotCsvFields } from './dealer.js';
 import { photoDetailLabels, spinLimits } from './market.js';
-import { videoLimit } from './videos.js';
-import { apiForm, appearanceControls, area, buttonEmbroideryLabel, check, choice, day, e, embed, empty, field, flash, formStatus, hidden, href, icon, keyInput, km, lang, link as uiLink, localized, pageHead, panel, pillCount, price, sectionHead, submit as uiSubmit, tag, titleOf, wrap } from './ui.js';
+import { listingVideoLimit } from './listing-video-policy.js';
+import { apiForm, appearanceControls, area, buttonEmbroideryLabel, check, choice, day, e, embed, empty, field, flash, formStatus, hidden, href, icon, keyInput, km, lang, link as uiLink, listingVideoLimitAttributes, localized, pageHead, panel, pillCount, price, sectionHead, submit as uiSubmit, tag, titleOf, wrap } from './ui.js';
 import { reportDialog } from './views-market.js';
 import { languages } from './i18n.js';
 import { supportChoices, supportInvitation } from './views-support.js';
@@ -425,7 +425,7 @@ export async function wizard(ctx,offer,state) {
       <label class="btn file-button" data-button-finish-action>${icon('image',18)}${buttonEmbroideryLabel(t('Wybierz zdjęcia','Choose photos'))}<input type="file" data-photo-input multiple accept="image/jpeg,image/png,image/webp" aria-label="${t('Wybierz zdjęcia','Choose photos')}"></label></div>
       <section class="media-editor listing-reel-editor" aria-labelledby="listing-reel-heading">
           <h3 id="listing-reel-heading">${icon('video',20)}${t('Rolka pojazdu','Vehicle reel')} <small data-video-status></small></h3>
-          <p>${t('Dodaj jeden film MP4 (H.264) lub WebM do 24 MB. Po publikacji pojawi się w ogłoszeniu i w zakładce Rolki.','Add one MP4 (H.264) or WebM video up to 24 MB. Once published, it appears in the listing and in Reels.')}</p>
+          <p>${t('Dodaj jeden film MP4 (H.264) lub WebM do {limit} MiB. Film może trwać 1–2 minuty, jeśli mieści się w limicie pliku. Po publikacji pojawi się w ogłoszeniu i w Rolkach.','Add one MP4 (H.264) or WebM video up to {limit} MiB. A 1–2 minute clip can be uploaded if it fits the file limit. Once published, it appears in the listing and in Reels.',{limit:listingVideoLimit/1024**2})}</p>
           <div class="inline"><label class="btn file-button" data-button-finish-action>${icon('upload',18)}<span class="button-embroidery-label" data-video-label>${t('Dodaj rolkę','Add reel')}</span><input type="file" data-video-input accept="video/mp4,video/webm,.mp4,.webm" aria-label="${t('Dodaj rolkę','Add reel')}"></label>
             <button class="btn" type="button" data-remove-video hidden>${t('Usuń rolkę','Remove reel')}</button></div>
           <video class="edit-video" data-video-preview controls playsinline preload="none" hidden aria-label="${t('Podgląd rolki','Reel preview')}"></video>
@@ -474,7 +474,7 @@ export async function wizard(ctx,offer,state) {
       data-photos="${embed(state.photos)}" data-spin="${embed(state.spin)}" data-spin-min="${spinLimits.min}" data-spin-max="${spinLimits.max}"
       data-smart-camera="${embed(state.smartCamera||{})}"
       data-photo-details="${embed(d.photoDetails||{})}" data-photo-detail-options="${embed(Object.entries(photoDetailLabels).map(([key,words])=>[key,t(...words)]))}"
-      data-video="${e(state.video)}" data-video-limit="${videoLimit}" data-vehicle-catalog="${embed(catalog.makesByType)}" data-vehicle-profiles="${embed(profiles)}">
+      data-video="${e(state.video)}" ${listingVideoLimitAttributes(t)} data-vehicle-catalog="${embed(catalog.makesByType)}" data-vehicle-profiles="${embed(profiles)}">
       <div class="wizard-steps" aria-label="${t('Kroki formularza','Form steps')}">${stepNames.map((name,i)=>`<button type="button" data-step-to="${i+1}" data-button-finish-action="step"${state.step===i+1?' aria-current="step"':''}><span>${i+1}</span><strong>${e(name)}</strong></button>`).join('')}</div>
       <div class="wizard-body">${steps.map((html,i)=>`<section data-step-body="${i+1}" ${i+1===state.step?'':'hidden'}><div class="section-head"><div><h2>${e(stepNames[i])}</h2>${i<4?`<p>${t('Pola z gwiazdką są wymagane do publikacji.','Fields marked with an asterisk are required to publish.')}</p>`:''}</div></div>${html}</section>`).join('')}</div>
       <div class="wizard-footer"><button class="btn" type="button" data-step-back data-button-finish-action>${icon('back',17)}${buttonEmbroideryLabel(t('Wstecz','Back'))}</button><div class="inline">

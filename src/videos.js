@@ -1,57 +1,71 @@
 import { fail, missing } from './core.js';
 
 export const videoLimit = 24 * 1024 * 1024;
-const textAt = (bytes, from, to) => String.fromCharCode(...bytes.subarray(from,to));
-const invalidVideo = () => fail(422,'Wybierz prawidłowe wideo MP4 (H.264) lub WebM.','Choose a valid MP4 (H.264) or WebM video.');
+const textAt = (bytes, from=0, to=bytes.length) => String.fromCharCode(...bytes.subarray(from,to));
+export const invalidVideo = () => fail(422,'Wybierz prawidłowe wideo MP4 (H.264) lub WebM.','Choose a valid MP4 (H.264) or WebM video.');
 
-function* boxes(view,from,to) {
-  for (let offset=from;offset<to;) {
-    if (offset+8>to) invalidVideo();
-    let size=view.getUint32(offset);
-    const type=textAt(new Uint8Array(view.buffer,view.byteOffset,view.byteLength),offset+4,offset+8);
-    let header=8;
-    if (size===1) {
-      if (offset+16>to) invalidVideo();
-      size=Number(view.getBigUint64(offset+8));
-      header=16;
-    } else if (size===0) size=to-offset;
-    if (size<header||size>to-offset) invalidVideo();
-    yield {type,start:offset+header,end:offset+size};
-    offset+=size;
+// The parser requests only container headers, track flags and codec names.
+// Both storage-backed and in-memory validation drive this same parser.
+function* mp4Box(offset,limit) {
+  if (offset+8>limit) invalidVideo();
+  const bytes=yield {offset,length:Math.min(16,limit-offset)};
+  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+  let size=view.getUint32(0);
+  const type=textAt(bytes,4,8);
+  let header=8;
+  if (size===1) {
+    if (bytes.length<16) invalidVideo();
+    size=Number(view.getBigUint64(8));
+    header=16;
+  } else if (size===0) size=limit-offset;
+  if (size<header||size>limit-offset) invalidVideo();
+  return {type,start:offset+header,end:offset+size};
+}
+
+function* childBox(parent,type) {
+  if (!parent) return;
+  for (let offset=parent.start;offset<parent.end;) {
+    const child=yield* mp4Box(offset,parent.end);
+    if (child.type===type) return child;
+    offset=child.end;
   }
 }
 
-function childBox(view,box,type) {
-  if (!box) return;
-  for (const child of boxes(view,box.start,box.end)) if (child.type===type) return child;
-}
-
-function isMp4(bytes,view) {
+function* isMp4(size) {
   let movie,hasMedia=false;
-  for (const box of boxes(view,0,bytes.length)) {
+  for (let offset=0;offset<size;) {
+    const box=yield* mp4Box(offset,size);
     if (box.type==='moov') movie=box;
     if (box.type==='mdat'&&box.end>box.start) hasMedia=true;
+    offset=box.end;
   }
   if (!movie||!hasMedia) return false;
-  for (const track of boxes(view,movie.start,movie.end)) {
+  for (let offset=movie.start;offset<movie.end;) {
+    const track=yield* mp4Box(offset,movie.end);
+    offset=track.end;
     if (track.type!=='trak') continue;
-    const media=childBox(view,track,'mdia');
-    const handler=childBox(view,media,'hdlr');
-    if (!handler||handler.end-handler.start<12||textAt(bytes,handler.start+8,handler.start+12)!=='vide') continue;
-    const table=childBox(view,childBox(view,media,'minf'),'stbl');
-    const descriptions=childBox(view,table,'stsd');
+    const media=yield* childBox(track,'mdia');
+    const handler=yield* childBox(media,'hdlr');
+    if (!handler||handler.end-handler.start<12) continue;
+    const kind=yield {offset:handler.start+8,length:4};
+    if (textAt(kind)!=='vide') continue;
+    const mediaInfo=yield* childBox(media,'minf');
+    const table=yield* childBox(mediaInfo,'stbl');
+    const descriptions=yield* childBox(table,'stsd');
     if (!descriptions||descriptions.end-descriptions.start<8) continue;
-    for (const entry of boxes(view,descriptions.start+8,descriptions.end)) {
+    for (let pos=descriptions.start+8;pos<descriptions.end;) {
+      const entry=yield* mp4Box(pos,descriptions.end);
       if (['avc1','avc3'].includes(entry.type)&&entry.end-entry.start>=78) return true;
+      pos=entry.end;
     }
   }
   return false;
 }
 
-function ebmlNumber(bytes,from,to,identifier=false) {
-  if (from>=to||!bytes[from]) invalidVideo();
+function ebmlNumber(bytes,from,identifier=false) {
+  if (from>=bytes.length||!bytes[from]) invalidVideo();
   const length=Math.clz32(bytes[from])-23;
-  if (from+length>to||(identifier&&length>4)) invalidVideo();
+  if (from+length>bytes.length||(identifier&&length>4)) invalidVideo();
   const mask=(1<<(8-length))-1;
   let value=identifier?bytes[from]:bytes[from]&mask;
   let unknown=!identifier&&value===mask;
@@ -63,41 +77,55 @@ function ebmlNumber(bytes,from,to,identifier=false) {
   return {value,after:from+length,unknown};
 }
 
-function* elements(bytes,from,to) {
-  for (let offset=from;offset<to;) {
-    const id=ebmlNumber(bytes,offset,to,true);
-    const length=ebmlNumber(bytes,id.after,to);
-    const end=length.unknown?to:length.after+length.value;
-    if (end>to) invalidVideo();
-    yield {id:id.value,start:length.after,end};
-    offset=end;
-  }
+function* ebmlElement(offset,limit) {
+  const bytes=yield {offset,length:Math.min(12,limit-offset)};
+  const id=ebmlNumber(bytes,0,true);
+  const length=ebmlNumber(bytes,id.after);
+  const start=offset+length.after;
+  const end=length.unknown?limit:start+length.value;
+  if (end>limit) invalidVideo();
+  return {id:id.value,start,end};
 }
 
-function webmTrack(bytes,tracks) {
-  for (const track of elements(bytes,tracks.start,tracks.end)) {
+function* webmTrack(tracks) {
+  for (let offset=tracks.start;offset<tracks.end;) {
+    const track=yield* ebmlElement(offset,tracks.end);
+    offset=track.end;
     if (track.id!==0xae) continue;
     let video=false,codec='';
-    for (const field of elements(bytes,track.start,track.end)) {
-      if (field.id===0x83) video=field.end-field.start===1&&bytes[field.start]===1;
-      if (field.id===0x86&&field.end-field.start<20) codec=textAt(bytes,field.start,field.end);
+    for (let pos=track.start;pos<track.end;) {
+      const field=yield* ebmlElement(pos,track.end);
+      pos=field.end;
+      const length=field.end-field.start;
+      if (field.id===0x83) {
+        video=length===1&&(yield {offset:field.start,length})[0]===1;
+      }
+      if (field.id===0x86&&length<20) codec=textAt(yield {offset:field.start,length});
     }
     if (video&&['V_VP8','V_VP9','V_AV1'].includes(codec)) return true;
   }
   return false;
 }
 
-function isWebm(bytes) {
+function* isWebm(size) {
   let documentType=false;
-  for (const root of elements(bytes,0,bytes.length)) {
+  for (let offset=0;offset<size;) {
+    const root=yield* ebmlElement(offset,size);
+    offset=root.end;
     if (root.id===0x1a45dfa3) {
-      for (const header of elements(bytes,root.start,root.end)) {
-        if (header.id===0x4282&&header.end-header.start===4) documentType=textAt(bytes,header.start,header.end)==='webm';
+      for (let pos=root.start;pos<root.end;) {
+        const header=yield* ebmlElement(pos,root.end);
+        pos=header.end;
+        if (header.id===0x4282&&header.end-header.start===4) {
+          documentType=textAt(yield {offset:header.start,length:4})==='webm';
+        }
       }
     } else if (root.id===0x18538067&&documentType) {
       let video=false,cluster=false;
-      for (const element of elements(bytes,root.start,root.end)) {
-        if (element.id===0x1654ae6b) video=webmTrack(bytes,element);
+      for (let pos=root.start;pos<root.end;) {
+        const element=yield* ebmlElement(pos,root.end);
+        pos=element.end;
+        if (element.id===0x1654ae6b) video=yield* webmTrack(element);
         if (element.id===0x1f43b675&&element.end>element.start) cluster=true;
         if (video&&cluster) return true;
       }
@@ -106,12 +134,23 @@ function isWebm(bytes) {
   return false;
 }
 
-export function videoMime(bytes) {
-  if (bytes.length<32) invalidVideo();
-  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
-  if (textAt(bytes,4,8)==='ftyp'&&isMp4(bytes,view)) return 'video/mp4';
-  if (view.getUint32(0)===0x1a45dfa3&&isWebm(bytes)) return 'video/webm';
+export function* videoHeaders(size) {
+  if (!Number.isSafeInteger(size)||size<32) invalidVideo();
+  const signature=yield {offset:0,length:8};
+  if (textAt(signature,4,8)==='ftyp'&&(yield* isMp4(size))) return 'video/mp4';
+  const view=new DataView(signature.buffer,signature.byteOffset,signature.byteLength);
+  if (view.getUint32(0)===0x1a45dfa3&&(yield* isWebm(size))) return 'video/webm';
   invalidVideo();
+}
+
+export function videoMime(bytes) {
+  const parser=videoHeaders(bytes.length);
+  let step=parser.next();
+  while (!step.done) {
+    const {offset,length}=step.value;
+    step=parser.next(bytes.subarray(offset,offset+length));
+  }
+  return step.value;
 }
 
 function byteRange(value,size) {

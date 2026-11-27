@@ -132,9 +132,9 @@ if(editor) {
   query('[data-robot-video]',editor).addEventListener('change',event=>{
     const file=event.target.files?.[0];event.target.value='';if(!file)return;
     enqueue(async()=>{
-      if(file.size>24*1024*1024)throw new Error(t('Film może mieć do 24 MB.','The video can be up to 24 MB.'));
+      if(file.size>Number(editor.dataset.videoLimit))throw new Error(editor.dataset.videoSizeError||t('Plik jest za duży.','File too large.'));
       await save();report(t('Przesyłanie filmu…','Uploading video…'));
-      accept(await api('/listings/'+listing+'/video',{method:'POST',body:file,headers:{'Content-Type':'application/octet-stream','X-Edit-Version':String(state.version)}}));
+      accept(await api('/listings/'+listing+'/video',{method:'POST',body:file,headers:{'Content-Type':'application/octet-stream','X-Video-Size':String(file.size),'X-Edit-Version':String(state.version)}}));
       drawMedia();report(t('Film zapisany.','Video saved.'));
     });
   });

@@ -64,10 +64,15 @@ env.BUCKET={
     const temporary=path+'.'+crypto.randomUUID()+'.tmp';
     const info=path+'.type';
     const typeTemporary=temporary+'.type';
-    await writeFile(temporary,bytes,{mode:0o600});
-    await writeFile(typeTemporary,options.httpMetadata.contentType,{mode:0o600});
-    await rename(typeTemporary,info);
-    await rename(temporary,path);
+    try {
+      await writeFile(temporary,bytes,{mode:0o600});
+      await writeFile(typeTemporary,options.httpMetadata.contentType,{mode:0o600});
+      await rename(typeTemporary,info);
+      await rename(temporary,path);
+    } catch (error) {
+      await Promise.allSettled([unlink(temporary),unlink(typeTemporary)]);
+      throw error;
+    }
   },
   async get(key,{range}={}) {
     const path=objectPath(key);

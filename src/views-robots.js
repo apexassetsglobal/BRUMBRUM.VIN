@@ -1,11 +1,12 @@
 import { isStaff, missing, requireUser, row, rows } from './core.js';
 import { options } from './data.js';
+import { listingVideoLimit } from './listing-video-policy.js';
 import { favorites } from './inbox.js';
 import { listingsByKeys, search, spinLimits } from './market.js';
 import { robotBrands, robotCategories, robotCurrencies, robotRentalUnits, robotTradeModes } from './robot-catalog.js';
 import { featuredRobotDemos, getRobotDemo, listRobotDemos } from './robot-demo.js';
 import { robotOrderLimits } from './robot-orders.js';
-import { apiForm, area, check, choice, day, e, embed, empty, field, flash, formStatus, hidden, href, icon, keyInput, lang, link, localized, loginLink, pageHead, panel, price, sectionHead, submit, tag, titleOf } from './ui.js';
+import { apiForm, area, check, choice, day, e, embed, empty, field, flash, formStatus, hidden, href, icon, keyInput, lang, link, listingVideoLimitAttributes, localized, loginLink, pageHead, panel, price, sectionHead, submit, tag, titleOf } from './ui.js';
 import { photoGallery, reportDialog } from './views-market.js';
 
 const shell=body=>`<div class="robot-page">${body}</div>`;
@@ -221,7 +222,7 @@ export function wizard(ctx,offer,state) {
   const c=(name,label,items,required=false)=>choice(ctx,name,label,items,d[name]??'',{required,placeholder:required?t('Wybierz','Select'):false});
   return {title:t('Wystaw sprzęt','List equipment'),body:shell(pageHead(offer.status==='draft'?t('Wystaw sprzęt','List equipment'):t('Edytuj ogłoszenie','Edit listing'),t('Dane zapisują się na Twoim koncie.','Your data is saved to your account.'),link(ctx,'/moje-ogloszenia',t('Moje ogłoszenia','My listings'),'btn'))+
     (offer.status==='published'?flash(t('Publikacja zmian wymaga ponownej moderacji. Dotychczasowe zamówienia zachowują uzgodnione ceny.','Publishing changes requires another review. Existing orders keep their agreed prices.'),'warn'):'')+
-    `<form method="post" novalidate class="robot-editor" data-robot-editor="${e(offer.id)}" data-version="${state.version}" data-photos="${embed(state.photos)}" data-spin="${embed(state.spin)}" data-video="${e(state.video||'')}">
+    `<form method="post" novalidate class="robot-editor" data-robot-editor="${e(offer.id)}" ${listingVideoLimitAttributes(t)} data-version="${state.version}" data-photos="${embed(state.photos)}" data-spin="${embed(state.spin)}" data-video="${e(state.video||'')}">
       ${hidden('type','robot')}${hidden('market','robotics')}
       <section class="robot-form-section"><h2>${t('Sprzęt i zastosowanie','Equipment and application')}</h2><div class="field-grid">
         ${c('robotCategory',t('Kategoria robota','Robot category'),robotCategories,true)}${c('tradeMode',t('Rodzaj ogłoszenia','Listing type'),robotTradeModes,true)}
@@ -247,7 +248,7 @@ export function wizard(ctx,offer,state) {
         <label class="robot-upload">${icon('upload',28)}<strong>${t('Wybierz zdjęcia','Choose photos')}</strong><span>JPEG, PNG, WebP · ${t('do 12 MB / plik · maks. 30','up to 12 MB / file · max. 30')}</span><input type="file" multiple accept="image/jpeg,image/png,image/webp" data-robot-photos></label>
         <div class="robot-edit-photos" data-robot-photo-grid></div>
         <details><summary>${t('Film i zdjęcia 360°','Video and 360° photos')}</summary><div class="stack">
-          ${field('videoFile',t('Film MP4 lub WebM do 24 MB','MP4 or WebM video up to 24 MB'),'',{type:'file',attributes:'accept="video/mp4,video/webm" data-robot-video'})}
+          ${field('videoFile',t('Film MP4 (H.264) lub WebM do {limit} MiB','MP4 (H.264) or WebM video up to {limit} MiB',{limit:listingVideoLimit/1024**2}),'',{type:'file',attributes:'accept="video/mp4,video/webm" data-robot-video'})}
           <div data-robot-video-preview></div><button type="button" class="btn" data-robot-video-remove hidden>${t('Usuń film','Remove video')}</button>
           ${field('spinFiles',t('Ujęcia 360°: od 8 do 24 zdjęć','360° sequence: 8–24 photos'),'',{type:'file',attributes:'multiple accept="image/jpeg,image/png,image/webp" data-robot-spin'})}
           <div class="robot-edit-photos" data-robot-spin-grid></div></div></details>

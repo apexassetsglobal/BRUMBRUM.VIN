@@ -2303,11 +2303,11 @@ if (wizard) {
   }
   cameraButtons.forEach(button=>button.addEventListener('click',()=>launchCamera(button.dataset.cameraOpen)));
   async function sendVideo(file) {
-    if (file.size>Number(wizard.dataset.videoLimit)) throw new Error(t('Maksymalny rozmiar wideo to 24 MB.','The video size limit is 24 MB.'));
+    if (file.size>Number(wizard.dataset.videoLimit)) throw new Error(wizard.dataset.videoSizeError||t('Plik jest za duży.','File too large.'));
     if (!/\.(mp4|webm)$/i.test(file.name)&&!['video/mp4','video/webm'].includes(file.type))
       throw new Error(t('Wybierz wideo MP4 (H.264) lub WebM.','Choose an MP4 (H.264) or WebM video.'));
     report(status,t('Przesyłanie wideo…','Uploading video…'));
-    await uploadMedia('video',file);
+    await uploadMedia('video',file,{'X-Video-Size':String(file.size)});
     report(status,t('Wideo zapisano w szkicu.','The video was saved to your draft.'));
   }
   function showMediaError(errors,file,err,retryUpload) {

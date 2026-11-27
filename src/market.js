@@ -2,7 +2,8 @@ import { after, changes, conflict, digest, fail, forbidden, id, integer, isId, i
 import { catalogFor, demoGalleries, featureKeys, options } from './data.js';
 import { cleanImage, maxUpload, objectImage, thumbLimit } from './images.js';
 import { semiTrailerBodies, vehicleProfile } from './vehicle-types.js';
-import { videoLimit, videoMime, videoObject } from './videos.js';
+import { videoObject } from './videos.js';
+import { storeListingVideo } from './listing-video-upload.js';
 import { moderationStatement, saveSubmission, statusNotice } from './listing-review.js';
 import { robotDefaultData, validateRobotListing } from './robot-catalog.js';
 import { assertRobotStock, robotStockGuardSQL } from './robot-orders.js';
@@ -452,13 +453,11 @@ export async function uploadVideo(ctx,key) {
   const version=integer(ctx.req.headers.get('X-Edit-Version'),0,Number.MAX_SAFE_INTEGER);
   if (state.version!==version) conflict();
   if (record.status==='pending') fail(409,'Ogłoszenie jest w moderacji.','The listing is under review.');
-  const bytes=await limitedBody(ctx.req,videoLimit);
-  const mime=videoMime(bytes);
   const video=id();
   const objectKey='videos/'+video;
-  await ctx.env.BUCKET.put(objectKey,bytes,{httpMetadata:{contentType:mime}});
+  const {mime,size}=await storeListingVideo(ctx.req,ctx.env.BUCKET,objectKey);
   try {
-    await run(ctx.db,'INSERT INTO listing_videos(id,listing_id,mime,size,created_at) VALUES(?,?,?,?,?)',video,record.id,mime,bytes.length,now());
+    await run(ctx.db,'INSERT INTO listing_videos(id,listing_id,mime,size,created_at) VALUES(?,?,?,?,?)',video,record.id,mime,size,now());
   } catch (error) {
     await Promise.allSettled([ctx.env.BUCKET.delete(objectKey)]);
     throw error;

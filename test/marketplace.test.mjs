@@ -1475,7 +1475,16 @@ test('16 · ordered 360° frames and playable video follow listing permissions a
   assert.deepEqual(state.spin,ordered);
   await seller.api(editsPath(key),{version:state.version,spin:[...ordered,crypto.randomUUID()]},422,'PUT');
   await send('video',state.version,Buffer.from('<html>invalid file</html>'),422);
-  await send('video',state.version,Buffer.alloc(24*1024*1024+1),413);
+  const oneMiB=new Blob([Buffer.alloc(1024*1024)]);
+  await send('video',state.version,new Blob([...Array(90).fill(oneMiB),new Uint8Array(1)]),413);
+  const padding=Buffer.alloc(8);
+  padding.writeUInt32BE(24*1024*1024+padding.length);
+  padding.write('free',4);
+  const largerClip=new Blob([mp4,padding,...Array(24).fill(oneMiB)]);
+  state=await send('video',state.version,largerClip);
+  const largerPath='/wideo/'+state.video;
+  assert.equal((await seller.go(largerPath,{method:'HEAD'})).headers.get('content-length'),String(largerClip.size));
+  assert.deepEqual((await seller.go(largerPath,{headers:{Range:'bytes=0-7'},code:206})).result,mp4.subarray(0,8));
   const beforeVideo=state.version;
   state=await send('video',state.version,mp4);
   await send('video',beforeVideo,webm,409);
