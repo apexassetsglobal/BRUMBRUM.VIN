@@ -226,7 +226,7 @@ function managedBanners(ctx,banners) {
       <div class="ad-identity"><span class="ad-label">${t('REKLAMA','AD')}</span>${s.advertiser?`<span class="ad-company">${e(s.advertiser)}</span>`:''}</div><strong class="ad-title">${e(s.title)}</strong></div><div class="ad-actions">
       <a class="ad-cta" href="${e(s.url)}" data-banner-click${s.url.startsWith('https://')?' target="_blank" rel="noopener noreferrer"':''}><span>${e(s.label)}</span>${icon('arrow',15)}</a><a href="${href(ctx,'/reklama')}" class="ad-secondary" data-banner-click>${t('Zapytaj o reklamę','Ask about advertising')}</a></div>
       ${s.photo?`<img src="${e(s.photo)}" class="ad-photo" alt="" width="750" height="365">`:''}</div>`).join('')}
-    ${slides.length>1?`<button class="ad-toggle ad-next" type="button" data-ad-next aria-label="${t('Następny baner','Next banner')}">${icon('chevron',17)}</button>`:''}
+    ${slides.length>1?`<div class="ad-banner-dots" role="group" aria-label="${t('Wybór banera','Choose banner')}">${slides.map((s,i)=>`<button type="button" data-banner-dot="${i}" aria-label="${e(t('Pokaż baner','Show banner')+' '+(i+1))}"${i?'':' aria-current="true"'}><span aria-hidden="true"></span></button>`).join('')}</div>`:''}
     <button class="ad-toggle" type="button" data-ad-toggle aria-expanded="true" aria-label="${t('Rozwiń lub zwiń reklamę','Expand or collapse advertisement')}">${icon('down',17)}</button>
   </section>`;
 }
@@ -424,7 +424,9 @@ export async function home(ctx) {
   </div></div></section>
   <div class="wrap home-content">
     ${vehicleSearchForm(ctx,{home:true})}
-    ${adCarousel(ctx,adsReady)}
+    ${adCarousel(ctx,adsReady,[{id:'',alt:t('Roboty i automatyka','Robots and automation'),content:`
+      <span class="ad-carousel-strip"><span class="ad-carousel-company">${t('ROBOTY I AUTOMATYKA','ROBOTS & AUTOMATION')}</span>
+        <span class="ad-carousel-action">${t('Przejdź do strefy','Enter zone')}${icon('arrow',15)}</span></span>${robotBanner(ctx)}`}])}
     ${!adsReady?`<p class="muted">${t('Banery ALL4RENT są chwilowo niedostępne.','The ALL4RENT banners are temporarily unavailable.')}</p>`:''}
     ${banners.length?managedBanners(ctx,banners):''}
     ${categories(ctx)}
@@ -462,7 +464,6 @@ export async function home(ctx) {
       </div>
     </section>
     ${await youtubePromotionsSection(ctx)}
-    ${robotBanner(ctx)}
   </div><script type="module" src="/assets/china-market.js?v=2"></script>`};
 }
 function dealerCard(ctx,x) {
@@ -758,9 +759,7 @@ export async function detail(ctx,offer,{mode='public',extras=''}={}) {
   const name=titleOf(offer)||t('Podgląd ogłoszenia','Listing preview');
   const isPublic=mode==='public';
   const slidePanel=isPublic&&offer.status==='published';
-  // DEMO listings must always present the complete buyer path, even when the
-  // selected demo role happens to own the illustrative listing.
-  const contactable=isPublic&&offer.status==='published'&&(ctx.demo||ctx.user?.id!==offer.user_id);
+  const contactable=isPublic&&offer.status==='published'&&ctx.user?.id!==offer.user_id;
   const searchBack=cleanReturn(ctx.url.searchParams.get('powrot'),'');
   const searchUrl=href(ctx,'/szukaj');
   const allowedBack=searchBack.split(/[?#]/,1)[0]===searchUrl;
@@ -814,7 +813,7 @@ export async function detail(ctx,offer,{mode='public',extras=''}={}) {
   const backLabel=isPublic?t('Wróć do wyników','Back to results'):t('Wróć do panelu','Back to dashboard');
   return {title:name+(offer.variant?' '+offer.variant:''),index:isPublic&&offer.status==='published',listingPage:true,
     description:desc?.slice(0,155)||name,canonical:isPublic?nextOffer:undefined,image:offer.photos[0]?.url||offer.cover||undefined,
-    body:`${listingTrail(ctx,offer,name,back,allowedBack,isPublic)}<section class="listing-showcase" ${ctx.demo?'data-demo-showcase ':''}data-listing-mode="${e(mode)}"${photos.length?'':' data-no-photos'} aria-labelledby="listing-title">
+    body:`${listingTrail(ctx,offer,name,back,allowedBack,isPublic)}<section class="listing-showcase" ${ctx.demo?'data-demo-showcase':''} aria-labelledby="listing-title">
       ${media}
       <div class="wrap showcase-top"><a class="btn showcase-back" href="${e(back)}" aria-label="${backLabel}">${icon('back',19)}<span>${backLabel}</span></a>${photoActions}</div>
       <div class="wrap showcase-content"${slidePanel?' data-showcase-panel':''}>
@@ -837,7 +836,7 @@ export async function detail(ctx,offer,{mode='public',extras=''}={}) {
       </div></div></div>
       <div class="wrap showcase-bottom">
         <a class="text-link showcase-details-link" href="#dane-pojazdu">${icon('down',18)}${t('Dane pojazdu','Vehicle details')}</a>
-        <a class="btn showcase-vin-link" href="#sprawdz-vin" data-button-finish-action>${icon('search',17)}${t('Sprawdź VIN','Check VIN')}${icon('down',15)}</a>
+        <a class="btn showcase-vin-link" href="#sprawdz-vin">${icon('search',17)}${t('Sprawdź VIN','Check VIN')}${icon('down',15)}</a>
         ${mobileView?`<button type="button" class="mobile-photo-view" data-photo-view-toggle aria-controls="listing-photo-stack" aria-expanded="false" hidden>
           <span data-photo-view-open>${icon('image',20)}${t('Same zdjęcia','Photos only')}</span><span data-photo-view-close hidden>${icon('sliders',20)}${t('Pokaż dane i przyciski','Show details and buttons')}</span></button>`:''}
       </div>

@@ -377,7 +377,7 @@ if (sideNav) {
   const menuItems=$$(itemSelector,sideNav);
   const captions=menuItems.map(item=>$('span:not(.count)',item)).filter(Boolean);
   const railLayout=matchMedia('(min-width:1041px) and (hover:hover) and (pointer:fine), (min-width:768px) and (min-height:480px) and (orientation:landscape)');
-  let opener=null,pinned=false,hoverOpen=false,captionItem=null,touchPreview=null,openingSlide=null;
+  let opener=null,pinned=false,hoverOpen=false,captionItem=null,touchPreview=false,openingSlide=null;
 
   function sizeCaptions() {
     const labels=sideNav.hasAttribute('data-side-open')?captions:captions.filter(label=>label.parentElement===captionItem);
@@ -412,7 +412,8 @@ if (sideNav) {
     opener=null;
     pinned=false;
     hoverOpen=false;
-    touchPreview=openingSlide=null;
+    touchPreview=false;
+    openingSlide=null;
     showCaption(null);
     sideNav.removeAttribute('data-side-ready');
     if (themePicker) themePicker.open=false;
@@ -490,19 +491,21 @@ if (sideNav) {
   });
   themePicker?.addEventListener('toggle',updateSideNav);
   sideNav.addEventListener('pointerdown',event=>{
-    const item=event.target.closest(itemSelector);
     const touch=event.pointerType==='touch'||event.pointerType==='pen';
-    touchPreview=touch&&item!==toggle&&captionItem!==item&&!sideNav.hasAttribute('data-side-open')?item:null;
+    touchPreview=touch&&!event.target.closest('[data-side-toggle]')&&!sideNav.hasAttribute('data-side-open');
   });
-  sideNav.addEventListener('pointercancel',()=>{touchPreview=null;});
-  // Capture the first tap before a link navigates or a button opens a dialog.
+  sideNav.addEventListener('pointercancel',()=>{touchPreview=false;});
+  // The first touch anywhere on the tablet rail opens the complete drawer.
   sideNav.addEventListener('click',event=>{
-    const item=touchPreview;
-    touchPreview=null;
-    if (!item||!event.detail||!item.contains(event.target)||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey) return;
+    const openDrawer=touchPreview;
+    touchPreview=false;
+    if (!openDrawer||!event.detail||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey) return;
     event.preventDefault();
     event.stopPropagation();
-    showCaption(item);
+    pinned=true;
+    sideNav.setAttribute('data-side-ready','');
+    showCaption(null);
+    updateSideNav();
   },true);
   sideNav.addEventListener('click',event=>{
     const action=event.target.closest('a[href],button');
@@ -846,8 +849,6 @@ if (carousel) {
     schedule();
   };
   rotation.addEventListener('click',()=>setPlaying(!playing));
-  $('[data-ad-previous]',carousel).addEventListener('click',()=>navigate(index-1));
-  $('[data-ad-forward]',carousel).addEventListener('click',()=>navigate(index+1));
   for (const [i,dot] of dots.entries()) dot.addEventListener('click',()=>navigate(i));
   carousel.addEventListener('pointerenter',event=>{
     if (event.pointerType!=='mouse'||!mouse.matches) return;
@@ -911,10 +912,13 @@ if (ad) {
   });
   const step=direction=>{
     slides[index].hidden=true;
+    dots[index]?.removeAttribute('aria-current');
     index=(index+direction+slides.length)%slides.length;
     slides[index].hidden=false;
+    dots[index]?.setAttribute('aria-current','true');
   };
-  $('[data-ad-next]',ad)?.addEventListener('click',()=>step(1));
+  const dots=$$('[data-banner-dot]',ad);
+  for (const [target,dot] of dots.entries()) dot.addEventListener('click',()=>step(target-index));
   enableAdSwipe(ad,slides,()=>index,step,active=>{
     if (active) clearTimeout(timer);
     else if (desktop.matches) collapseAfter();

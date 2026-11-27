@@ -178,23 +178,17 @@ test('desktop keeps the icon rail visible and expands every caption on hover',()
   env.click(env.toggle);assertRail(env,true,false);
 });
 
-test('touch previews one icon at a time and pressing its caption activates the original action',()=>{
+test('the first touch anywhere on the tablet rail opens the complete drawer',()=>{
   for(const pointerType of ['touch','pen']) {
     const env=harness(),press=node=>env.click(node,{pointerType});
     let calls=0;
     env.dialogAction.addEventListener('click',()=>{calls++;});
     env.open();
-    assert.equal(press(env.linkIcon).defaultPrevented,true);assertRail(env,true);
-    assert.equal(env.link.hasAttribute('data-side-caption'),true);
-    press(env.dialogAction);
+    assert.equal(press(env.panel).defaultPrevented,true);assertRail(env,true,true);
     assert.equal(env.link.hasAttribute('data-side-caption'),false);
-    assert.equal(env.dialogAction.hasAttribute('data-side-caption'),true);
-    assert.equal(calls,0);
     press(env.dialogAction);assert.equal(calls,1);assertRail(env,false);
-    env.open();press(env.linkIcon);
+    env.open();assert.equal(press(env.linkIcon).defaultPrevented,true);assertRail(env,true,true);
     assert.equal(press(env.linkLabel).defaultPrevented,false);assertRail(env,false);
-    env.open();press(env.toggle);
-    assert.equal(press(env.linkIcon).defaultPrevented,false);assertRail(env,false);
   }
 });
 
@@ -207,7 +201,9 @@ test('the drawer fits one caption on preview and the longest visible caption whe
   env.open();
   assert.equal(drawerWidth(),'0px');
   env.click(env.linkIcon,{pointerType:'touch'});
-  assert.equal(drawerWidth(),'50px');
+  assert.equal(drawerWidth(),'166px');
+  env.click(env.toggle);
+  assert.equal(drawerWidth(),'0px');
   env.click(env.toggle);
   assert.equal(drawerWidth(),'166px');
   env.linkLabel.layoutWidth=188.5;

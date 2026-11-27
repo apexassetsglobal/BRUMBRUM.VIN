@@ -33,7 +33,7 @@ function houseAd(ctx) {
   };
 }
 
-export function adCarousel(ctx,mediaReady) {
+export function adCarousel(ctx,mediaReady,extraSlides=[]) {
   const t=ctx.t;
   const ads=mediaReady?carouselBanners(ctx):[];
   const slides=[houseAd(ctx),...ads.map(({id,name,file,width=2172,url,title,action:label})=>{
@@ -52,7 +52,7 @@ export function adCarousel(ctx,mediaReady) {
       content:url?`<a class="ad-carousel-link" href="${e(url)}" data-banner-click target="_blank" rel="noopener noreferrer" draggable="false"
         aria-label="${e(alt+' · '+t('otwiera w nowej karcie','opens in a new tab'))}">${strip}${photo}</a>`:`${strip}${photo}`
     };
-  })];
+  }),...extraSlides];
   const count=slides.length;
   const openingIndex=Math.floor(Math.random()*count);
   const [openingSlide]=slides.splice(openingIndex,1);
@@ -60,7 +60,7 @@ export function adCarousel(ctx,mediaReady) {
   const position=i=>t('{index} z {count}','{index} of {count}',{index:i+1,count});
   return `<section class="ad-carousel" id="reklamy" data-ad-carousel aria-label="${t('Reklamy','Advertisements')}" aria-roledescription="${t('karuzela','carousel')}">
     <div class="ad-carousel-stage" data-ad-stage>
-      ${slides.map(({id,alt,content},i)=>`<div data-ad-slide="${e(alt)}" data-banner-id="${id}" role="group" aria-roledescription="${t('slajd','slide')}"
+      ${slides.map(({id,alt,content},i)=>`<div data-ad-slide="${e(alt)}"${id?` data-banner-id="${e(id)}"`:''} role="group" aria-roledescription="${t('slajd','slide')}"
         aria-label="${position(i)}"${i?' hidden':''}>${content}</div>`).join('')}
     </div>
     <div class="ad-carousel-controls" data-ad-controls hidden>
@@ -70,8 +70,6 @@ export function adCarousel(ctx,mediaReady) {
         <div class="ad-carousel-dots" role="group" aria-label="${t('Wybór reklamy','Choose an ad')}">
           ${slides.map(({alt},i)=>`<button type="button" class="ad-carousel-dot" data-ad-dot="${i}" aria-label="${e(t('Pokaż reklamę','Show ad')+' '+(i+1)+' · '+alt)}"${i?'':' aria-current="true"'}><span aria-hidden="true"></span></button>`).join('')}
         </div>
-        <button type="button" class="ad-carousel-control" data-ad-previous aria-label="${t('Poprzednia reklama','Previous ad')}">${icon('chevron',17)}</button>
-        <button type="button" class="ad-carousel-control" data-ad-forward aria-label="${t('Następna reklama','Next ad')}">${icon('chevron',17)}</button>
         <button type="button" class="ad-carousel-control" data-ad-rotation aria-label="${t('Wstrzymaj automatyczną zmianę reklam','Pause ad rotation')}">
           <span data-ad-pause aria-hidden="true">${icon('pause',16)}</span><span data-ad-play aria-hidden="true" hidden>${icon('play',16)}</span>
         </button>
