@@ -1,6 +1,6 @@
 export const defaultHomeLogo = '07';
 export const originalBrandLogo = 'original';
-export const brandLogoIds = Array.from({length:60},(_,index)=>String(index+1).padStart(2,'0'));
+export const brandLogoIds = Array.from({length:70},(_,index)=>String(index+1).padStart(2,'0'));
 
 export function brandLogoAsset(id) {
   return brandLogoIds.includes(id)?'/assets/brand-logos/'+id+'.webp':'';

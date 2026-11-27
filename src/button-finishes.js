@@ -14,6 +14,29 @@ export const buttonFinishPresets = [
   ['stock','Fabryczny niebieski','Factory blue','blue','smooth','none','silver'],
 ].map(makePreset);
 
+export const blackStoneFinishPresets = [
+  ['stone-01','Czarny diament','Black diamond'],
+  ['stone-02','Onyks falisty','Wavy onyx'],
+  ['stone-03','Obsydian lustrzany','Mirror obsidian'],
+  ['stone-04','Marmur Marquina','Marquina marble'],
+  ['stone-05','Agat pasmowy','Banded agate'],
+  ['stone-06','Hematyt','Hematite'],
+  ['stone-07','Bazalt kolumnowy','Columnar basalt'],
+  ['stone-08','Turmalin czarny','Black tourmaline'],
+  ['stone-09','Labradoryt nocny','Midnight labradorite'],
+  ['stone-10','Kwarc dymny','Smoky quartz'],
+  ['stone-11','Granit galaktyczny','Galaxy granite'],
+  ['stone-12','Łupek antracytowy','Anthracite slate'],
+  ['stone-13','Spinel czarny','Black spinel'],
+  ['stone-14','Obsydian śnieżny','Snowflake obsidian'],
+  ['stone-15','Szungit','Shungite'],
+  ['stone-16','Czarny opal ognisty','Black fire opal'],
+  ['stone-17','Marmur Portoro','Portoro marble'],
+  ['stone-18','Sardonyks','Sardonyx'],
+  ['stone-19','Gabro srebrzyste','Silver gabbro'],
+  ['stone-20','Obsydian tęczowy','Rainbow obsidian'],
+].map(([id,pl,en])=>makePreset([id,pl,en,'graphite',id,'none','silver']));
+
 export const rollsRoyceFinishPresets = [
   ['rr-grace-suite','Biel z granatową nicią','White with navy stitch','rr-grace','coachbuild-grain','double','navy'],
   ['rr-navy-suite','Granat z lamówką','Navy with piping','rr-navy','placed-perforation','piping','silver'],
@@ -53,7 +76,7 @@ export const luxuryBrandPresetGroups = [
 export const luxuryBrandFinishPresets = luxuryBrandPresetGroups.flatMap(({presets})=>presets);
 
 export const buttonFinishes = Object.fromEntries(
-  [...buttonFinishPresets,...rollsRoyceFinishPresets,...carbonAndMetalFinishPresets,...luxuryBrandFinishPresets].map(({id,finish})=>[id,finish]));
+  [...buttonFinishPresets,...rollsRoyceFinishPresets,...carbonAndMetalFinishPresets,...luxuryBrandFinishPresets,...blackStoneFinishPresets].map(({id,finish})=>[id,finish]));
 
 export const buttonFinishPalettes = [
   {id:'standard',label:['Kolory podstawowe','Base colors'],colors:
@@ -128,6 +151,7 @@ export const buttonFinishFields = {
     ['brogued-leather','Skóra z perforacją brogue','Brogue-perforated leather'],
     ['forged-carbon','Kuty karbon','Forged carbon'],
     ...carbonAndMetalFinishPresets.map(({pl,en,finish})=>[finish.material,pl,en]),
+    ...blackStoneFinishPresets.map(({id,pl,en})=>[id,pl,en]),
   ]},
   stitch: {label: ['Przeszycie','Stitching'], options: [
     ['none','Bez przeszycia','No stitching'],

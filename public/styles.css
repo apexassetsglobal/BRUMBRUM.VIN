@@ -3920,7 +3920,8 @@ body:has(#wyglad-ikon[open] [data-appearance-section=buttons][open] [data-appear
   :is(:root,.button-finish-swatch) {
     --button-face-top:#125ba3;--button-face-bottom:#083568;--button-face-edge:#6397c8;
     --button-face-sheen:#ffffff12;--button-hover-sheen:#ffffff20;--button-face-grain:none;--button-grain-size:140px;
-    --button-face-tint:transparent;--button-face-shade:#04080e24;
+    --button-grain-blend:soft-light;--button-grain-fit:initial;
+    --button-face-tint:transparent;--button-face-perimeter:initial;--button-face-shade:#04080e24;
     --button-face-ink:#fff;--button-face-text-shadow:0 1px 2px #05080eaa;--button-thread:#cbd8e3;
     --button-seam-style:dashed;--button-seam-width:1px;--button-seam-art:none;
   }
@@ -3998,7 +3999,7 @@ body:has(#wyglad-ikon[open] [data-appearance-section=buttons][open] [data-appear
   :is(:root,.button-finish-swatch)[data-button-material=nappa] {--button-face-grain:url('/assets/buttons/nappa.webp');--button-grain-size:130px}
   :is(:root,.button-finish-swatch)[data-button-material=grained] {--button-face-grain:url('/assets/buttons/grained.webp');--button-grain-size:155px}
   :is(:root,.button-finish-swatch)[data-button-material=perforated] {--button-face-grain:url('/assets/buttons/perforated.webp');--button-grain-size:120px}
-  :is(:root,.button-finish-swatch)[data-button-material]:not([data-button-material=smooth]) {
+  :is(:root,.button-finish-swatch)[data-button-material]:not([data-button-material=smooth],[data-button-material^="stone-"]) {
     --button-face-sheen:#07101846;--button-hover-sheen:#0710183d;
   }
   :is(:root,.button-finish-swatch)[data-button-material=alcantara] {
@@ -4040,6 +4041,35 @@ body:has(#wyglad-ikon[open] [data-appearance-section=buttons][open] [data-appear
     --button-face-sheen:#ffffff24;--button-hover-sheen:#ffffff37;
     --button-face-tint:color-mix(in srgb,var(--button-face-top) 56%,transparent);--button-face-shade:#15233410;
   }
+  /* Stone is photographed at button scale; preserve its veins and facets at every width. */
+  :is(:root,.button-finish-swatch)[data-button-material^="stone-"] {
+    --button-grain-blend:normal;--button-grain-fit:cover;
+    --button-face-top:#24272d;--button-face-bottom:#111316;--button-face-edge:#767d86;
+    --button-face-ink:#fff;--button-face-text-shadow:0 1px 2px #000;
+    --button-face-tint:#05060994;--button-face-perimeter:#05060928;
+    --button-face-sheen:#ffffff0c;--button-hover-sheen:#ffffff24;--button-face-shade:#0003;
+  }
+  .button-finish-swatch[data-button-material^="stone-"] {--button-face-tint:#05060922}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-01] {--button-face-grain:url('/assets/buttons/stone-01.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-02] {--button-face-grain:url('/assets/buttons/stone-02.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-03] {--button-face-grain:url('/assets/buttons/stone-03.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-04] {--button-face-grain:url('/assets/buttons/stone-04.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-05] {--button-face-grain:url('/assets/buttons/stone-05.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-06] {--button-face-grain:url('/assets/buttons/stone-06.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-07] {--button-face-grain:url('/assets/buttons/stone-07.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-08] {--button-face-grain:url('/assets/buttons/stone-08.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-09] {--button-face-grain:url('/assets/buttons/stone-09.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-10] {--button-face-grain:url('/assets/buttons/stone-10.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-11] {--button-face-grain:url('/assets/buttons/stone-11.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-12] {--button-face-grain:url('/assets/buttons/stone-12.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-13] {--button-face-grain:url('/assets/buttons/stone-13.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-14] {--button-face-grain:url('/assets/buttons/stone-14.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-15] {--button-face-grain:url('/assets/buttons/stone-15.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-16] {--button-face-grain:url('/assets/buttons/stone-16.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-17] {--button-face-grain:url('/assets/buttons/stone-17.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-18] {--button-face-grain:url('/assets/buttons/stone-18.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-19] {--button-face-grain:url('/assets/buttons/stone-19.webp')}
+  :is(:root,.button-finish-swatch)[data-button-material=stone-20] {--button-face-grain:url('/assets/buttons/stone-20.webp')}
   :is(:root,.button-finish-swatch)[data-button-thread=ivory] {--button-thread:#f9e3b9}
   :is(:root,.button-finish-swatch)[data-button-thread=copper] {--button-thread:#ffb282}
   :is(:root,.button-finish-swatch)[data-button-thread=red] {--button-thread:#ff8995}
@@ -4076,21 +4106,32 @@ body:has(#wyglad-ikon[open] [data-appearance-section=buttons][open] [data-appear
   }
 
   .button-finish-swatch,
+  :root[data-button-material^="stone-"] .chip[data-filter-shortcut],
   :root:is([data-button-color]:not([data-button-color=blue]),[data-button-material]:not([data-button-material=smooth]),[data-button-stitch]:not([data-button-stitch=none]))
   :is(.btn.primary,.ad-carousel-house-add,.listing-showcase[data-photo-view-open] .mobile-photo-view,
     [data-button-finish-action]:not([data-button-finish-action=step],[data-button-finish-action=tab]),
     [data-button-finish-action=step][aria-current=step]):not(:where(
+    :root[data-button-material^="stone-"] [data-button-finish-action=icon],
     :is([data-account-buttons=text],[data-account-buttons=outline]) :is(.account-heading-action,.account-identity-action)
   )) {
     color:var(--button-face-ink);text-shadow:var(--button-face-text-shadow);
     border-color:var(--button-face-edge);background-color:var(--button-face-bottom);
     background-image:linear-gradient(178deg,var(--button-face-sheen),transparent 52%,var(--button-face-shade)),
-      linear-gradient(var(--button-face-tint),var(--button-face-tint)),var(--button-face-grain),
+      linear-gradient(var(--button-face-perimeter,var(--button-face-tint)),var(--button-face-tint) 27% 73%,
+        var(--button-face-perimeter,var(--button-face-tint))),var(--button-face-grain),
       linear-gradient(155deg,var(--button-face-top),var(--button-face-bottom));
-    background-blend-mode:normal,normal,soft-light,normal;
-    background-position:center;background-size:100% 100%,100% 100%,var(--button-rendered-grain-size,var(--button-grain-size)) var(--button-rendered-grain-size,var(--button-grain-size)),100% 100%;
+    background-blend-mode:normal,normal,var(--button-grain-blend),normal;
+    background-position:center;background-size:100% 100%,100% 100%,
+      var(--button-grain-fit,var(--button-rendered-grain-size,var(--button-grain-size)) var(--button-rendered-grain-size,var(--button-grain-size))),100% 100%;
     background-repeat:no-repeat,no-repeat,repeat,no-repeat;
     box-shadow:inset 0 1px #ffffff29,inset 0 -2px #05091255,0 2px 4px #0a14262b;
+  }
+  :root[data-button-material^="stone-"] .chip[data-filter-shortcut]:not(:disabled):is(:hover,:focus-visible) {
+    --button-face-sheen:var(--button-hover-sheen);border-color:#c7ced7;
+  }
+  :root[data-button-material^="stone-"] .chip[data-filter-shortcut][aria-pressed=true] {
+    border-color:#ffe2a6;box-shadow:inset 0 0 0 2px #ffe2a6,0 1px 3px #0008;
+    text-decoration:underline;text-underline-offset:.18em;
   }
   .button-finish-swatch[data-button-color=blue][data-button-material=smooth][data-button-stitch=none] {background:var(--accent,#066bd1)}
   .button-finish-swatch[data-button-detail=diamond]>span {
@@ -4185,23 +4226,23 @@ body:has(#wyglad-ikon[open] [data-appearance-section=buttons][open] [data-appear
   :is(.btn.primary,.ad-carousel-house-add,[data-button-finish-action]:not([data-button-finish-action=step],[data-button-finish-action=tab])) {
     border-color:var(--hardware-metal);box-shadow:inset 0 1px var(--hardware-highlight),inset 0 -2px var(--hardware-shadow),0 2px 4px #0a14262b;
   }
-  :root[data-button-hardware-fasteners=torx]
+  :root[data-button-hardware-fasteners=torx]:where(:not([data-button-material^="stone-"]))
   :is(.btn.primary,.ad-carousel-house-add,[data-button-finish-action]:not([data-button-finish-action=step],[data-button-finish-action=tab])) {
     background-image:radial-gradient(circle at 9px 9px,var(--hardware-shadow) 0 1px,var(--hardware-highlight) 1.5px 2px,var(--hardware-metal) 2.5px 4px,transparent 4.5px),radial-gradient(circle at calc(100% - 9px) 9px,var(--hardware-shadow) 0 1px,var(--hardware-highlight) 1.5px 2px,var(--hardware-metal) 2.5px 4px,transparent 4.5px),radial-gradient(circle at 9px calc(100% - 9px),var(--hardware-shadow) 0 1px,var(--hardware-highlight) 1.5px 2px,var(--hardware-metal) 2.5px 4px,transparent 4.5px),radial-gradient(circle at calc(100% - 9px) calc(100% - 9px),var(--hardware-shadow) 0 1px,var(--hardware-highlight) 1.5px 2px,var(--hardware-metal) 2.5px 4px,transparent 4.5px),linear-gradient(178deg,var(--button-face-sheen),transparent 52%,var(--button-face-shade)),linear-gradient(var(--button-face-tint),var(--button-face-tint)),var(--button-face-grain),linear-gradient(155deg,var(--button-face-top),var(--button-face-bottom));
   }
   :root[data-button-hardware-piping=contrast]
   :is(.btn.primary,.ad-carousel-house-add,[data-button-finish-action]:not([data-button-finish-action=step],[data-button-finish-action=tab])) {outline:2px solid var(--button-thread);outline-offset:-5px}
-  :root[data-button-hardware-strap=buckle]
+  :root[data-button-hardware-strap=buckle]:where(:not([data-button-material^="stone-"]))
   :is(.btn.primary,.ad-carousel-house-add,[data-button-finish-action]:not([data-button-finish-action=step],[data-button-finish-action=tab])) {background-image:linear-gradient(90deg,transparent 0 68%,#3a241900 68%,#3a2419aa 69% 79%,var(--hardware-metal) 79% 82%,#3a2419aa 82% 92%,transparent 92%),linear-gradient(178deg,var(--button-face-sheen),transparent 52%,var(--button-face-shade)),linear-gradient(var(--button-face-tint),var(--button-face-tint)),var(--button-face-grain),linear-gradient(155deg,var(--button-face-top),var(--button-face-bottom))}
   :root[data-button-hardware-trim=walnut] {--hardware-trim:repeating-linear-gradient(4deg,#2a160d 0 2px,#70472d 3px 5px,#3a2115 6px 8px)}
   :root[data-button-hardware-trim=forged-carbon] {--hardware-trim:repeating-linear-gradient(132deg,#111 0 4px,#495057 5px 7px,#1b1d1f 8px 12px)}
   :root[data-button-hardware-trim=slate] {--hardware-trim:linear-gradient(105deg,#394047,#667078 45%,#252b30 48%,#505960 70%,#30363b)}
   :root[data-button-hardware-trim]:not([data-button-hardware-trim=none])
   :is(.btn.primary,.ad-carousel-house-add,[data-button-finish-action]:not([data-button-finish-action=step],[data-button-finish-action=tab])) {border-block-end:5px solid transparent;border-image:var(--hardware-trim) 1}
-  :root[data-button-hardware-lettering=debossed] .button-embroidery-label {
+  :root[data-button-hardware-lettering=debossed]:where(:not([data-button-material^="stone-"])) .button-embroidery-label {
     color:color-mix(in srgb,var(--button-face-bottom) 72%,#020406);-webkit-text-fill-color:currentColor;background:none;filter:none;text-shadow:-1px -1px #0008,1px 1px #fff2;font-weight:800
   }
-  :root[data-button-hardware-plaque=engraved] .button-embroidery-label::after {
+  :root[data-button-hardware-plaque=engraved]:where(:not([data-button-material^="stone-"])) .button-embroidery-label::after {
     content:"BRUMBRUM";position:absolute;right:9px;bottom:5px;padding:1px 4px;border:1px solid var(--hardware-highlight);border-radius:2px;color:var(--hardware-shadow);background:linear-gradient(120deg,var(--hardware-highlight),var(--hardware-metal));font:700 7px/1 system-ui;letter-spacing:.08em;-webkit-text-fill-color:currentColor;text-shadow:0 1px #fff8
   }
   .hardware-swatch {display:block;width:100%;height:34px;border-radius:7px;border:1px solid var(--line);background:linear-gradient(125deg,#e8edf0,#737f87 45%,#e9eef1 52%,#626c73)}

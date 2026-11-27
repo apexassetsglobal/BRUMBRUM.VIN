@@ -3,7 +3,7 @@ import { marqueFiles } from './marque-files.js';
 import { appleStartupImages } from './apple-startup.js';
 import { brandLogoAsset, brandLogoIds } from './brand-logos.js';
 import { id, isStaff, withAuthReturn } from './core.js';
-import { buttonEmbroideryOptions, buttonFinishChoices, buttonFinishFields, buttonFinishPalettes, buttonFinishPresets, buttonFinishes, buttonHardwareChoices, buttonHardwareFields, carbonAndMetalFinishPresets, defaultButtonHardware, luxuryBrandPresetGroups, rollsRoyceFinishPresets } from './button-finishes.js';
+import { blackStoneFinishPresets, buttonEmbroideryOptions, buttonFinishChoices, buttonFinishFields, buttonFinishPalettes, buttonFinishPresets, buttonFinishes, buttonHardwareChoices, buttonHardwareFields, carbonAndMetalFinishPresets, defaultButtonHardware, luxuryBrandPresetGroups, rollsRoyceFinishPresets } from './button-finishes.js';
 import { options } from './data.js';
 import { listingVideoLimit } from './listing-video-policy.js';
 import { formatLocale, languages } from './i18n.js';
@@ -617,6 +617,12 @@ function buttonFinishCustomizer(ctx,group) {
       'appearance-button-axis',` data-appearance-button-axis="${field}"`);
   };
   const options=(field,variants)=>`<div class="button-finish-options">${variants.map(variant=>option(field,variant)).join('')}</div>`;
+  const materialOptions=(variants)=>`
+    ${options('material',variants.filter(([id])=>!id.startsWith('stone-')))}
+    <details class="button-finish-palette" data-button-finish-palette="stone">
+      <summary>${e(t('Czarne kamienie','Black stones'))}</summary>
+      ${options('material',variants.filter(([id])=>id.startsWith('stone-')))}
+    </details>`;
   return `<details class="button-finish-customizer">
     <summary>${e(t('Dostosuj tapicerkę','Customize upholstery'))}</summary>
     <div class="button-finish-config">
@@ -626,7 +632,7 @@ function buttonFinishCustomizer(ctx,group) {
           ${options('color',colors)}
         </details>`).join(''))}
       ${Object.entries(buttonFinishFields).map(([field,{label,options:variants}])=>
-        stage(field,label,options(field,variants))).join('')}
+        stage(field,label,field==='material'?materialOptions(variants):options(field,variants))).join('')}
     </div>
   </details>`;
 }
@@ -646,6 +652,10 @@ function buttonFinishSection(ctx,group,title) {
       ${buttonFinishPresets.map(card).join('')}
       ${card({id:'custom',pl:'Własny styl',en:'Custom finish',finish:buttonFinishes.stock})}
     </div>
+    <details class="button-finish-palette button-finish-preset-group" data-button-finish-preset-group data-stone-finishes>
+      <summary>${e(t('Czarne kamienie','Black stones'))}</summary>
+      <div class="button-finish-options">${blackStoneFinishPresets.map(card).join('')}</div>
+    </details>
     <details class="button-finish-palette button-finish-preset-group" data-button-finish-preset-group>
       <summary>${e(t('Gotowe wzory inspirowane Rolls‑Royce’em','Rolls-Royce inspired presets'))}</summary>
       <div class="button-finish-options">${rollsRoyceFinishPresets.map(card).join('')}</div>
@@ -683,7 +693,7 @@ function personalLogoOptions(ctx,group) {
   const options=[
     ['default',t('Domyślne logo strony','Site default')],
     ['original',t('Oryginalne czarno-niebieskie','Original black and blue')],
-    ...brandLogoIds.map(id=>[id,(Number(id)>20?t('Skóra','Leather')+' '+String(Number(id)-20).padStart(2,'0'):t('Metal','Metal')+' '+id)])
+    ...brandLogoIds.map(id=>[id,(Number(id)>60?t('Onyks / obsydian','Onyx / obsidian')+' '+String(Number(id)-10):Number(id)>20?t('Skóra','Leather')+' '+String(Number(id)-20).padStart(2,'0'):t('Metal','Metal')+' '+id)])
   ];
   const gallery=`<fieldset class="logo-choice-grid" aria-label="${e(t('Logo w nagłówku','Header logo'))}">
     ${options.map(([value,label])=>{
@@ -997,9 +1007,9 @@ export function layout(ctx,view) {
   ${name==='BRUMBRUM.VIN'?appleStartupImages:''}
   <script src="/appearance.js?v=13"></script>
   ${ctx.robotics?'<script src="/assets/robot-appearance.js?v=2"></script>':''}
-  ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=uniform-logo"><script defer src="/assets/header-logo.js?v=5"></script>'}
+  ${view.watchPage||view.reelsPage?'':'<link rel="stylesheet" href="/assets/launch-screen.css?v=onyx"><script defer src="/assets/header-logo.js?v=6"></script>'}
   ${launchScreen?'<script src="/assets/launch-screen.js"></script>':''}
-  <link rel="stylesheet" href="/styles.css?v=wizard-layout"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
+  <link rel="stylesheet" href="/styles.css?v=black-stone"><link rel="stylesheet" href="/assets/vehicle-catalog-layout.css?v=4"><link rel="stylesheet" href="/assets/service-shell.css?v=rail4">
   ${view.services?'<link rel="stylesheet" href="/assets/services-map.css"><link rel="stylesheet" href="/assets/services-promo.css"><script type="module" src="/assets/services-ui.js"></script><script type="module" src="/assets/services-map.js"></script><script type="module" src="/assets/services-promo.js"></script>':''}
   <link rel="stylesheet" href="/assets/robots.css?v=6">${ctx.robotics?'<link rel="stylesheet" href="/assets/robots-demo.css?v=2"><link rel="stylesheet" href="/assets/robot-appearance.css?v=3"><script type="module" src="/assets/robots.js?v=3"></script>':''}
   ${view.automation?'<script type="module" src="/assets/automation-ui.js"></script>':''}${view.structured?'<script type="application/ld+json">'+JSON.stringify(view.structured).replace(/</g,'\\u003c')+'</script>':''}

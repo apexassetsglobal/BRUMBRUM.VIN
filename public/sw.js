@@ -2,7 +2,7 @@ const cacheName='all4auto-public-v204';
 const languages=['pl','en','cs','sk','de','uk'];
 const offline=language=>'/offline.html?lang='+language;
 const preference='/offline-language';
-const essentials=[...languages.map(offline),'/styles.css','/styles.css?v=wizard-layout','/assets/vehicle-catalog-layout.css?v=4','/assets/service-shell.css?v=rail4',
+const essentials=[...languages.map(offline),'/styles.css','/styles.css?v=black-stone','/assets/vehicle-catalog-layout.css?v=4','/assets/service-shell.css?v=rail4',
   '/assets/robots.css?v=6','/assets/robot-appearance.css?v=3','/assets/robot-appearance.js?v=2','/assets/robots-demo.css?v=2','/appearance.js?v=13','/assets/sound-catalog.js?v=1','/assets/sound-engine.js?v=1','/assets/sound-garage.js?v=1','/assets/icon-192.png?v=engine-start','/assets/icon-512.png?v=engine-start','/assets/icon-maskable-192.png?v=engine-start','/assets/icon-maskable-512.png?v=engine-start',
   '/assets/robots/icon.svg','/assets/robots/icon-180.png','/assets/robots/icon-192.png','/assets/robots/icon-512.png'];
 

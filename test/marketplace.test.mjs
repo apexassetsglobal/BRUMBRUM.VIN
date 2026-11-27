@@ -322,7 +322,8 @@ test('button upholstery presets and independent options keep one complete saved 
   assert.deepEqual(embroideryStyles,['satin','cotton','silk','metallic','reflective','plain']);
   const choices=JSON.parse(buttonFinishChoices);
   const presets=JSON.parse(buttonFinishPresets);
-  assert.deepEqual(Object.keys(presets),[
+  const stones=Array.from({length:20},(_,index)=>'stone-'+String(index+1).padStart(2,'0'));
+  assert.deepEqual(Object.keys(presets).filter(id=>!stones.includes(id)),[
     'graphite-gt','track-red','cognac','ivory','racing-green','midnight-navy',
     'steel-gray','aubergine','ice-blue','copper','stock',
     'rr-grace-suite','rr-navy-suite','rr-tan-suite','rr-charles-suite',
@@ -333,6 +334,11 @@ test('button upholstery presets and independent options keep one complete saved 
   assert.match(html,/Motyw tapicerki/);
   assert.match(html,/Karbon i metale/);
   const menu=html.split('id="icon-style-dialog"')[1].split('</dialog>')[0];
+  const stoneOptions=menu.match(/<input\b[^>]*\bvalue="stone-\d+"[^>]*>/g)||[];
+  for (const attribute of ['data-button-finish-preset','data-button-finish-field="material"']) {
+    assert.deepEqual(stoneOptions.filter(tag=>tag.includes(attribute))
+      .map(tag=>tag.match(/value="([^"]+)"/)[1]).sort(),stones);
+  }
   assert.match(menu,/<\/details>\s*<\/div>\s*<div class="button-finish-preview-dock"/);
   assert.equal((menu.match(/class="btn primary button-finish-preview-button"/g)||[]).length,1);
   assert.match(menu,/<span class="button-embroidery-label">Dodaj ogłoszenie<\/span>/);
@@ -358,7 +364,7 @@ test('button upholstery presets and independent options keep one complete saved 
     'appearance menu shows the board before small icon groups and all button settings');
   for (const brand of ['ferrari','porsche','bentley','rolls-royce','lamborghini','maybach','aston-martin','pagani-bugatti']) assert.ok(html.includes('data-button-finish-palette="'+brand+'"'));
   assert.deepEqual(Object.fromEntries(Object.entries(choices).map(([field,values])=>[field,values.length])),
-    {color:63,material:18,stitch:7,thread:17});
+    {color:63,material:38,stitch:7,thread:17});
   assert.doesNotMatch(html,/data-button-finish-choice=/);
   const attributes={color:'buttonColor',material:'buttonMaterial',stitch:'buttonStitch',thread:'buttonThread'};
   const dataset={iconStyle:'classic',iconStyles:'classic',themeModes:'{"light":"light"}',themeMaterials:'',
@@ -371,7 +377,7 @@ test('button upholstery presets and independent options keep one complete saved 
   const storage=new Map([['a4-button-finish',JSON.stringify(previousFinish)],['a4-button-embroidery','silk']]);
   const readFinish=()=>Object.fromEntries(Object.entries(attributes).map(([field,attribute])=>[field,dataset[attribute]]));
 
-  runInNewContext(script,{
+  const openPage=()=>runInNewContext(script,{
     document:{
       documentElement:{dataset,style:{setProperty(){}},toggleAttribute(){},addEventListener:(type,callback)=>{rootListeners[type]=callback;}},
       querySelectorAll:selector=>({
@@ -384,6 +390,7 @@ test('button upholstery presets and independent options keep one complete saved 
     localStorage:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)},
     window:{matchMedia:()=>({matches:false,addEventListener(){}}),addEventListener:(type,callback)=>{windowListeners[type]=callback;}}
   });
+  openPage();
   assert.deepEqual(readFinish(),previousFinish);
   assert.equal(dataset.buttonEmbroidery,'silk');
   const mockRadio=(value,field)=>{
@@ -452,6 +459,26 @@ test('button upholstery presets and independent options keep one complete saved 
   assert.deepEqual(readFinish(),{color:'copper',material:'brushed-copper',stitch:'none',thread:'silver'});
   assert.deepEqual(selectedFields(),presets['finish-brushed-copper']);
 
+  for (const stone of stones) {
+    const option=radio(stone);
+    option.checked=true;
+    documentListeners.change({target:option});
+    assert.equal(dataset.buttonMaterial,stone);
+    assert.deepEqual(selected(),[stone]);
+    assert.deepEqual(selectedFields(),presets[stone]);
+    assert.deepEqual(JSON.parse(storage.get('a4-button-finish')),presets[stone]);
+  }
+  for (const attribute of Object.values(attributes)) delete dataset[attribute];
+  openPage();
+  documentListeners.DOMContentLoaded();
+  assert.deepEqual(readFinish(),presets['stone-20']);
+  assert.deepEqual(selected(),['stone-20']);
+  radio('cognac').checked=true;
+  documentListeners.change({target:radio('cognac')});
+  assert.deepEqual(readFinish(),presets.cognac);
+  assert.deepEqual(selectedFields(),presets.cognac);
+  assert.deepEqual(JSON.parse(storage.get('a4-button-finish')),presets.cognac);
+
   storage.set('a4-button-finish',JSON.stringify(presets.ivory));
   windowListeners.storage({key:'a4-button-finish'});
   assert.deepEqual(selected(),['ivory']);
@@ -474,13 +501,16 @@ test('button upholstery presets and independent options keep one complete saved 
 
   const {result:css}=await client.go('/styles.css?v=bespoke-ambient-1');
   const proceduralMaterials=new Set(['q-citura','brogued-leather','forged-carbon']);
+  const stoneImages=new Set();
   for (const material of choices.material.filter(choice=>choice!=='smooth'&&!proceduralMaterials.has(choice))) {
     const path='/assets/buttons/'+material+'.webp';
     assert.ok(css.includes(path),path);
     const {result:image,headers}=await client.go(path);
     assert.match(headers.get('content-type'),/image\/webp/);
     assert.equal(image.subarray(8,12).toString(),'WEBP');
+    if (stones.includes(material)) stoneImages.add(await digest(image));
   }
+  assert.equal(stoneImages.size,stones.length,'each stone has its own texture');
   for (const material of proceduralMaterials) assert.match(css,new RegExp(`data-button-material=${material}`));
 });
 

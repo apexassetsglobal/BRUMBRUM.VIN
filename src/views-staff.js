@@ -67,7 +67,7 @@ function bannerForm(ctx,b) {
 function brandLogoSettings(ctx) {
   const t=ctx.t;
   const choices={[originalBrandLogo]:t('Oryginalne logo','Original logo'),
-    ...Object.fromEntries(brandLogoIds.map(id=>[id,(Number(id)>20?t('Skóra','Leather')+' '+String(Number(id)-20).padStart(2,'0'):t('Metal','Metal')+' '+id)]))};
+    ...Object.fromEntries(brandLogoIds.map(id=>[id,(Number(id)>60?t('Onyks / obsydian','Onyx / obsidian')+' '+String(Number(id)-10):Number(id)>20?t('Skóra','Leather')+' '+String(Number(id)-20).padStart(2,'0'):t('Metal','Metal')+' '+id)]))};
   const form=apiForm('/admin/settings',`<div class="field-grid">
     ${choice(ctx,'home_logo',t('Logo w nagłówku całej strony','Site-wide header logo'),choices,ctx.brand.home_logo,{placeholder:false})}
     ${choice(ctx,'launch_logo',t('Logo na ekranie startowym','Launch screen logo'),choices,ctx.brand.launch_logo,{placeholder:false})}

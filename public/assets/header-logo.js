@@ -5,7 +5,7 @@
   const original = header.querySelector('[data-header-original]');
   const preset = header.querySelector('[data-header-preset]');
   const controls = document.querySelectorAll('[data-personal-logo-choice]');
-  const isPreset = value => /^(0[1-9]|[1-5][0-9]|60)$/.test(value);
+  const isPreset = value => /^(0[1-9]|[1-6][0-9]|70)$/.test(value);
   let choice = 'default';
   const ledChoices = document.querySelectorAll('[data-logo-led-choice]');
   const ledColors = {off:'transparent',red:'#ff003c',blue:'#164bff',violet:'#bb00ff',cyan:'#00f5ff',green:'#39ff14',gold:'#fff000',white:'#f5ffff'};
