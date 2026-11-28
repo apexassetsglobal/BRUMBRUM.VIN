@@ -183,7 +183,9 @@ export async function search(ctx, params, settings = {}) {
   const robotics=Boolean(ctx.robotics||settings.robotics||params.get('market')==='robotics');
   const values=Object.fromEntries(Object.keys(filterFields).map(key=>[key,text(params.get(key),100)]).filter(([,value])=>value!==''));
   const category=text(params.get('category'),100);
-  if (category && !robotics) {
+  const machineryCategory=category==='machinery';
+  const yachtCategory=category==='yachts';
+  if (category && !robotics && !machineryCategory && !yachtCategory) {
     const [type,body]=category.split(':');
     if (Object.hasOwn(heavyVehicleFilters,body)&&heavyVehicleFilters[body][0]===type) {
       values.type=type;
@@ -195,6 +197,8 @@ export async function search(ctx, params, settings = {}) {
   const conditions=["l.scope=?","l.status='published'","u.deleted_at IS NULL"];
   const args=[ctx.scope];
   conditions.push(robotics?"l.type='robot'":"l.type<>'robot'");
+  if (machineryCategory) conditions.push("l.type IN ('farm','construction','forestry','garden','industrial','special')");
+  if (yachtCategory) { conditions.push("l.type='marine_air'"); values.body||='motor_yacht'; }
   if(robotics) {
     delete values.type;
     const robotCategory=text(params.get('robotCategory'),100)||category;

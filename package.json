@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@zip.js/zip.js": "2.25.0",
+    "qrcode-generator": "^1.4.4",
     "saxes": "6.0.0"
   }
 }
