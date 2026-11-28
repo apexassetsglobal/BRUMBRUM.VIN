@@ -666,6 +666,14 @@ test('05 · full preview, moderation submission and public visibility',async()=>
   assert.match(tvHome,/Samochody/);
   assert.match(tvHome,/Toyota Corolla/);
   assert.match(tvHome,/tv\.js\?v=2/);
+  const tvReels=(await browser().go('/tv?widok=rolki&make=Toyota')).result;
+  assert.match(tvReels,/data-tv-reel-feed/);
+  assert.match(tvReels,/data-tv-slide/);
+  assert.match(tvReels,/data-tv-reel-image/);
+  assert.match(tvReels,/data-tv-photo-list=/);
+  assert.match(tvReels,/data-tv-list-next/);
+  assert.match(tvReels,/data-tv-open/);
+  assert.match(tvReels,/Toyota Corolla/);
   const tvDetail=(await browser().go('/tv/oferta/'+result.slug)).result;
   assert.match(tvDetail,/data-gallery-image/);
   assert.match(tvDetail,/Pokaż na telefonie/);
