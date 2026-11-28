@@ -560,3 +560,66 @@ button,input {
   background:#12301f;
   color:#b8f3cf
 }
+
+/* Smart TV visual language follows the existing BRUMBRUM.VIN app. */
+html{background:#f2f6fb;color:#13263e;color-scheme:light;font:500 clamp(18px,1.05vw,24px)/1.45 Manrope,Arial,sans-serif;scroll-behavior:smooth}
+body{background:#f2f6fb;color:#14263e;min-width:960px}
+.tv-shell{width:100%;max-width:none;padding:0 0 76px;min-height:100vh;min-height:100dvh;overflow:hidden}
+.tv-top{height:clamp(76px,7vh,108px);display:flex;align-items:center;justify-content:space-between;padding:10px clamp(26px,3vw,58px);background:#fff;border-bottom:1px solid #e3eaf2;box-shadow:0 4px 18px #1a35520d;position:relative;z-index:4}
+.tv-brand{display:flex;align-items:center;gap:13px;color:#10223b;line-height:1}
+.tv-brand>svg,.tv-brand>img,.tv-brand>span{width:clamp(230px,16vw,330px);height:auto;max-height:62px;object-fit:contain}
+.tv-brand small{padding:8px 11px;border-radius:8px;background:#eef4fb;color:#526982;font-weight:800;letter-spacing:.14em;font-size:12px}
+.tv-profile{display:flex;align-items:center;gap:12px;color:#182c45;font-size:clamp(18px,1.15vw,24px);font-weight:800}
+.tv-profile b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#0874df;color:white;font-size:15px}
+.exchange-strip{height:clamp(42px,4vh,58px);display:flex;align-items:center;gap:18px;padding:0 clamp(26px,3vw,58px);background:#f7f9fc;border-bottom:1px solid #dfe7f0;color:#193b62;font-size:clamp(13px,.78vw,17px);white-space:nowrap;overflow:hidden}
+.exchange-source{display:grid;line-height:1.05;flex:none;color:#1769c2}.exchange-source time{font-size:.76em;color:#6a7786}.exchange-window{flex:1;min-width:0;overflow:hidden}.exchange-track{display:flex;width:max-content}.exchange-track ul{display:flex;align-items:center;gap:30px;margin:0;padding:0;list-style:none;animation:tv-rate-scroll 80s linear infinite}.exchange-track li{display:flex;align-items:center;gap:8px}.exchange-track li strong{color:#1469c6}.exchange-flag{object-fit:cover}.exchange-pause{border:0;background:transparent;color:#1769c2;font-weight:900}.exchange-strip[data-rates-paused] .exchange-track ul{animation-play-state:paused}
+@keyframes tv-rate-scroll{to{transform:translateX(-100%)}}
+.tv-side{position:fixed;z-index:10;right:0;top:calc(clamp(76px,7vh,108px) + clamp(42px,4vh,58px) + 8px);bottom:clamp(72px,7vh,100px);width:clamp(70px,5vw,92px);padding:10px 7px;display:flex;flex-direction:column;gap:5px;overflow:hidden auto;background:rgba(255,255,255,.96);border:1px solid #dce5ef;border-right:0;border-radius:20px 0 0 20px;box-shadow:0 6px 24px #10284316;transition:width .18s ease,box-shadow .18s ease}
+.tv-side:focus-within,.tv-side:hover{width:clamp(260px,19vw,340px);box-shadow:0 10px 32px #10284325}
+.tv-side a{min-height:clamp(52px,5.2vh,68px);display:grid;grid-template-columns:48px 1fr;align-items:center;gap:13px;padding:7px 10px;color:#203b5a;border-radius:12px;white-space:nowrap}
+.tv-side a span{opacity:0;transform:translateX(8px);transition:opacity .12s ease,transform .12s ease;font-weight:750}
+.tv-side:focus-within a span,.tv-side:hover a span{opacity:1;transform:none}
+.tv-side a:hover,.tv-side a:focus-visible{background:#edf5ff;color:#1268c4}
+.tv-hero{position:relative;display:block;height:clamp(500px,61vh,790px);min-height:500px;margin:0;overflow:visible;padding:0;background:#dcebf7}
+.tv-hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 52%}
+.tv-search-panel{position:absolute;z-index:2;left:clamp(24px,2.2vw,44px);right:clamp(90px,6vw,120px);bottom:-42px;padding:clamp(24px,2vw,38px);border-radius:24px;background:#fffffff5;box-shadow:0 18px 48px #1c365322;border:1px solid #e3eaf1}
+.tv-search-panel h1{font-size:clamp(24px,1.55vw,34px);margin:0 0 18px;letter-spacing:-.025em}
+.tv-search-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 16px;align-items:end}
+.tv-field{gap:8px;color:#1a2c42;font-weight:800;font-size:clamp(15px,.87vw,19px)}
+.tv-field input,.tv-field textarea,.tv-field select{height:clamp(58px,5.5vh,76px);width:100%;border:1px solid #d8e0e9;border-radius:14px;background:#fff;color:#273d56;padding:12px 18px;box-shadow:0 2px 6px #19324d0b;font-size:clamp(17px,1vw,22px)}
+.tv-field input::placeholder{color:#8b97a4;opacity:1}
+.tv-search-panel .tv-primary{grid-column:1/-1;width:100%;height:clamp(66px,6.2vh,84px);border-radius:16px;background:linear-gradient(110deg,#10151c,#050608 58%,#151920);border:1px solid #6c7480;color:#fff;font-size:clamp(19px,1.2vw,26px);box-shadow:inset 0 1px #ffffff22}
+.tv-primary{background:#136dcc;color:#fff;border-radius:13px;box-shadow:0 5px 14px #0b5fb32b}
+.tv-primary:hover{background:#0d5fb7}
+.tv-extra-filters{grid-column:1/-1;border:1px solid #dce5ef;border-radius:12px;padding:10px 14px;color:#183758}
+.tv-extra-filters summary{font-size:17px}.tv-extra-filters .tv-search-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tv-categories,.tv-results{margin:75px clamp(24px,2.2vw,44px) 30px;padding-right:clamp(70px,5vw,96px)}
+.tv-categories h2,.tv-section-head h2,.tv-search h2{font-size:clamp(24px,1.5vw,34px);color:#142a45;margin-bottom:20px}
+.tv-category-grid{grid-template-columns:repeat(7,minmax(0,1fr));gap:15px}
+.tv-category-grid a{height:clamp(110px,12vh,160px);padding:14px;display:flex;flex-direction:column;justify-content:center;gap:10px;text-align:center;background:#fff;border:1px solid #dce5ef;border-radius:16px;color:#142a45;box-shadow:0 3px 12px #18355508}
+.tv-category-grid a span{display:grid;place-items:center;width:auto;height:auto;background:transparent;color:#176dc7;border-radius:0}
+.tv-category-grid a b{font-size:clamp(16px,.95vw,21px)}
+.tv-results{margin-top:38px}
+.tv-cards{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.tv-card{background:#fff;border-color:#dce5ef;border-radius:16px;color:#142a45;box-shadow:0 3px 12px #18355508}
+.tv-card img{background:#fff;object-fit:contain}
+.tv-card-copy strong{color:#1268c4}
+.tv-card-copy div,.tv-section-head span{color:#66778b}
+.tv-empty{background:#fff;color:#142a45}
+.tv-detail{margin:0;padding:clamp(22px,2vw,40px) clamp(24px,3vw,58px) 25px;background:#071421 url('/assets/hero.webp') center/cover no-repeat;min-height:calc(100vh - 150px);color:#fff;position:relative}
+.tv-detail:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#071421 0%,#071421ed 26%,#07142150 57%,#07142118 100%);pointer-events:none}
+.tv-detail>*{position:relative}.tv-detail-top{margin-right:clamp(90px,6vw,120px)}
+.tv-detail-top h1{font-size:clamp(38px,3.4vw,72px)}.tv-kicker{color:#83baf2}.tv-price{color:#b9dcff}
+.tv-detail-grid{grid-template-columns:minmax(0,1.3fr) minmax(300px,.78fr) minmax(220px,.52fr);margin-right:clamp(90px,6vw,120px)}
+.tv-gallery{background:#0b1826a6;border:1px solid #ffffff32}.tv-info,.tv-qr{background:#102235ef;border-color:#7991aa55}.tv-action,.tv-back{background:#102a43;border-color:#7290ad;color:#fff}
+.tv-qr-code{background:#fff}.tv-description{color:#d7e0e9}
+.tv-brand-strip{position:fixed;z-index:7;bottom:34px;left:0;right:0;display:flex;justify-content:space-around;align-items:center;height:clamp(48px,5vh,70px);gap:24px;padding:0 30px;background:#fff;border-top:1px solid #e1e7ed;color:#243950;overflow:hidden;white-space:nowrap;font-size:clamp(13px,.9vw,19px);font-weight:900;letter-spacing:-.04em}
+.tv-footer{position:fixed;z-index:8;left:0;right:0;bottom:0;margin:0;padding:8px 20px;background:#101318;color:#fff;text-align:center;font-size:14px;border:0}
+.tv-footer i{color:#78baff}
+.tv-mode :focus,[data-focus]:focus{outline:3px solid #2382e8!important;outline-offset:3px;box-shadow:0 0 0 5px #2382e826;z-index:4;position:relative}
+.tv-mode :focus{scroll-margin:100px}
+.tv-message{color:#142a45}.tv-message .tv-field{color:#142a45}.tv-message .tv-field textarea{background:#fff;color:#142a45}.tv-form-error{color:#a72838}
+.tv-offline{background:#f2f6fbf5;color:#142a45}.tv-offline button{color:#fff}
+@media(min-width:3000px){.tv-top{height:140px}.exchange-strip{height:74px}.tv-hero{height:62vh;max-height:1400px}.tv-search-panel{bottom:-60px;padding:52px}.tv-category-grid a{height:190px}.tv-side{top:224px;width:106px}.tv-side:focus-within,.tv-side:hover{width:390px}.tv-brand-strip{height:90px;bottom:44px}.tv-footer{font-size:18px;padding:12px}.tv-detail{min-height:calc(100vh - 230px)}}
+@media(max-width:1100px){body{min-width:0}.tv-top{height:68px;padding-inline:18px}.tv-brand>svg,.tv-brand>img,.tv-brand>span{width:200px}.exchange-strip{padding-inline:18px}.tv-side{top:122px;width:58px}.tv-side:focus-within,.tv-side:hover{width:230px}.tv-side a{grid-template-columns:35px 1fr;padding-inline:8px}.tv-hero{height:510px}.tv-search-panel{left:16px;right:70px;padding:18px}.tv-search-form{gap:10px}.tv-categories,.tv-results{margin-inline:16px;padding-right:55px}.tv-category-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.tv-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.tv-detail-grid{grid-template-columns:1fr 1fr}.tv-qr{grid-column:2}.tv-brand-strip{gap:18px}}
+@media(min-width:3000px){html{font-size:36px}.tv-field{font-size:28px}.tv-field input,.tv-field select{height:96px;font-size:32px}.tv-search-panel h1{font-size:44px}.tv-search-panel .tv-primary{height:104px;font-size:34px}.tv-categories h2,.tv-section-head h2{font-size:42px}.tv-category-grid a b{font-size:28px}.tv-side a{min-height:84px}}

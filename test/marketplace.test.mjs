@@ -665,7 +665,7 @@ test('05 · full preview, moderation submission and public visibility',async()=>
   assert.match(tvHome,/SMART TV/);
   assert.match(tvHome,/Samochody/);
   assert.match(tvHome,/Toyota Corolla/);
-  assert.match(tvHome,/tv\.js\?v=1/);
+  assert.match(tvHome,/tv\.js\?v=2/);
   const tvDetail=(await browser().go('/tv/oferta/'+result.slug)).result;
   assert.match(tvDetail,/data-gallery-image/);
   assert.match(tvDetail,/Pokaż na telefonie/);
