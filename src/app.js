@@ -31,6 +31,7 @@ import {servicePage} from './views-services.js';
 import {serviceMedia,serviceSitemap} from './services.js';
 import {automationTick} from './automation.js';
 import {automationPage} from './views-automation.js';
+import { tvHome, tvDetail, tvMessage } from './views-tv.js';
 
 const authPages={'/zaloguj':'login','/zarejestruj':'register','/potwierdz-email':'verify','/ponow-potwierdzenie':'resend',
   '/odzyskaj-haslo':'reset-request','/ustaw-haslo':'reset','/sprawdz-poczte':'mail','/dostep-wlasciciela':'owner'};
@@ -101,11 +102,15 @@ const manifest=ctx=>new Response(JSON.stringify({
   display:'standalone',background_color:ctx.robotics?'#ffffff':'#000000',theme_color:ctx.robotics?'#ffffff':'#000000',
   shortcuts:[{name:ctx.robotics?ctx.t('Szukaj robotów','Search robots'):ctx.t('Szukaj pojazdów','Search vehicles'),url:href(ctx,'/szukaj')},
     {name:ctx.t('Ulubione','Saved'),url:href(ctx,'/ulubione')}],
-  icons:ctx.robotics?[192,512].map(size=>({src:'/assets/robots/icon-'+size+'.png',sizes:size+'x'+size,type:'image/png',purpose:'any'})):[192,512].map(size=>({src:'/assets/icon-'+size+'.png?v=emblem',sizes:size+'x'+size,type:'image/png',purpose:'any maskable'}))}),
+  icons:ctx.robotics?[192,512].map(size=>({src:'/assets/robots/icon-'+size+'.png',sizes:size+'x'+size,type:'image/png',purpose:'any'})):[192,512].map(size=>({src:'/assets/icon-'+size+'.png?v=emblem',sizes:size+'x'+size,type:'image/png',purpose:'any maskable'})),
+  ...(ctx.path==='/tv/manifest.webmanifest'?{name:'BRUMBRUM.VIN Smart TV',short_name:'BRUMBRUM TV',id:'/tv/',start_url:'/tv',scope:'/tv/'}:{})}),
   {headers:{'Content-Type':'application/manifest+json; charset=utf-8','Cache-Control':'private, no-cache'}});
 
 async function page(ctx) {
   const path=ctx.path;
+  if(path==='/tv')return tvHome(ctx);
+  if(/^\/tv\/oferta\/[^/]+\/wiadomosc$/.test(path))return tvMessage(ctx,path.split('/')[3]);
+  if(/^\/tv\/oferta\/[^/]+$/.test(path))return tvDetail(ctx,path.split('/')[3]);
   if(ctx.robotics&&(/^\/(uslugi|moje-uslugi|moderacja-uslug)(\/|$)/.test(path)||path==='/moje-ogloszenia/import'||path==='/administracja/import')) {
     return redirect(ctx.prefix+path+ctx.url.search);
   }
@@ -216,7 +221,7 @@ export async function handler(req,env,asset,execution) {
     if (!ctx.demo&&req.method==='GET'&&path==='/api/china-market-news') return withHeaders(await chinaMarketNews());
     if (!ctx.demo&&req.method==='GET'&&path==='/api/exchange-rates') return withHeaders(await exchangeRates());
     if (!ctx.demo&&readable&&path==='/offline.html') return withHeaders(offlinePage(ctx));
-    if (!ctx.demo && readable && (path.startsWith('/assets/')||['/app.js','/appearance.js','/ultimate-visual.js','/smart-camera.js','/smart-camera-guides.js','/smart-camera-quality.js','/styles.css','/sw.js'].includes(path))) {
+    if (!ctx.demo && readable && (path.startsWith('/assets/')||['/app.js','/appearance.js','/ultimate-visual.js','/smart-camera.js','/smart-camera-guides.js','/smart-camera-quality.js','/styles.css','/sw.js','/tv.js','/tv.css','/tv-sw.js'].includes(path))) {
       result=await asset(path,req.method);
       if (!result&&path.startsWith(adMediaPath)) result=await readAdMedia(ctx,path);
       if (!result&&path.startsWith('/assets/')) result=await readDemoMedia(ctx,path);
@@ -265,7 +270,7 @@ export async function handler(req,env,asset,execution) {
       }
     }
     else if (!readable) missing();
-    else if (path==='/manifest.webmanifest') result=manifest(ctx);
+    else if (path==='/manifest.webmanifest'||path==='/tv/manifest.webmanifest') result=manifest(ctx);
     else if(path.startsWith('/uslugi-media/'))result=await serviceMedia(ctx,path.slice('/uslugi-media/'.length));
     else if (path.startsWith('/media/')) {
       const [,,key,thumb,extra]=path.split('/');
